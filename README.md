@@ -1,8 +1,10 @@
-# velvet-tarot
+# Velvet Tarot
 
 An interactive, AI-powered tarot reading app wrapped in a theatrical, scroll-driven experience. Ask a question, draw your cards, and receive a personalized interpretation powered by Google's Gemini API!
 
 ## Preview
+
+![Landing page](public/images/assets/preview.png)
 
 The experience opens on a theater entrance. Scroll to raise the curtain, split the powder room doors, and step inside to begin your reading.
 
