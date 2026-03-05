@@ -1,5 +1,7 @@
 # Velvet Tarot
 
+[Live Demo](https://velvet-tarot-7c4i.onrender.com)
+
 An interactive, AI-powered tarot reading app wrapped in a theatrical, scroll-driven experience. Ask a question, draw your cards, and receive a personalized interpretation powered by Google's Gemini API!
 
 ## Preview
