@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#10039; Artifacts &#10039;</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      html { overflow-y: auto; }
+    </style>
+  </head>
+  <body class="artifacts-page">
+    <script src="components.js"></script>
+
+    <main class="artifacts-container">
+      <h1 class="artifacts-title">The Arcana</h1>
+      <div id="artifacts-content"></div>
+    </main>
+
+    <script>
+      const SUIT_ORDER = ['wands', 'cups', 'swords', 'pentacles'];
+      const SUIT_LABELS = {
+        wands: 'Suit of Wands',
+        cups: 'Suit of Cups',
+        swords: 'Suit of Swords',
+        pentacles: 'Suit of Pentacles'
+      };
+
+      async function loadCards() {
+        const res = await fetch('/api/cards');
+        const cards = await res.json();
+
+        const major = cards.filter(c => c.arcana === 'major').sort((a, b) => a.number - b.number);
+        const suits = {};
+        SUIT_ORDER.forEach(s => { suits[s] = []; });
+        cards.filter(c => c.arcana === 'minor').forEach(c => {
+          if (suits[c.suit]) suits[c.suit].push(c);
+        });
+        // Sort each suit by number
+        Object.values(suits).forEach(arr => arr.sort((a, b) => a.number - b.number));
+
+        const container = document.getElementById('artifacts-content');
+
+        // Render Major Arcana group heading
+        const majorHeading = document.createElement('h2');
+        majorHeading.className = 'artifacts-group-heading';
+        majorHeading.textContent = 'Major Arcana';
+        container.appendChild(majorHeading);
+
+        // Render Major Arcana cards
+        container.appendChild(renderSection(null, major));
+
+        // Render Minor Arcana group heading
+        const minorHeading = document.createElement('h2');
+        minorHeading.className = 'artifacts-group-heading';
+        minorHeading.textContent = 'Minor Arcana';
+        container.appendChild(minorHeading);
+
+        // Render each suit
+        SUIT_ORDER.forEach(suit => {
+          container.appendChild(renderSection(SUIT_LABELS[suit], suits[suit]));
+        });
+      }
+
+      function renderSection(title, cards) {
+        const section = document.createElement('section');
+        section.className = 'artifacts-section';
+
+        if (title) {
+          const heading = document.createElement('h3');
+          heading.className = 'artifacts-section-heading';
+          heading.textContent = title;
+          section.appendChild(heading);
+        }
+
+        const table = document.createElement('div');
+        table.className = 'artifacts-table';
+
+        cards.forEach(card => {
+          const row = document.createElement('div');
+          row.className = 'artifacts-row';
+
+          row.innerHTML = `
+            ${card.pinterest ? `<a href="${card.pinterest}" target="_blank" rel="noopener noreferrer" class="artifacts-card-img">` : `<div class="artifacts-card-img">`}
+              <img src="/${card.image}" alt="${card.name}" />
+            ${card.pinterest ? `</a>` : `</div>`}
+            <div class="artifacts-card-info">
+              <h3 class="artifacts-card-name">${card.name}</h3>
+              <div class="artifacts-keywords">
+                <span class="artifacts-keyword-label">Upright:</span>
+                <span class="artifacts-keyword-list">${card.keywords.upright.join(', ')}</span>
+              </div>
+              <div class="artifacts-keywords">
+                <span class="artifacts-keyword-label">Reversed:</span>
+                <span class="artifacts-keyword-list">${card.keywords.reversed.join(', ')}</span>
+              </div>
+              <div class="artifacts-meaning">
+                <p><strong>Upright:</strong> ${card.meaning.upright}</p>
+              </div>
+              <div class="artifacts-meaning">
+                <p><strong>Reversed:</strong> ${card.meaning.reversed}</p>
+              </div>
+            </div>
+          `;
+
+          table.appendChild(row);
+        });
+
+        section.appendChild(table);
+        return section;
+      }
+
+      loadCards();
+
+      // Hide footer until user scrolls to bottom
+      const footer = document.querySelector('.site-footer');
+      if (footer) {
+        footer.style.opacity = '0';
+        footer.style.transition = 'opacity 0.4s ease';
+        window.addEventListener('scroll', () => {
+          const nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 50;
+          footer.style.opacity = nearBottom ? '1' : '0';
+        });
+      }
+    </script>
+  </body>
+</html>

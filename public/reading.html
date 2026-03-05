@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Reading page overrides: scrollable, full-width body */
+      html { overflow-y: auto; }
+      body { max-width: 100%; padding: 0; }
+    </style>
+  </head>
+  <body class="reading-page">
+    <script src="components.js"></script>
+
+    <main class="reading-stage">
+      <p class="reading-status" id="reading-status"></p>
+
+      <!-- Shuffle scene: hands flank the deck during shuffling -->
+      <div class="shuffle-scene" id="shuffle-scene">
+        <img src="/images/assets/leftHand.png" class="shuffle-hand hand-left" alt="" />
+        <div id="cards"></div>
+        <img src="/images/assets/rightHand.png" class="shuffle-hand hand-right" alt="" />
+      </div>
+
+      <div id="spread-area"></div>
+      <div id="reading"></div>
+    </main>
+
+    <div class="cloud-frame">
+      <img src="/images/assets/cloudFrame.png" class="cloud-frame-left" alt="" />
+      <img src="/images/assets/cloudFrame.png" class="cloud-frame-right" alt="" />
+    </div>
+
+    <script src="reading.js"></script>
+  </body>
+</html>

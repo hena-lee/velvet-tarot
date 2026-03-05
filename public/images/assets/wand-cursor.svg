@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- wand shaft -->
+  <line x1="28" y1="28" x2="8" y2="8" stroke="#413737" stroke-width="2" stroke-linecap="round"/>
+  <!-- star tip -->
+  <polygon points="6,0 7.5,4.5 12,4.5 8.5,7.5 10,12 6,9 2,12 3.5,7.5 0,4.5 4.5,4.5" fill="#c9a84c"/>
+</svg>

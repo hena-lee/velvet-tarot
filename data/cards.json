@@ -1,0 +1,2108 @@
+[
+  {
+    "id": "major_00",
+    "name": "The Fool",
+    "arcana": "major",
+    "suit": null,
+    "number": 0,
+    "keywords": {
+      "upright": [
+        "beginnings",
+        "innocence",
+        "spontaneity",
+        "free spirit"
+      ],
+      "reversed": [
+        "recklessness",
+        "risk-taking",
+        "holding back",
+        "naivety"
+      ]
+    },
+    "meaning": {
+      "upright": "A fresh start, a leap of faith into the unknown. Trust the journey even without knowing the destination.",
+      "reversed": "Reckless decisions or, conversely, fear of taking a necessary risk. Something is holding you back from beginning."
+    },
+    "image": "images/cards/major/The-Fool.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar00.htm"
+  },
+  {
+    "id": "major_01",
+    "name": "The Magician",
+    "arcana": "major",
+    "suit": null,
+    "number": 1,
+    "keywords": {
+      "upright": [
+        "willpower",
+        "manifestation",
+        "resourcefulness",
+        "skill"
+      ],
+      "reversed": [
+        "manipulation",
+        "trickery",
+        "wasted talent",
+        "illusion"
+      ]
+    },
+    "meaning": {
+      "upright": "You have all the tools you need. Channel your focus and willpower to manifest your goals into reality.",
+      "reversed": "Talents left unused, or someone using their skills to deceive. Look for misaligned intentions."
+    },
+    "image": "images/cards/major/The-Magician.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar01.htm"
+  },
+  {
+    "id": "major_02",
+    "name": "The High Priestess",
+    "arcana": "major",
+    "suit": null,
+    "number": 2,
+    "keywords": {
+      "upright": [
+        "intuition",
+        "mystery",
+        "inner knowledge",
+        "subconscious"
+      ],
+      "reversed": [
+        "secrets",
+        "withdrawal",
+        "silence",
+        "disconnection"
+      ]
+    },
+    "meaning": {
+      "upright": "Trust your intuition. The answers lie within, not in the noise of the outside world. Be still and listen.",
+      "reversed": "Ignoring your inner voice or keeping secrets that need to surface. Reconnect with your deeper self."
+    },
+    "image": "images/cards/major/The-High-Priestess.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar02.htm"
+  },
+  {
+    "id": "major_03",
+    "name": "The Empress",
+    "arcana": "major",
+    "suit": null,
+    "number": 3,
+    "keywords": {
+      "upright": [
+        "abundance",
+        "nurturing",
+        "fertility",
+        "nature"
+      ],
+      "reversed": [
+        "dependence",
+        "smothering",
+        "emptiness",
+        "creative block"
+      ]
+    },
+    "meaning": {
+      "upright": "A time of growth, creativity, and abundance. Nurture what matters and let it flourish naturally.",
+      "reversed": "Creative stagnation or over-dependence on others. You may be giving too much or too little."
+    },
+    "image": "images/cards/major/The-Empress.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar03.htm"
+  },
+  {
+    "id": "major_04",
+    "name": "The Emperor",
+    "arcana": "major",
+    "suit": null,
+    "number": 4,
+    "keywords": {
+      "upright": [
+        "authority",
+        "structure",
+        "stability",
+        "leadership"
+      ],
+      "reversed": [
+        "tyranny",
+        "rigidity",
+        "lack of discipline",
+        "domination"
+      ]
+    },
+    "meaning": {
+      "upright": "Establish order and take command of your situation. Structure and discipline will carry you forward.",
+      "reversed": "Authority misused or a lack of structure causing chaos. Rigidity may be stifling growth."
+    },
+    "image": "images/cards/major/The-Emperor.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar04.htm"
+  },
+  {
+    "id": "major_05",
+    "name": "The Hierophant",
+    "arcana": "major",
+    "suit": null,
+    "number": 5,
+    "keywords": {
+      "upright": [
+        "tradition",
+        "guidance",
+        "conformity",
+        "education"
+      ],
+      "reversed": [
+        "rebellion",
+        "nonconformity",
+        "new approaches",
+        "freedom"
+      ]
+    },
+    "meaning": {
+      "upright": "Seek wisdom from established traditions or a trusted mentor. There is value in the tried and true.",
+      "reversed": "Questioning convention and forging your own path. Established systems may not serve you right now."
+    },
+    "image": "images/cards/major/The-Hierophant.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar05.htm"
+  },
+  {
+    "id": "major_06",
+    "name": "The Lovers",
+    "arcana": "major",
+    "suit": null,
+    "number": 6,
+    "keywords": {
+      "upright": [
+        "love",
+        "harmony",
+        "partnership",
+        "choices"
+      ],
+      "reversed": [
+        "disharmony",
+        "imbalance",
+        "misalignment",
+        "indecision"
+      ]
+    },
+    "meaning": {
+      "upright": "A meaningful connection or a pivotal choice. Align your actions with your deepest values.",
+      "reversed": "Conflict in a relationship or an internal struggle between head and heart. Values feel misaligned."
+    },
+    "image": "images/cards/major/The-Lovers.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar06.htm"
+  },
+  {
+    "id": "major_07",
+    "name": "The Chariot",
+    "arcana": "major",
+    "suit": null,
+    "number": 7,
+    "keywords": {
+      "upright": [
+        "determination",
+        "willpower",
+        "victory",
+        "control"
+      ],
+      "reversed": [
+        "aggression",
+        "lack of direction",
+        "obstacles",
+        "defeat"
+      ]
+    },
+    "meaning": {
+      "upright": "Harness opposing forces and charge forward. Victory comes through determination and focused willpower.",
+      "reversed": "Scattered energy or feeling out of control. Obstacles may stem from a lack of clear direction."
+    },
+    "image": "images/cards/major/The-Chariot.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar07.htm"
+  },
+  {
+    "id": "major_08",
+    "name": "Strength",
+    "arcana": "major",
+    "suit": null,
+    "number": 8,
+    "keywords": {
+      "upright": [
+        "courage",
+        "patience",
+        "compassion",
+        "inner strength"
+      ],
+      "reversed": [
+        "self-doubt",
+        "weakness",
+        "insecurity",
+        "raw emotion"
+      ]
+    },
+    "meaning": {
+      "upright": "True strength is gentle. Meet challenges with patience, compassion, and quiet confidence.",
+      "reversed": "Self-doubt is undermining you. Insecurity or unchecked emotions may be running the show."
+    },
+    "image": "images/cards/major/The-Strength.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar08.htm"
+  },
+  {
+    "id": "major_09",
+    "name": "The Hermit",
+    "arcana": "major",
+    "suit": null,
+    "number": 9,
+    "keywords": {
+      "upright": [
+        "solitude",
+        "reflection",
+        "inner guidance",
+        "searching"
+      ],
+      "reversed": [
+        "isolation",
+        "loneliness",
+        "withdrawal",
+        "lost"
+      ]
+    },
+    "meaning": {
+      "upright": "Step back from the noise. Solitude and introspection will illuminate the path you seek.",
+      "reversed": "Isolation has gone too far, or you are avoiding necessary self-reflection. Reconnect intentionally."
+    },
+    "image": "images/cards/major/The-Hermit.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar09.htm"
+  },
+  {
+    "id": "major_10",
+    "name": "Wheel of Fortune",
+    "arcana": "major",
+    "suit": null,
+    "number": 10,
+    "keywords": {
+      "upright": [
+        "change",
+        "cycles",
+        "fate",
+        "turning point"
+      ],
+      "reversed": [
+        "resistance to change",
+        "bad luck",
+        "stagnation",
+        "setbacks"
+      ]
+    },
+    "meaning": {
+      "upright": "The wheel turns. Change is coming — embrace the cycle and trust that this shift serves your growth.",
+      "reversed": "Resisting an inevitable change or feeling stuck in a rut. The wheel will turn regardless."
+    },
+    "image": "images/cards/major/The-Wheel-of-Fortune.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar10.htm"
+  },
+  {
+    "id": "major_11",
+    "name": "Justice",
+    "arcana": "major",
+    "suit": null,
+    "number": 11,
+    "keywords": {
+      "upright": [
+        "fairness",
+        "truth",
+        "accountability",
+        "law"
+      ],
+      "reversed": [
+        "dishonesty",
+        "injustice",
+        "avoidance",
+        "unfairness"
+      ]
+    },
+    "meaning": {
+      "upright": "Truth and fairness prevail. Take responsibility for your actions and seek balanced outcomes.",
+      "reversed": "Something feels unjust. Dishonesty or avoidance of accountability is creating imbalance."
+    },
+    "image": "images/cards/major/The-Justice.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar11.htm"
+  },
+  {
+    "id": "major_12",
+    "name": "The Hanged Man",
+    "arcana": "major",
+    "suit": null,
+    "number": 12,
+    "keywords": {
+      "upright": [
+        "surrender",
+        "new perspective",
+        "pause",
+        "letting go"
+      ],
+      "reversed": [
+        "stalling",
+        "resistance",
+        "indecision",
+        "martyrdom"
+      ]
+    },
+    "meaning": {
+      "upright": "Pause and see things from a new angle. Surrender control and wisdom will follow.",
+      "reversed": "Stalling without purpose or resisting a necessary shift in perspective. Stop playing the martyr."
+    },
+    "image": "images/cards/major/The-Hanged Man.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar12.htm"
+  },
+  {
+    "id": "major_13",
+    "name": "Death",
+    "arcana": "major",
+    "suit": null,
+    "number": 13,
+    "keywords": {
+      "upright": [
+        "transformation",
+        "endings",
+        "transition",
+        "release"
+      ],
+      "reversed": [
+        "resistance to change",
+        "stagnation",
+        "fear of endings",
+        "decay"
+      ]
+    },
+    "meaning": {
+      "upright": "An ending that makes way for transformation. Let go of what no longer serves you.",
+      "reversed": "Clinging to something that has already run its course. Resisting necessary transformation."
+    },
+    "image": "images/cards/major/The-Death.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar13.htm"
+  },
+  {
+    "id": "major_14",
+    "name": "Temperance",
+    "arcana": "major",
+    "suit": null,
+    "number": 14,
+    "keywords": {
+      "upright": [
+        "balance",
+        "moderation",
+        "patience",
+        "harmony"
+      ],
+      "reversed": [
+        "excess",
+        "imbalance",
+        "impatience",
+        "overindulgence"
+      ]
+    },
+    "meaning": {
+      "upright": "Find the middle path. Balance, patience, and moderation will bring lasting harmony.",
+      "reversed": "Excess or impatience is throwing things off balance. Pull back and recalibrate."
+    },
+    "image": "images/cards/major/The-Temperance.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar14.htm"
+  },
+  {
+    "id": "major_15",
+    "name": "The Devil",
+    "arcana": "major",
+    "suit": null,
+    "number": 15,
+    "keywords": {
+      "upright": [
+        "bondage",
+        "materialism",
+        "shadow self",
+        "attachment"
+      ],
+      "reversed": [
+        "release",
+        "breaking free",
+        "reclaiming power",
+        "detachment"
+      ]
+    },
+    "meaning": {
+      "upright": "Something has a hold on you — addiction, toxic patterns, or materialism. Recognize the chains you can remove.",
+      "reversed": "Breaking free from what bound you. A moment of clarity about unhealthy attachments."
+    },
+    "image": "images/cards/major/The-Devil.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar15.htm"
+  },
+  {
+    "id": "major_16",
+    "name": "The Tower",
+    "arcana": "major",
+    "suit": null,
+    "number": 16,
+    "keywords": {
+      "upright": [
+        "upheaval",
+        "sudden change",
+        "revelation",
+        "chaos"
+      ],
+      "reversed": [
+        "avoidance",
+        "delayed disaster",
+        "fear of change",
+        "narrowly avoided"
+      ]
+    },
+    "meaning": {
+      "upright": "Sudden upheaval tears down what was built on shaky ground. Destruction clears the way for rebuilding.",
+      "reversed": "You sense something unstable but are avoiding the reckoning. Delaying the inevitable only prolongs it."
+    },
+    "image": "images/cards/major/The-Tower.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar16.htm"
+  },
+  {
+    "id": "major_17",
+    "name": "The Star",
+    "arcana": "major",
+    "suit": null,
+    "number": 17,
+    "keywords": {
+      "upright": [
+        "hope",
+        "renewal",
+        "inspiration",
+        "serenity"
+      ],
+      "reversed": [
+        "despair",
+        "disconnection",
+        "lack of faith",
+        "discouragement"
+      ]
+    },
+    "meaning": {
+      "upright": "After the storm, hope returns. Trust that you are being guided toward healing and renewal.",
+      "reversed": "Faith is wavering. Despair or disconnection from your sense of purpose needs attention."
+    },
+    "image": "images/cards/major/The-Star.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar17.htm"
+  },
+  {
+    "id": "major_18",
+    "name": "The Moon",
+    "arcana": "major",
+    "suit": null,
+    "number": 18,
+    "keywords": {
+      "upright": [
+        "illusion",
+        "fear",
+        "subconscious",
+        "anxiety"
+      ],
+      "reversed": [
+        "clarity",
+        "release of fear",
+        "truth revealed",
+        "recovery"
+      ]
+    },
+    "meaning": {
+      "upright": "Things are not as they seem. Navigate uncertainty with care — trust your instincts over appearances.",
+      "reversed": "Fog is lifting. Illusions dissolve and clarity returns after a period of confusion."
+    },
+    "image": "images/cards/major/The-Moon.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar18.htm"
+  },
+  {
+    "id": "major_19",
+    "name": "The Sun",
+    "arcana": "major",
+    "suit": null,
+    "number": 19,
+    "keywords": {
+      "upright": [
+        "joy",
+        "success",
+        "vitality",
+        "positivity"
+      ],
+      "reversed": [
+        "temporary sadness",
+        "overconfidence",
+        "blocked joy",
+        "setback"
+      ]
+    },
+    "meaning": {
+      "upright": "Radiant joy, success, and vitality. Everything is illuminated — celebrate this bright moment.",
+      "reversed": "Joy is dimmed but not gone. A temporary cloud over an otherwise positive situation."
+    },
+    "image": "images/cards/major/The-Sun.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar19.htm"
+  },
+  {
+    "id": "major_20",
+    "name": "Judgement",
+    "arcana": "major",
+    "suit": null,
+    "number": 20,
+    "keywords": {
+      "upright": [
+        "reflection",
+        "reckoning",
+        "awakening",
+        "renewal"
+      ],
+      "reversed": [
+        "self-doubt",
+        "refusal to learn",
+        "harsh self-judgment",
+        "stagnation"
+      ]
+    },
+    "meaning": {
+      "upright": "A moment of honest reckoning. Reflect on your journey, learn from it, and rise renewed.",
+      "reversed": "Refusing to learn from the past or judging yourself too harshly. Growth requires honest reflection, not punishment."
+    },
+    "image": "images/cards/major/The-Judgement.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar20.htm"
+  },
+  {
+    "id": "major_21",
+    "name": "The World",
+    "arcana": "major",
+    "suit": null,
+    "number": 21,
+    "keywords": {
+      "upright": [
+        "completion",
+        "achievement",
+        "fulfillment",
+        "wholeness"
+      ],
+      "reversed": [
+        "incompletion",
+        "shortcuts",
+        "emptiness",
+        "unfinished business"
+      ]
+    },
+    "meaning": {
+      "upright": "A cycle complete. You have arrived at wholeness and fulfillment. Savor it before the next chapter begins.",
+      "reversed": "Something remains unfinished. Taking shortcuts has left gaps. Close the loop before moving on."
+    },
+    "image": "images/cards/major/The-World.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/ar21.htm"
+  },
+  {
+    "id": "wands_01",
+    "name": "Ace of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 1,
+    "keywords": {
+      "upright": [
+        "inspiration",
+        "new opportunity",
+        "creative spark",
+        "potential"
+      ],
+      "reversed": [
+        "delays",
+        "lack of motivation",
+        "missed opportunity",
+        "creative block"
+      ]
+    },
+    "meaning": {
+      "upright": "A burst of creative energy and inspiration. A powerful new beginning is calling — seize it with passion.",
+      "reversed": "A promising spark is being stifled by hesitation or poor timing. Reignite your motivation before the opportunity fades."
+    },
+    "image": "images/cards/wands/The-Ace-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/waac.htm"
+  },
+  {
+    "id": "wands_02",
+    "name": "Two of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 2,
+    "keywords": {
+      "upright": [
+        "planning",
+        "future vision",
+        "discovery",
+        "decisions"
+      ],
+      "reversed": [
+        "fear of the unknown",
+        "poor planning",
+        "indecision",
+        "playing it safe"
+      ]
+    },
+    "meaning": {
+      "upright": "The world is in your hands. Plan boldly and look beyond your current horizon — bigger things await.",
+      "reversed": "Fear of stepping into the unknown is keeping you small. Avoiding decisions now will limit your future."
+    },
+    "image": "images/cards/wands/Two-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa02.htm"
+  },
+  {
+    "id": "wands_03",
+    "name": "Three of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 3,
+    "keywords": {
+      "upright": [
+        "expansion",
+        "foresight",
+        "progress",
+        "exploration"
+      ],
+      "reversed": [
+        "setbacks",
+        "frustration",
+        "obstacles",
+        "limited vision"
+      ]
+    },
+    "meaning": {
+      "upright": "Your efforts are gaining momentum and new horizons are opening. Keep your vision wide and trust the expansion unfolding.",
+      "reversed": "Progress feels stalled by unexpected obstacles or a narrowing perspective. Reassess your strategy and widen your view."
+    },
+    "image": "images/cards/wands/Three-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa03.htm"
+  },
+  {
+    "id": "wands_04",
+    "name": "Four of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 4,
+    "keywords": {
+      "upright": [
+        "celebration",
+        "harmony",
+        "homecoming",
+        "community"
+      ],
+      "reversed": [
+        "instability",
+        "conflict at home",
+        "lack of belonging",
+        "transition"
+      ]
+    },
+    "meaning": {
+      "upright": "A time of joyful celebration and stable foundations. Gather with those who matter and honor what you have built together.",
+      "reversed": "Home life or community feels unsettled. A sense of belonging is missing, and foundations need tending."
+    },
+    "image": "images/cards/wands/Four-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa04.htm"
+  },
+  {
+    "id": "wands_05",
+    "name": "Five of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 5,
+    "keywords": {
+      "upright": [
+        "competition",
+        "conflict",
+        "tension",
+        "rivalry"
+      ],
+      "reversed": [
+        "avoidance",
+        "compromise",
+        "resolution",
+        "inner conflict"
+      ]
+    },
+    "meaning": {
+      "upright": "Clashing energies and healthy competition are pushing you to sharpen your skills. Rise to the challenge without losing yourself.",
+      "reversed": "Conflict is being avoided rather than resolved, or internal struggles are draining your energy. Seek honest compromise."
+    },
+    "image": "images/cards/wands/Five-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa05.htm"
+  },
+  {
+    "id": "wands_06",
+    "name": "Six of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 6,
+    "keywords": {
+      "upright": [
+        "victory",
+        "recognition",
+        "confidence",
+        "triumph"
+      ],
+      "reversed": [
+        "ego",
+        "fall from grace",
+        "lack of recognition",
+        "self-doubt"
+      ]
+    },
+    "meaning": {
+      "upright": "Success and public recognition are yours. Stand tall in your achievement — you have earned this moment of triumph.",
+      "reversed": "Recognition is elusive, or ego is distorting your sense of accomplishment. Stay grounded and let your work speak for itself."
+    },
+    "image": "images/cards/wands/Six-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa06.htm"
+  },
+  {
+    "id": "wands_07",
+    "name": "Seven of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 7,
+    "keywords": {
+      "upright": [
+        "perseverance",
+        "defense",
+        "standing your ground",
+        "courage"
+      ],
+      "reversed": [
+        "overwhelm",
+        "giving up",
+        "exhaustion",
+        "vulnerability"
+      ]
+    },
+    "meaning": {
+      "upright": "You are being challenged but hold the higher ground. Stand firm in your convictions and defend what you believe in.",
+      "reversed": "The constant battle is wearing you down. Know when to hold your ground and when to step back and recharge."
+    },
+    "image": "images/cards/wands/Seven-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa07.htm"
+  },
+  {
+    "id": "wands_08",
+    "name": "Eight of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 8,
+    "keywords": {
+      "upright": [
+        "swift action",
+        "momentum",
+        "movement",
+        "alignment"
+      ],
+      "reversed": [
+        "delays",
+        "stagnation",
+        "miscommunication",
+        "scattered energy"
+      ]
+    },
+    "meaning": {
+      "upright": "Everything is moving quickly and in your favor. Ride this wave of momentum — the path ahead is clear and swift.",
+      "reversed": "Plans are stalled or messages are getting crossed. Scattered energy is slowing what should be flowing freely."
+    },
+    "image": "images/cards/wands/Eight-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa08.htm"
+  },
+  {
+    "id": "wands_09",
+    "name": "Nine of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 9,
+    "keywords": {
+      "upright": [
+        "resilience",
+        "persistence",
+        "grit",
+        "last stand"
+      ],
+      "reversed": [
+        "burnout",
+        "stubbornness",
+        "paranoia",
+        "fatigue"
+      ]
+    },
+    "meaning": {
+      "upright": "You have been through the fire and are still standing. One last push is needed — your resilience will carry you through.",
+      "reversed": "Exhaustion and hyper-vigilance are taking their toll. Stubbornly pushing forward without rest leads to burnout, not victory."
+    },
+    "image": "images/cards/wands/Nine-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa09.htm"
+  },
+  {
+    "id": "wands_10",
+    "name": "Ten of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 10,
+    "keywords": {
+      "upright": [
+        "burden",
+        "responsibility",
+        "hard work",
+        "overcommitment"
+      ],
+      "reversed": [
+        "release",
+        "delegation",
+        "breaking point",
+        "lightening the load"
+      ]
+    },
+    "meaning": {
+      "upright": "You are carrying too much. The weight of responsibilities is real, but the finish line is near — prioritize and push through.",
+      "reversed": "It is time to put something down. Delegate, release, or let go before the weight crushes your spirit."
+    },
+    "image": "images/cards/wands/Ten-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wa10.htm"
+  },
+  {
+    "id": "wands_11",
+    "name": "Page of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 11,
+    "keywords": {
+      "upright": [
+        "enthusiasm",
+        "exploration",
+        "free spirit",
+        "new ideas"
+      ],
+      "reversed": [
+        "impatience",
+        "lack of direction",
+        "hasty decisions",
+        "restlessness"
+      ]
+    },
+    "meaning": {
+      "upright": "A spark of youthful enthusiasm and curiosity. Explore freely and let your passion guide you toward exciting new ventures.",
+      "reversed": "Restless energy without focus is leading to false starts. Channel your excitement into a clear direction before leaping."
+    },
+    "image": "images/cards/wands/Page-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wapa.htm"
+  },
+  {
+    "id": "wands_12",
+    "name": "Knight of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 12,
+    "keywords": {
+      "upright": [
+        "action",
+        "adventure",
+        "boldness",
+        "passion"
+      ],
+      "reversed": [
+        "recklessness",
+        "impulsiveness",
+        "haste",
+        "scattered focus"
+      ]
+    },
+    "meaning": {
+      "upright": "Charge forward with fiery confidence and daring energy. Your boldness and passion are magnetic — let them lead the way.",
+      "reversed": "Impulsive action without forethought is creating chaos. Slow down before your fire burns bridges instead of lighting paths."
+    },
+    "image": "images/cards/wands/Knight-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/wakn.htm"
+  },
+  {
+    "id": "wands_13",
+    "name": "Queen of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 13,
+    "keywords": {
+      "upright": [
+        "confidence",
+        "warmth",
+        "determination",
+        "vitality"
+      ],
+      "reversed": [
+        "jealousy",
+        "selfishness",
+        "insecurity",
+        "demanding"
+      ]
+    },
+    "meaning": {
+      "upright": "Radiant confidence and magnetic warmth. Lead with your heart, inspire others, and trust in your vibrant inner fire.",
+      "reversed": "Insecurity is masking itself as jealousy or controlling behavior. Reconnect with your authentic confidence rather than forcing it."
+    },
+    "image": "images/cards/wands/Queen-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/waqu.htm"
+  },
+  {
+    "id": "wands_14",
+    "name": "King of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 14,
+    "keywords": {
+      "upright": [
+        "leadership",
+        "vision",
+        "ambition",
+        "honor"
+      ],
+      "reversed": [
+        "tyranny",
+        "arrogance",
+        "ruthlessness",
+        "impulsiveness"
+      ]
+    },
+    "meaning": {
+      "upright": "A natural leader driven by vision and bold ambition. Take charge with integrity and inspire others to follow your flame.",
+      "reversed": "Leadership has tipped into arrogance or domination. Ambition without honor becomes tyranny — temper your fire with wisdom."
+    },
+    "image": "images/cards/wands/King-of-Wands.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/waki.htm"
+  },
+  {
+    "id": "cups_01",
+    "name": "Ace of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 1,
+    "keywords": {
+      "upright": [
+        "new love",
+        "compassion",
+        "emotional awakening",
+        "intuition"
+      ],
+      "reversed": [
+        "emotional loss",
+        "blocked feelings",
+        "emptiness",
+        "repressed emotions"
+      ]
+    },
+    "meaning": {
+      "upright": "A wellspring of love and emotion overflows. Open your heart to new feelings, deep compassion, and spiritual connection.",
+      "reversed": "Emotions are blocked or running dry. You may be suppressing feelings or resisting an opportunity for deeper connection."
+    },
+    "image": "images/cards/cups/Ace-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cuac.htm"
+  },
+  {
+    "id": "cups_02",
+    "name": "Two of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 2,
+    "keywords": {
+      "upright": [
+        "partnership",
+        "mutual attraction",
+        "unity",
+        "connection"
+      ],
+      "reversed": [
+        "imbalance",
+        "broken trust",
+        "separation",
+        "misunderstanding"
+      ]
+    },
+    "meaning": {
+      "upright": "A beautiful bond forms between two souls. Mutual respect, attraction, and shared emotion create a harmonious union.",
+      "reversed": "A relationship feels off-balance or trust has been shaken. Miscommunication is creating distance where closeness once lived."
+    },
+    "image": "images/cards/cups/Two-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu02.htm"
+  },
+  {
+    "id": "cups_03",
+    "name": "Three of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 3,
+    "keywords": {
+      "upright": [
+        "celebration",
+        "friendship",
+        "community",
+        "joy"
+      ],
+      "reversed": [
+        "overindulgence",
+        "gossip",
+        "isolation",
+        "exclusion"
+      ]
+    },
+    "meaning": {
+      "upright": "Raise your cup in celebration with those you love. Friendship, community, and shared happiness fill this moment.",
+      "reversed": "Social circles feel strained, or celebration has tipped into excess. Gossip or exclusion may be undermining your connections."
+    },
+    "image": "images/cards/cups/Three-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu03.htm"
+  },
+  {
+    "id": "cups_04",
+    "name": "Four of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 4,
+    "keywords": {
+      "upright": [
+        "contemplation",
+        "apathy",
+        "discontent",
+        "meditation"
+      ],
+      "reversed": [
+        "awareness",
+        "acceptance",
+        "renewed motivation",
+        "gratitude"
+      ]
+    },
+    "meaning": {
+      "upright": "You are so lost in thought that you may be missing what is being offered. Step out of apathy and see the gift before you.",
+      "reversed": "A fog of discontent lifts and you begin to see opportunities with fresh eyes. Gratitude replaces restlessness."
+    },
+    "image": "images/cards/cups/Four-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu04.htm"
+  },
+  {
+    "id": "cups_05",
+    "name": "Five of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 5,
+    "keywords": {
+      "upright": [
+        "grief",
+        "loss",
+        "regret",
+        "disappointment"
+      ],
+      "reversed": [
+        "acceptance",
+        "moving on",
+        "healing",
+        "forgiveness"
+      ]
+    },
+    "meaning": {
+      "upright": "Grief weighs heavy, and the focus is on what has been lost. Allow yourself to mourn, but remember that not all cups have spilled.",
+      "reversed": "You are beginning to heal and turn toward what remains. Acceptance and forgiveness open the door to moving forward."
+    },
+    "image": "images/cards/cups/Five-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu05.htm"
+  },
+  {
+    "id": "cups_06",
+    "name": "Six of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 6,
+    "keywords": {
+      "upright": [
+        "nostalgia",
+        "innocence",
+        "childhood memories",
+        "generosity"
+      ],
+      "reversed": [
+        "living in the past",
+        "naivety",
+        "unrealistic expectations",
+        "stagnation"
+      ]
+    },
+    "meaning": {
+      "upright": "Sweet memories and innocent joy resurface. Reconnect with the simplicity of the past or share kindness freely with others.",
+      "reversed": "Dwelling too deeply in the past prevents growth. Nostalgia has become a refuge rather than a comfort."
+    },
+    "image": "images/cards/cups/Six-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu06.htm"
+  },
+  {
+    "id": "cups_07",
+    "name": "Seven of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 7,
+    "keywords": {
+      "upright": [
+        "fantasy",
+        "illusion",
+        "choices",
+        "wishful thinking"
+      ],
+      "reversed": [
+        "clarity",
+        "decisiveness",
+        "grounded action",
+        "focus"
+      ]
+    },
+    "meaning": {
+      "upright": "Many dazzling options appear before you, but not all are real. Distinguish between genuine opportunity and wishful thinking.",
+      "reversed": "The daydream ends and clarity takes its place. You are ready to commit to a path grounded in reality."
+    },
+    "image": "images/cards/cups/Seven-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu07.htm"
+  },
+  {
+    "id": "cups_08",
+    "name": "Eight of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 8,
+    "keywords": {
+      "upright": [
+        "departure",
+        "letting go",
+        "seeking deeper meaning",
+        "courage"
+      ],
+      "reversed": [
+        "fear of change",
+        "clinging",
+        "avoidance",
+        "aimless drifting"
+      ]
+    },
+    "meaning": {
+      "upright": "Something once fulfilling no longer nourishes your soul. It takes courage to walk away and seek what truly matters.",
+      "reversed": "You know something needs to change but cannot bring yourself to leave. Fear of the unknown keeps you tethered to what no longer serves you."
+    },
+    "image": "images/cards/cups/Eight-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu08.htm"
+  },
+  {
+    "id": "cups_09",
+    "name": "Nine of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 9,
+    "keywords": {
+      "upright": [
+        "contentment",
+        "satisfaction",
+        "wish fulfillment",
+        "gratitude"
+      ],
+      "reversed": [
+        "dissatisfaction",
+        "greed",
+        "materialism",
+        "unfulfilled wishes"
+      ]
+    },
+    "meaning": {
+      "upright": "The wish card. Emotional satisfaction and deep contentment fill your life. Enjoy this moment of fulfillment with a grateful heart.",
+      "reversed": "What you wished for has not brought the happiness you expected. True fulfillment may require looking beyond surface desires."
+    },
+    "image": "images/cards/cups/Nine-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu09.htm"
+  },
+  {
+    "id": "cups_10",
+    "name": "Ten of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 10,
+    "keywords": {
+      "upright": [
+        "harmony",
+        "family",
+        "lasting happiness",
+        "emotional fulfillment"
+      ],
+      "reversed": [
+        "broken home",
+        "disconnection",
+        "unrealistic ideals",
+        "family conflict"
+      ]
+    },
+    "meaning": {
+      "upright": "A rainbow of emotional abundance arches over your life. Deep family bonds, lasting love, and true happiness are yours to cherish.",
+      "reversed": "The ideal of domestic harmony feels fractured. Family tensions or unrealistic expectations are disrupting the peace you long for."
+    },
+    "image": "images/cards/cups/Ten-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cu10.htm"
+  },
+  {
+    "id": "cups_11",
+    "name": "Page of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 11,
+    "keywords": {
+      "upright": [
+        "creative inspiration",
+        "curiosity",
+        "emotional openness",
+        "gentle surprise"
+      ],
+      "reversed": [
+        "emotional immaturity",
+        "creative block",
+        "escapism",
+        "insecurity"
+      ]
+    },
+    "meaning": {
+      "upright": "A tender messenger of the heart arrives with unexpected inspiration. Stay open, curious, and willing to explore your feelings.",
+      "reversed": "Emotional immaturity or creative blockages hold you back. Escapism or insecurity may be masking deeper feelings that need attention."
+    },
+    "image": "images/cards/cups/Page-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cupa.htm"
+  },
+  {
+    "id": "cups_12",
+    "name": "Knight of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 12,
+    "keywords": {
+      "upright": [
+        "romance",
+        "charm",
+        "idealism",
+        "following the heart"
+      ],
+      "reversed": [
+        "moodiness",
+        "unrealistic expectations",
+        "jealousy",
+        "deception"
+      ]
+    },
+    "meaning": {
+      "upright": "A dreamer and romantic rides forward, led by the heart. Follow your passion and let your emotions guide you toward what you desire.",
+      "reversed": "Charm has curdled into manipulation, or idealism has lost touch with reality. Guard against jealousy and emotional dishonesty."
+    },
+    "image": "images/cards/cups/Knights-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cukn.htm"
+  },
+  {
+    "id": "cups_13",
+    "name": "Queen of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 13,
+    "keywords": {
+      "upright": [
+        "compassion",
+        "emotional depth",
+        "nurturing",
+        "intuitive wisdom"
+      ],
+      "reversed": [
+        "emotional overwhelm",
+        "codependency",
+        "martyrdom",
+        "boundary issues"
+      ]
+    },
+    "meaning": {
+      "upright": "A deeply compassionate soul who holds space for others with grace. Trust your intuitive wisdom and nurture from a place of genuine love.",
+      "reversed": "Caring for others has come at the cost of yourself. Emotional boundaries need strengthening before you can truly support anyone else."
+    },
+    "image": "images/cards/cups/Queen-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cuqu.htm"
+  },
+  {
+    "id": "cups_14",
+    "name": "King of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 14,
+    "keywords": {
+      "upright": [
+        "emotional maturity",
+        "diplomacy",
+        "calm authority",
+        "wisdom"
+      ],
+      "reversed": [
+        "emotional manipulation",
+        "volatility",
+        "coldness",
+        "repression"
+      ]
+    },
+    "meaning": {
+      "upright": "Mastery over the emotional realm. Lead with a warm heart and a steady hand, balancing feeling with wisdom and compassion with strength.",
+      "reversed": "Emotions are being weaponized or suppressed entirely. Beneath a calm exterior, volatility or coldness may be causing harm."
+    },
+    "image": "images/cards/cups/King-of-Cups.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/cuki.htm"
+  },
+  {
+    "id": "swords_01",
+    "name": "Ace of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 1,
+    "keywords": {
+      "upright": [
+        "clarity",
+        "breakthrough",
+        "truth",
+        "new idea"
+      ],
+      "reversed": [
+        "confusion",
+        "miscommunication",
+        "hostility",
+        "clouded judgment"
+      ]
+    },
+    "meaning": {
+      "upright": "A powerful moment of mental clarity and breakthrough. Cut through the fog and seize this new insight with conviction.",
+      "reversed": "A good idea clouded by confusion or poor communication. The truth is there, but something is distorting it."
+    },
+    "image": "images/cards/swords/The-Ace-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/swac.htm"
+  },
+  {
+    "id": "swords_02",
+    "name": "Two of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 2,
+    "keywords": {
+      "upright": [
+        "indecision",
+        "stalemate",
+        "difficult choice",
+        "avoidance"
+      ],
+      "reversed": [
+        "overthinking",
+        "information overload",
+        "lesser of two evils",
+        "emotional confusion"
+      ]
+    },
+    "meaning": {
+      "upright": "You are caught between two options and refusing to choose. Remove the blindfold and face the decision honestly.",
+      "reversed": "Overthinking has created paralysis, or you are finally ready to face what you have been avoiding. Let the information settle."
+    },
+    "image": "images/cards/swords/Two-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw02.htm"
+  },
+  {
+    "id": "swords_03",
+    "name": "Three of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 3,
+    "keywords": {
+      "upright": [
+        "heartbreak",
+        "grief",
+        "sorrow",
+        "painful truth"
+      ],
+      "reversed": [
+        "healing",
+        "forgiveness",
+        "recovery",
+        "releasing pain"
+      ]
+    },
+    "meaning": {
+      "upright": "A painful truth pierces the heart. Grief and sorrow are present, but acknowledging the pain is the first step toward healing.",
+      "reversed": "The worst of the pain is passing. You are finding the strength to forgive, release, and begin mending what was broken."
+    },
+    "image": "images/cards/swords/Three-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw03.htm"
+  },
+  {
+    "id": "swords_04",
+    "name": "Four of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 4,
+    "keywords": {
+      "upright": [
+        "rest",
+        "recovery",
+        "contemplation",
+        "solitude"
+      ],
+      "reversed": [
+        "burnout",
+        "restlessness",
+        "forced rest",
+        "mental exhaustion"
+      ]
+    },
+    "meaning": {
+      "upright": "Your mind needs rest. Step away from the conflict and give yourself permission to recover before re-entering the fray.",
+      "reversed": "You have pushed too hard for too long and burnout is setting in. Rest is not optional; it is essential."
+    },
+    "image": "images/cards/swords/Four-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw04.htm"
+  },
+  {
+    "id": "swords_05",
+    "name": "Five of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 5,
+    "keywords": {
+      "upright": [
+        "conflict",
+        "defeat",
+        "winning at a cost",
+        "hostility"
+      ],
+      "reversed": [
+        "reconciliation",
+        "making amends",
+        "moving on",
+        "forgiveness"
+      ]
+    },
+    "meaning": {
+      "upright": "A hollow victory or a bitter defeat. Winning this battle may cost you something far more valuable than what you gain.",
+      "reversed": "The conflict is winding down and there is an opportunity to make amends. Choose peace over pride."
+    },
+    "image": "images/cards/swords/Five-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw05.htm"
+  },
+  {
+    "id": "swords_06",
+    "name": "Six of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 6,
+    "keywords": {
+      "upright": [
+        "transition",
+        "moving on",
+        "leaving behind",
+        "calmer waters"
+      ],
+      "reversed": [
+        "stuck",
+        "unresolved baggage",
+        "resistance to change",
+        "unfinished business"
+      ]
+    },
+    "meaning": {
+      "upright": "You are moving away from turbulence toward calmer waters. The journey may be somber, but you are heading somewhere better.",
+      "reversed": "Something from the past keeps pulling you back. Unresolved baggage is making it difficult to move forward."
+    },
+    "image": "images/cards/swords/Six-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw06.htm"
+  },
+  {
+    "id": "swords_07",
+    "name": "Seven of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 7,
+    "keywords": {
+      "upright": [
+        "deception",
+        "strategy",
+        "stealth",
+        "cunning"
+      ],
+      "reversed": [
+        "exposure",
+        "coming clean",
+        "conscience",
+        "confession"
+      ]
+    },
+    "meaning": {
+      "upright": "Someone is acting with hidden motives or cutting corners. Be strategic, but ask yourself whether cleverness has crossed into dishonesty.",
+      "reversed": "Secrets are being exposed or a guilty conscience demands honesty. The truth is surfacing whether you are ready or not."
+    },
+    "image": "images/cards/swords/Seven-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw07.htm"
+  },
+  {
+    "id": "swords_08",
+    "name": "Eight of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 8,
+    "keywords": {
+      "upright": [
+        "trapped",
+        "restricted",
+        "self-limiting",
+        "powerless"
+      ],
+      "reversed": [
+        "liberation",
+        "new perspective",
+        "empowerment",
+        "release"
+      ]
+    },
+    "meaning": {
+      "upright": "You feel trapped, but the prison is largely of your own making. The bindings are looser than they appear — look for a way out.",
+      "reversed": "The mental chains are breaking. A shift in perspective reveals that you have more freedom and power than you believed."
+    },
+    "image": "images/cards/swords/Eight-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw08.htm"
+  },
+  {
+    "id": "swords_09",
+    "name": "Nine of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 9,
+    "keywords": {
+      "upright": [
+        "anxiety",
+        "nightmares",
+        "worry",
+        "dread"
+      ],
+      "reversed": [
+        "hope",
+        "reaching out",
+        "recovery",
+        "overcoming fear"
+      ]
+    },
+    "meaning": {
+      "upright": "Anxiety and worry are keeping you up at night. Much of the fear lives in your mind — do not suffer alone in the dark.",
+      "reversed": "The long night of worry is ending. You are finding the courage to reach out, seek help, and face your fears."
+    },
+    "image": "images/cards/swords/Nine-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw09.htm"
+  },
+  {
+    "id": "swords_10",
+    "name": "Ten of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 10,
+    "keywords": {
+      "upright": [
+        "rock bottom",
+        "painful ending",
+        "betrayal",
+        "loss"
+      ],
+      "reversed": [
+        "recovery",
+        "regeneration",
+        "rising up",
+        "worst is over"
+      ]
+    },
+    "meaning": {
+      "upright": "A devastating ending or betrayal that leaves you feeling utterly defeated. This is the lowest point — the only way now is up.",
+      "reversed": "You are rising from rock bottom. The worst is behind you, and a slow but real recovery is beginning."
+    },
+    "image": "images/cards/swords/Ten-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/sw10.htm"
+  },
+  {
+    "id": "swords_11",
+    "name": "Page of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 11,
+    "keywords": {
+      "upright": [
+        "curiosity",
+        "new ideas",
+        "vigilance",
+        "mental agility"
+      ],
+      "reversed": [
+        "gossip",
+        "haste",
+        "scattered thinking",
+        "deception"
+      ]
+    },
+    "meaning": {
+      "upright": "A sharp and curious mind is awakening. Stay vigilant and embrace new ideas, but think before you speak.",
+      "reversed": "Mental energy is scattered or being used for gossip and idle chatter. Channel your cleverness toward something constructive."
+    },
+    "image": "images/cards/swords/Page-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/swpa.htm"
+  },
+  {
+    "id": "swords_12",
+    "name": "Knight of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 12,
+    "keywords": {
+      "upright": [
+        "ambition",
+        "action",
+        "determination",
+        "swift change"
+      ],
+      "reversed": [
+        "recklessness",
+        "impatience",
+        "arrogance",
+        "burnout"
+      ]
+    },
+    "meaning": {
+      "upright": "Charge forward with conviction and intellectual force. Your determination is powerful — just make sure you know where you are heading.",
+      "reversed": "Moving too fast without thinking. Impatience or arrogance is undermining your mission. Slow down before you crash."
+    },
+    "image": "images/cards/swords/Knight-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/swkn.htm"
+  },
+  {
+    "id": "swords_13",
+    "name": "Queen of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 13,
+    "keywords": {
+      "upright": [
+        "independence",
+        "clear boundaries",
+        "direct communication",
+        "perceptive"
+      ],
+      "reversed": [
+        "coldness",
+        "bitterness",
+        "overly critical",
+        "isolation"
+      ]
+    },
+    "meaning": {
+      "upright": "Speak your truth with clarity and grace. Set firm boundaries and trust your sharp perception to guide wise decisions.",
+      "reversed": "Honest directness has hardened into coldness or cruelty. Guard against letting past pain turn you bitter or overly critical."
+    },
+    "image": "images/cards/swords/Queen-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/swqu.htm"
+  },
+  {
+    "id": "swords_14",
+    "name": "King of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 14,
+    "keywords": {
+      "upright": [
+        "intellect",
+        "authority",
+        "truth",
+        "fair judgment"
+      ],
+      "reversed": [
+        "manipulation",
+        "tyranny",
+        "abuse of power",
+        "cold rationality"
+      ]
+    },
+    "meaning": {
+      "upright": "Lead with your mind and uphold the truth. Fair, clear-headed authority earns respect and brings order from chaos.",
+      "reversed": "Intellect weaponized into manipulation or control. Power without compassion becomes tyranny."
+    },
+    "image": "images/cards/swords/King-of-Swords.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/swki.htm"
+  },
+  {
+    "id": "pentacles_01",
+    "name": "Ace of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 1,
+    "keywords": {
+      "upright": [
+        "opportunity",
+        "prosperity",
+        "new venture",
+        "abundance"
+      ],
+      "reversed": [
+        "missed opportunity",
+        "scarcity",
+        "poor planning",
+        "instability"
+      ]
+    },
+    "meaning": {
+      "upright": "A powerful new opportunity for material or financial growth is within reach. Plant this seed wisely and watch it flourish.",
+      "reversed": "A promising opportunity may be slipping away due to poor planning or hesitation. Reassess your foundations before moving forward."
+    },
+    "image": "images/cards/pentacles/The-Ace-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/peac.htm"
+  },
+  {
+    "id": "pentacles_02",
+    "name": "Two of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 2,
+    "keywords": {
+      "upright": [
+        "balance",
+        "adaptability",
+        "juggling",
+        "flexibility"
+      ],
+      "reversed": [
+        "overwhelm",
+        "disorganization",
+        "imbalance",
+        "overcommitment"
+      ]
+    },
+    "meaning": {
+      "upright": "You are skillfully juggling multiple responsibilities or financial demands. Stay flexible and trust your ability to adapt.",
+      "reversed": "Too many commitments are pulling you in different directions. Something needs to give before the balance tips."
+    },
+    "image": "images/cards/pentacles/The-Two-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe02.htm"
+  },
+  {
+    "id": "pentacles_03",
+    "name": "Three of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 3,
+    "keywords": {
+      "upright": [
+        "teamwork",
+        "craftsmanship",
+        "collaboration",
+        "skill"
+      ],
+      "reversed": [
+        "disharmony",
+        "poor quality",
+        "lack of effort",
+        "misalignment"
+      ]
+    },
+    "meaning": {
+      "upright": "Collaboration and skilled effort are building something meaningful. Your expertise is valued — keep refining your craft alongside others.",
+      "reversed": "A team effort is faltering due to misaligned goals or lack of dedication. Reconnect on shared vision and quality standards."
+    },
+    "image": "images/cards/pentacles/Three-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe03.htm"
+  },
+  {
+    "id": "pentacles_04",
+    "name": "Four of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 4,
+    "keywords": {
+      "upright": [
+        "security",
+        "conservation",
+        "stability",
+        "possession"
+      ],
+      "reversed": [
+        "greed",
+        "materialism",
+        "hoarding",
+        "insecurity"
+      ]
+    },
+    "meaning": {
+      "upright": "You have built a sense of financial security and stability. Protect what you have earned, but remain open to life's flow.",
+      "reversed": "Clinging too tightly to money or possessions out of fear. Hoarding blocks the natural circulation of abundance."
+    },
+    "image": "images/cards/pentacles/The-Four-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe04.htm"
+  },
+  {
+    "id": "pentacles_05",
+    "name": "Five of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 5,
+    "keywords": {
+      "upright": [
+        "hardship",
+        "loss",
+        "isolation",
+        "worry"
+      ],
+      "reversed": [
+        "recovery",
+        "improvement",
+        "turning a corner",
+        "acceptance"
+      ]
+    },
+    "meaning": {
+      "upright": "A period of financial or physical hardship that leaves you feeling left out in the cold. Help is closer than you think — do not be afraid to ask.",
+      "reversed": "The worst is behind you. Recovery from material loss or health struggles is underway, and brighter days are returning."
+    },
+    "image": "images/cards/pentacles/The-Five-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe05.htm"
+  },
+  {
+    "id": "pentacles_06",
+    "name": "Six of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 6,
+    "keywords": {
+      "upright": [
+        "generosity",
+        "charity",
+        "sharing",
+        "gratitude"
+      ],
+      "reversed": [
+        "debt",
+        "selfishness",
+        "strings attached",
+        "power imbalance"
+      ]
+    },
+    "meaning": {
+      "upright": "A time of generous giving or grateful receiving. Wealth flows best when shared — let kindness guide your resources.",
+      "reversed": "Generosity comes with hidden strings, or an imbalance of power exists around money. Examine who truly benefits."
+    },
+    "image": "images/cards/pentacles/Six-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe06.htm"
+  },
+  {
+    "id": "pentacles_07",
+    "name": "Seven of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 7,
+    "keywords": {
+      "upright": [
+        "patience",
+        "investment",
+        "evaluation",
+        "long-term growth"
+      ],
+      "reversed": [
+        "impatience",
+        "wasted effort",
+        "lack of reward",
+        "frustration"
+      ]
+    },
+    "meaning": {
+      "upright": "You have worked hard and now must wait for the harvest. Evaluate your progress with patience — your investment is growing beneath the surface.",
+      "reversed": "Frustration over slow results or realizing effort has been poured into the wrong venture. It may be time to redirect your energy."
+    },
+    "image": "images/cards/pentacles/Seven-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe07.htm"
+  },
+  {
+    "id": "pentacles_08",
+    "name": "Eight of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 8,
+    "keywords": {
+      "upright": [
+        "diligence",
+        "mastery",
+        "skill development",
+        "dedication"
+      ],
+      "reversed": [
+        "perfectionism",
+        "burnout",
+        "lack of focus",
+        "shortcuts"
+      ]
+    },
+    "meaning": {
+      "upright": "Dedicated, focused effort is refining your skills and producing quality results. Stay committed to your craft — mastery is within reach.",
+      "reversed": "Perfectionism is draining your energy, or you are cutting corners to avoid the hard work. Reconnect with purpose over output."
+    },
+    "image": "images/cards/pentacles/Eight-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe08.htm"
+  },
+  {
+    "id": "pentacles_09",
+    "name": "Nine of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 9,
+    "keywords": {
+      "upright": [
+        "self-sufficiency",
+        "luxury",
+        "discipline",
+        "reward"
+      ],
+      "reversed": [
+        "overindulgence",
+        "financial dependence",
+        "superficiality",
+        "setback"
+      ]
+    },
+    "meaning": {
+      "upright": "You have earned this abundance through discipline and hard work. Enjoy the fruits of your labor with quiet confidence and self-sufficiency.",
+      "reversed": "Material comfort may be masking a deeper emptiness, or financial independence feels out of reach. Reassess what true wealth means to you."
+    },
+    "image": "images/cards/pentacles/Nine-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe09.htm"
+  },
+  {
+    "id": "pentacles_10",
+    "name": "Ten of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 10,
+    "keywords": {
+      "upright": [
+        "legacy",
+        "inheritance",
+        "family",
+        "lasting success"
+      ],
+      "reversed": [
+        "family conflict",
+        "financial failure",
+        "instability",
+        "broken tradition"
+      ]
+    },
+    "meaning": {
+      "upright": "Wealth, stability, and traditions that endure across generations. This is the fulfillment of long-term vision — a legacy built to last.",
+      "reversed": "Family disputes over money or a legacy under threat. Financial foundations may be cracking, calling for honest reassessment."
+    },
+    "image": "images/cards/pentacles/Ten-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pe10.htm"
+  },
+  {
+    "id": "pentacles_11",
+    "name": "Page of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 11,
+    "keywords": {
+      "upright": [
+        "ambition",
+        "studiousness",
+        "new opportunity",
+        "planning"
+      ],
+      "reversed": [
+        "procrastination",
+        "lack of progress",
+        "unfocused",
+        "unrealistic"
+      ]
+    },
+    "meaning": {
+      "upright": "A fresh spark of ambition and a desire to learn something practical. Set your goals, make a plan, and take the first steady step.",
+      "reversed": "Big dreams without follow-through, or getting lost in planning without action. Ground your ambitions in realistic steps."
+    },
+    "image": "images/cards/pentacles/Page-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pepa.htm"
+  },
+  {
+    "id": "pentacles_12",
+    "name": "Knight of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 12,
+    "keywords": {
+      "upright": [
+        "reliability",
+        "hard work",
+        "persistence",
+        "routine"
+      ],
+      "reversed": [
+        "stubbornness",
+        "stagnation",
+        "laziness",
+        "boredom"
+      ]
+    },
+    "meaning": {
+      "upright": "Steady, reliable, and committed to the task at hand. Progress may be slow, but your persistence and thoroughness will pay off.",
+      "reversed": "Stubbornly stuck in routine or losing motivation entirely. Efficiency has given way to stagnation — find a new spark."
+    },
+    "image": "images/cards/pentacles/Knight-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pekn.htm"
+  },
+  {
+    "id": "pentacles_13",
+    "name": "Queen of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 13,
+    "keywords": {
+      "upright": [
+        "nurturing",
+        "practicality",
+        "abundance",
+        "warmth"
+      ],
+      "reversed": [
+        "self-neglect",
+        "smothering",
+        "work-life imbalance",
+        "insecurity"
+      ]
+    },
+    "meaning": {
+      "upright": "A grounded, nurturing presence who creates abundance through practical care and warmth. Home, health, and finances thrive under your steady hand.",
+      "reversed": "Giving so much to others that you neglect yourself, or tying your self-worth to material success. Restore balance between caring and self-care."
+    },
+    "image": "images/cards/pentacles/Queen-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/pequ.htm"
+  },
+  {
+    "id": "pentacles_14",
+    "name": "King of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 14,
+    "keywords": {
+      "upright": [
+        "wealth",
+        "leadership",
+        "discipline",
+        "security"
+      ],
+      "reversed": [
+        "greed",
+        "corruption",
+        "stubbornness",
+        "materialism"
+      ]
+    },
+    "meaning": {
+      "upright": "Mastery over the material world through discipline, vision, and steady leadership. You have built something solid — lead it with integrity.",
+      "reversed": "Wealth pursued at the expense of integrity, or an obsession with status and control. True authority comes from generosity, not greed."
+    },
+    "image": "images/cards/pentacles/King-of-Pentacles.jpg",
+    "pinterest": "https://www.sacred-texts.com/tarot/xr/peki.htm"
+  }
+]

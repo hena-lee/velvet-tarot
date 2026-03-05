@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#10039; Download &#10039;</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      html { overflow-y: auto; }
+    </style>
+  </head>
+  <body class="download-page">
+    <script src="components.js"></script>
+
+    <main class="download-container">
+      <h1 class="download-title">Download</h1>
+      <ol class="download-steps">
+        <h2 class="download-steps-header">Thank you for your interest! You can run your oracle offline.</h2>
+        <li class="download-step">
+          <h3>Prerequisites</h3>
+          <p>Install <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer" class="download-link">Node.js</a> (v18 or later recommended). This includes npm, the package manager used to install dependencies.</p>
+        </li>
+
+        <li class="download-step">
+          <h3>Clone the repository</h3>
+          <p>Open your terminal and run:</p>
+          <pre class="download-code">git clone https://github.com/your-username/tarotApp.git</pre>
+        </li>
+
+        <li class="download-step">
+          <h3>Install dependencies</h3>
+          <p>Navigate into the project folder and install the required packages:</p>
+          <pre class="download-code">cd tarotApp && npm install</pre>
+        </li>
+
+        <li class="download-step">
+          <h3>Get a Gemini API key</h3>
+          <p>Visit <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="download-link">Google AI Studio</a> and create a free API key. You'll need a Google account.</p>
+        </li>
+
+        <li class="download-step">
+          <h3>Configure your API key</h3>
+          <p>Create a file called <code>.env</code> in the project root with your key:</p>
+          <pre class="download-code">GEMINI_API_KEY=your_key_here</pre>
+        </li>
+
+        <li class="download-step">
+          <h3>Start the app</h3>
+          <p>Launch the server, then open the app in your browser:</p>
+          <pre class="download-code">npm start</pre>
+          <p>Then visit <a href="http://localhost:3000" class="download-link">http://localhost:3000</a></p>
+        </li>
+      </ol>
+    </main>
+
+    <script>
+      // Hide footer until user scrolls to bottom
+      const footer = document.querySelector('.site-footer');
+      if (footer) {
+        footer.style.opacity = '0';
+        footer.style.transition = 'opacity 0.4s ease';
+        function checkFooter() {
+          const nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 50;
+          footer.style.opacity = nearBottom ? '1' : '0';
+        }
+        window.addEventListener('scroll', checkFooter);
+        checkFooter();
+      }
+    </script>
+  </body>
+</html>
