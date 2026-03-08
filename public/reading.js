@@ -12,6 +12,7 @@ const shuffleScene = document.getElementById('shuffle-scene');
 let shuffledDeck = [];
 let selectedCards = [];
 let pickedWrappers = [];
+let currentView = null; // 'shuffle' | 'fan' | 'spread' | 'reading'
 
 // Background AI fetch state
 let readingPromise = null;
@@ -39,10 +40,35 @@ function setStatus(text) {
   if (statusEl) statusEl.textContent = text;
 }
 
-// --- Spread position calculators ---
-function getSpreadPositions(type, cardW, cardH) {
-  const gap = 16;
+// --- Responsive card sizing ---
+function getResponsiveCardSize() {
+  const vw = window.innerWidth;
 
+  if (spreadType === 'celticCross') {
+    // Need 4 columns + gaps. On small screens, switch to 2-column mobile layout.
+    const padding = 32;
+    const gap = Math.max(8, Math.floor(vw * 0.02));
+    // Traditional layout: 4 cols of cards + 4 gaps
+    const maxCardW = Math.floor((vw - padding - gap * 4) / 4);
+    const cardW = Math.min(100, Math.max(50, maxCardW));
+    return { cardW, cardH: cardW * 1.5, gap, useMobileLayout: cardW < 65 };
+  }
+
+  if (spreadType === 'threeCard') {
+    const padding = 32;
+    const gap = 16;
+    const maxCardW = Math.floor((vw - padding - gap * 2) / 3);
+    const cardW = Math.min(100, Math.max(50, maxCardW));
+    return { cardW, cardH: cardW * 1.5, gap, useMobileLayout: false };
+  }
+
+  // Single card
+  const cardW = Math.min(100, vw - 40);
+  return { cardW, cardH: cardW * 1.5, gap: 16, useMobileLayout: false };
+}
+
+// --- Spread position calculators ---
+function getSpreadPositions(type, cardW, cardH, gap, useMobileLayout) {
   if (type === 'single') {
     return [{ left: 0, top: 0 }];
   }
@@ -56,6 +82,26 @@ function getSpreadPositions(type, cardW, cardH) {
   }
 
   if (type === 'celticCross') {
+    // Stacked 2-column layout for small screens
+    if (useMobileLayout) {
+      const col1 = 0;
+      const col2 = cardW + gap * 2;
+      const offset = Math.round(cardW * 0.1);
+      return [
+        { left: col1, top: 0 },
+        { left: col1 + offset, top: offset },
+        { left: col1, top: (cardH + gap) },
+        { left: col1, top: (cardH + gap) * 2 },
+        { left: col1, top: (cardH + gap) * 3 },
+        { left: col1, top: (cardH + gap) * 4 },
+        { left: col2, top: 0 },
+        { left: col2, top: (cardH + gap) },
+        { left: col2, top: (cardH + gap) * 2 },
+        { left: col2, top: (cardH + gap) * 3 }
+      ];
+    }
+
+    // Traditional cross + staff layout
     const col1 = 0;
     const col2 = cardW + gap;
     const col3 = (cardW + gap) * 2;
@@ -70,9 +116,10 @@ function getSpreadPositions(type, cardW, cardH) {
     const rightRow2 = crossBot - (cardH + gap) * 2;
     const rightRow1 = crossBot - (cardH + gap) * 3;
 
+    const offset = Math.round(cardW * 0.1);
     return [
       { left: col2, top: crossMid },
-      { left: col2 + 10, top: crossMid + 10 },
+      { left: col2 + offset, top: crossMid + offset },
       { left: col1, top: crossMid },
       { left: col2, top: crossBot },
       { left: col2, top: crossTop },
@@ -87,9 +134,7 @@ function getSpreadPositions(type, cardW, cardH) {
   return [];
 }
 
-function getSpreadAreaSize(type, cardW, cardH) {
-  const gap = 16;
-
+function getSpreadAreaSize(type, cardW, cardH, gap, useMobileLayout) {
   if (type === 'single') {
     return { width: cardW, height: cardH };
   }
@@ -99,6 +144,13 @@ function getSpreadAreaSize(type, cardW, cardH) {
   }
 
   if (type === 'celticCross') {
+    if (useMobileLayout) {
+      const col2 = cardW + gap * 2;
+      return {
+        width: col2 + cardW,
+        height: (cardH + gap) * 5
+      };
+    }
     const colRight = (cardW + gap) * 3 + gap * 2;
     return {
       width: colRight + cardW,
@@ -111,6 +163,7 @@ function getSpreadAreaSize(type, cardW, cardH) {
 
 // --- Shuffle animation (deck-of-cards scatter/collect style) ---
 function showShuffleAnimation() {
+  currentView = 'shuffle';
   return new Promise(resolve => {
     cardsEl.innerHTML = '';
     cardsEl.className = 'shuffle-stage';
@@ -142,7 +195,10 @@ function showShuffleAnimation() {
           const z = i / 4;
           const delay = i * stagger;
           const direction = Math.round(Math.random()) ? 1 : -1;
-          const distance = (Math.random() * 60 + 60); // 60-120px spread
+          const vw = window.innerWidth;
+          const maxScatter = Math.min(120, vw * 0.25);
+          const minScatter = maxScatter * 0.5;
+          const distance = Math.random() * (maxScatter - minScatter) + minScatter;
 
           // Phase 1 — Scatter: wide horizontal spread
           setTimeout(() => {
@@ -179,13 +235,19 @@ function showShuffleAnimation() {
 }
 
 function fanOutCards() {
+  currentView = 'fan';
   cardsEl.className = 'fan-stage';
   cardsEl.innerHTML = '';
 
   const displayCount = shuffledDeck.length;
-  const totalWidth = Math.min(window.innerWidth - 80, 900);
+  const vw = window.innerWidth;
+  const totalWidth = Math.min(vw - 40, 900);
   const cardSpacing = totalWidth / displayCount;
   const startX = -totalWidth / 2;
+
+  // Scale arc and angle for viewport
+  const arcIntensity = Math.min(15, vw * 0.025);
+  const maxAngle = Math.min(3, vw * 0.005);
 
   for (let i = 0; i < displayCount; i++) {
     const wrapper = document.createElement('div');
@@ -193,8 +255,8 @@ function fanOutCards() {
 
     const xPos = startX + (i * cardSpacing);
     const normalizedPos = (i / (displayCount - 1)) * 2 - 1;
-    const yOffset = normalizedPos * normalizedPos * 15;
-    const angle = normalizedPos * 3;
+    const yOffset = normalizedPos * normalizedPos * arcIntensity;
+    const angle = normalizedPos * maxAngle;
     wrapper.style.transform = `translateX(${xPos}px) translateY(${yOffset}px) rotate(${angle}deg)`;
     wrapper.style.zIndex = i;
 
@@ -280,21 +342,25 @@ async function startRevealSequence() {
   const cloudFrame = document.querySelector('.cloud-frame');
   if (cloudFrame) cloudFrame.classList.add('clearing');
 
-  const cardW = 100;
-  const cardH = 150;
+  currentView = 'spread';
+  const { cardW, cardH, gap: spreadGap, useMobileLayout } = getResponsiveCardSize();
 
-  const positions = getSpreadPositions(spreadType, cardW, cardH);
-  const areaSize = getSpreadAreaSize(spreadType, cardW, cardH);
+  const positions = getSpreadPositions(spreadType, cardW, cardH, spreadGap, useMobileLayout);
+  const areaSize = getSpreadAreaSize(spreadType, cardW, cardH, spreadGap, useMobileLayout);
 
   spreadArea.style.width = areaSize.width + 'px';
   spreadArea.style.height = areaSize.height + 'px';
   spreadArea.innerHTML = '';
   spreadArea.classList.add('active');
 
-  // For single/three-card: center the spread area vertically
+  // Center the spread area in the viewport
   if (isCentered) {
-    const topOffset = Math.max(0, (window.innerHeight - cardH) / 2 - 250);
-    spreadArea.style.marginTop = topOffset + 'px';
+    spreadArea.style.position = 'fixed';
+    spreadArea.style.top = '50%';
+    spreadArea.style.left = '50%';
+    spreadArea.style.transform = 'translate(-50%, -50%)';
+    spreadArea.style.margin = '0';
+    spreadArea.style.zIndex = '10';
   }
 
   const spreadCards = [];
@@ -307,6 +373,8 @@ async function startRevealSequence() {
     el.className = 'spread-card' + (card.isReversed ? ' reversed' : '');
     el.style.left = pos.left + 'px';
     el.style.top = pos.top + 'px';
+    el.style.width = cardW + 'px';
+    el.style.height = cardH + 'px';
     el.style.opacity = '0';
 
     el.innerHTML = `
@@ -355,10 +423,17 @@ async function startRevealSequence() {
   if (isCentered) {
     // Scale down and fade out the spread
     spreadArea.style.transition = 'transform 0.7s ease, opacity 0.7s ease';
-    spreadArea.style.transform = 'scale(0.8)';
+    spreadArea.style.transform = 'translate(-50%, -50%) scale(0.8)';
     spreadArea.style.opacity = '0';
     await delay(700);
     spreadArea.style.display = 'none';
+    // Reset fixed positioning
+    spreadArea.style.position = '';
+    spreadArea.style.top = '';
+    spreadArea.style.left = '';
+    spreadArea.style.transform = '';
+    spreadArea.style.zIndex = '';
+    spreadArea.style.margin = '';
     document.querySelector('.reading-stage')?.classList.add('spread-visible');
     buildCardList();
   } else {
@@ -532,6 +607,7 @@ async function handleReveal() {
 }
 
 function showReading(text) {
+  currentView = 'reading';
   const heading = document.createElement('h1');
   heading.className = 'reading-title';
   heading.textContent = 'What the Cards Reveal';
@@ -545,6 +621,17 @@ function showReading(text) {
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// --- Resize handler (re-layout fan on orientation change) ---
+let resizeDebounce = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeDebounce);
+  resizeDebounce = setTimeout(() => {
+    if (currentView === 'fan' && !selectionLocked) {
+      fanOutCards();
+    }
+  }, 200);
+});
 
 // --- Auto-start on load ---
 window.addEventListener('DOMContentLoaded', async () => {

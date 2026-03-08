@@ -238,6 +238,99 @@ form.addEventListener('submit', (e) => {
     if (phase === 2) advancePhase();
   });
 
+  // --- Touch support for mobile ---
+  let touchStartY = null;
+  let lastTouchY = null;
+  let touchStartTime = 0;
+
+  // Use landing element as touch target (covers viewport during animation)
+  landing.addEventListener('touchstart', (e) => {
+    if (isAnimating) return;
+    touchStartY = e.touches[0].clientY;
+    lastTouchY = touchStartY;
+    touchStartTime = Date.now();
+    clearTimeout(snapTimer);
+  }, { passive: true });
+
+  landing.addEventListener('touchmove', (e) => {
+    if (isAnimating || touchStartY === null) return;
+
+    const currentY = e.touches[0].clientY;
+
+    // Scroll back from the form page
+    if (isDone) {
+      const totalDelta = currentY - touchStartY;
+      if (!formSubmitted && totalDelta > 60) {
+        e.preventDefault();
+        touchStartY = null;
+        resetLanding();
+        phase = 2;
+        progress = 0.99;
+        animateTo(0, () => {
+          phase = 1;
+          progress = 1;
+          render();
+        });
+      }
+      return;
+    }
+
+    e.preventDefault();
+
+    const deltaY = lastTouchY - currentY; // positive = swipe up = forward
+    lastTouchY = currentY;
+
+    // Half-screen swipe completes one phase
+    const delta = deltaY / (window.innerHeight * 0.5);
+
+    // Scrolling backward past start of current phase
+    if (phase > 0 && progress + delta < 0) {
+      phase--;
+      progress = 1;
+      render();
+      return;
+    }
+
+    progress += delta;
+    progress = Math.max(0, Math.min(1, progress));
+    render();
+  }, { passive: false });
+
+  landing.addEventListener('touchend', () => {
+    if (touchStartY === null) return;
+    touchStartY = null;
+    lastTouchY = null;
+
+    if (isDone || isAnimating) return;
+
+    // Same snap logic as wheel handler
+    clearTimeout(snapTimer);
+    snapTimer = setTimeout(() => {
+      if (isAnimating || isDone) return;
+
+      if (phase < 2 && progress >= SNAP_THRESHOLD) {
+        animateTo(1, () => {
+          phase++;
+          progress = 0;
+          render();
+        });
+      } else if (phase === 2 && progress >= SNAP_THRESHOLD) {
+        animateTo(1, hideLanding);
+      } else if (progress > 0) {
+        animateTo(0);
+      }
+    }, 50);
+  }, { passive: true });
+
+  // --- Resize handler ---
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      render();
+    }, 150);
+  });
+
   // Star icon → return to landing
   if (homeBtn) {
     homeBtn.addEventListener('click', () => {
