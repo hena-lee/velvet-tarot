@@ -33,7 +33,7 @@ app.post('/api/interpret', async (req, res) => {
   try {
     const reading = await generateReading(cards, spread, question || null);
     const result = { cards, spread: spread.name, reading };
-    saveReading({ spreadType, question: question || null, ...result });
+    try { saveReading({ spreadType, question: question || null, ...result }); } catch (_) {}
     res.json(result);
   } catch (err) {
     const fallback = cards.map((card, i) => {
@@ -42,7 +42,7 @@ app.post('/api/interpret', async (req, res) => {
     }).join('\n\n');
 
     const result = { cards, spread: spread.name, reading: fallback };
-    saveReading({ spreadType, question: question || null, ...result });
+    try { saveReading({ spreadType, question: question || null, ...result }); } catch (_) {}
     res.status(500).json({ error: 'Intelligent reading unavailable', ...result });
   }
 });
