@@ -56,6 +56,7 @@
     document.body.append(wand);
 
     const pastelColors = ['#f9c6d0', '#fdfd96', '#ffb7b2', '#c7ceea', '#ffd1dc'];
+    const sparkleChars = ['✦', '⋆', '˚', '✶', '✷', '⊹', '✵'];
     let trailThrottle = 0;
 
     document.addEventListener('mousemove', (e) => {
@@ -64,21 +65,26 @@
       wand.style.top = (e.clientY - 6) + 'px';
 
       trailThrottle++;
-      if (trailThrottle % 2 !== 0) return;
+      if (trailThrottle % 3 !== 0) return;
 
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 2; i++) {
         const trail = document.createElement('div');
         trail.className = 'wand-trail';
-        const offsetX = (Math.random() - 0.5) * 16;
-        const offsetY = (Math.random() - 0.5) * 16;
-        const fallDist = 20 + Math.random() * 40;
-        const drift = (Math.random() - 0.5) * 20;
+        const offsetX = (Math.random() - 0.5) * 20;
+        const offsetY = (Math.random() - 0.5) * 20;
+        const fallDist = 15 + Math.random() * 30;
+        const drift = (Math.random() - 0.5) * 30;
+        const size = 8 + Math.random() * 12;
+        const spin = (Math.random() - 0.5) * 180;
         trail.style.left = (e.clientX + offsetX) + 'px';
         trail.style.top = (e.clientY + offsetY) + 'px';
-        trail.style.background = pastelColors[Math.floor(Math.random() * pastelColors.length)];
-        trail.style.animationDuration = (0.3 + Math.random() * 0.4) + 's';
+        trail.style.color = pastelColors[Math.floor(Math.random() * pastelColors.length)];
+        trail.style.setProperty('--char', '"' + sparkleChars[Math.floor(Math.random() * sparkleChars.length)] + '"');
+        trail.style.setProperty('--size', size + 'px');
+        trail.style.setProperty('--duration', (0.4 + Math.random() * 0.5) + 's');
         trail.style.setProperty('--fall', fallDist + 'px');
         trail.style.setProperty('--drift', drift + 'px');
+        trail.style.setProperty('--spin', spin + 'deg');
         document.body.append(trail);
         trail.addEventListener('animationend', () => trail.remove());
       }
