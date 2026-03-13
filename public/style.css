@@ -1021,39 +1021,6 @@ button:disabled {
     min-height 0s;
 }
 
-.cloud-frame {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.cloud-frame-left,
-.cloud-frame-right {
-  position: absolute;
-  bottom: 0;
-  width: 55%;
-  transition: transform 1.5s ease-in-out;
-}
-
-.cloud-frame-left {
-  left: 0;
-}
-
-.cloud-frame-right {
-  right: 0;
-  transform: scaleX(-1);
-}
-
-.cloud-frame.clearing .cloud-frame-left {
-  transform: translateX(-100%);
-}
-
-.cloud-frame.clearing .cloud-frame-right {
-  transform: scaleX(-1) translateX(-100%);
-}
 
 .shuffle-hand {
   position: absolute;

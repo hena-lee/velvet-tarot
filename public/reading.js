@@ -338,10 +338,6 @@ async function startRevealSequence() {
     document.querySelector('.reading-stage')?.classList.add('spread-visible');
   }
 
-  // Clear the fog
-  const cloudFrame = document.querySelector('.cloud-frame');
-  if (cloudFrame) cloudFrame.classList.add('clearing');
-
   currentView = 'spread';
   const { cardW, cardH, gap: spreadGap, useMobileLayout } = getResponsiveCardSize();
 
