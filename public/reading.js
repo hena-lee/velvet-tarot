@@ -187,23 +187,13 @@ function showShuffleAnimation() {
       cards.push(card);
     }
 
-    // Show skip button after a short delay
-    const skipShuffleBtn = document.createElement('button');
-    skipShuffleBtn.className = 'skip-shuffle-btn';
-    skipShuffleBtn.textContent = 'skip shuffle →';
-    shuffleScene.insertAdjacentElement('afterend', skipShuffleBtn);
-    setTimeout(() => skipShuffleBtn.classList.add('visible'), 1200);
-
     function finish() {
       aborted = true;
-      skipShuffleBtn.remove();
       shuffleScene.classList.remove('is-shuffling');
       cardsEl.innerHTML = '';
       cardsEl.className = '';
       resolve();
     }
-
-    skipShuffleBtn.addEventListener('click', finish);
 
     // One shuffle pass: scatter outward, then collect back into stack
     function shufflePass() {
@@ -217,8 +207,8 @@ function showShuffleAnimation() {
           const delay = i * stagger;
           const direction = Math.round(Math.random()) ? 1 : -1;
           const vw = window.innerWidth;
-          const maxScatter = Math.min(120, vw * 0.25);
-          const minScatter = maxScatter * 0.5;
+          const maxScatter = Math.min(60, vw * 0.12);
+          const minScatter = maxScatter * 0.4;
           const distance = Math.random() * (maxScatter - minScatter) + minScatter;
 
           setTimeout(() => {
@@ -296,7 +286,10 @@ function fanOutCards() {
     }, i * 25);
   });
 
-  // Auto-draw button — appears after the fan finishes fading in
+  // Auto-draw button — clean up any existing one first
+  const existingBtn = document.querySelector('.auto-draw-btn');
+  if (existingBtn) existingBtn.remove();
+
   const autoDrawBtn = document.createElement('button');
   autoDrawBtn.className = 'auto-draw-btn';
   autoDrawBtn.textContent = 'draw for me →';
@@ -387,7 +380,25 @@ function unpickCard(deckIndex, wrapper) {
 }
 
 async function startRevealSequence() {
-  shuffleScene.classList.add('collapsed');
+  // Remove draw button but keep doily visible through the card reveal
+  const doily = shuffleScene.querySelector('.shuffle-doily');
+  const drawBtn = document.querySelector('.auto-draw-btn');
+  if (drawBtn) {
+    drawBtn.style.transition = 'opacity 0.4s ease';
+    drawBtn.style.opacity = '0';
+  }
+  // Fade out hands and cards container but keep doily + shuffle-scene visible
+  const hands = shuffleScene.querySelectorAll('.shuffle-hand');
+  hands.forEach(h => { h.style.transition = 'opacity 0.5s ease'; h.style.opacity = '0'; });
+  cardsEl.style.transition = 'opacity 0.5s ease';
+  cardsEl.style.opacity = '0';
+  if (statusEl) { statusEl.style.transition = 'opacity 0.5s ease'; statusEl.style.opacity = '0'; }
+
+  await delay(500);
+  if (drawBtn) drawBtn.remove();
+  // Collapse inner elements but keep shuffle-scene for the doily
+  cardsEl.innerHTML = '';
+  cardsEl.className = '';
 
   const isCentered = spreadType === 'single' || spreadType === 'threeCard';
 
@@ -463,7 +474,12 @@ async function startRevealSequence() {
     document.querySelector('.reading-stage')?.classList.add('spread-visible');
   }
 
-  // Fade spread out and proceed directly to reading
+  // Fade spread + doily out together, then proceed to reading
+  if (doily) {
+    doily.style.transition = 'opacity 0.8s ease';
+    doily.style.opacity = '0';
+  }
+
   if (isCentered) {
     spreadArea.style.transition = 'transform 0.8s ease, opacity 0.8s ease';
     spreadArea.style.transform = 'translate(-50%, -50%) scale(0.92)';
@@ -485,8 +501,39 @@ async function startRevealSequence() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Go straight to reading — no card list, no reveal button
-  await handleReveal();
+  // Now collapse the shuffle scene (doily already faded)
+  shuffleScene.style.transition = 'opacity 0.3s ease';
+  shuffleScene.style.opacity = '0';
+  await delay(300);
+  shuffleScene.classList.add('collapsed');
+
+  // Wait for AI reading data if not ready yet
+  if (!readingData && !readingError) {
+    readingEl.innerHTML = `
+      <div class="reading-loader">
+        <span class="loader-symbol">&#9790;</span>
+        <span class="loader-symbol">&#10022;</span>
+        <span class="loader-symbol">&#9790;</span>
+      </div>
+    `;
+    document.querySelector('.reading-stage')?.classList.add('results-visible');
+    await readingPromise;
+    readingEl.innerHTML = '';
+  }
+
+  // Save state and navigate to reveal page
+  const readingPayload = readingError
+    ? 'Something went wrong generating the reading.'
+    : readingData.reading;
+
+  sessionStorage.setItem('velvet_reading', JSON.stringify({
+    reading: readingPayload,
+    selectedCards,
+    spreadType,
+    savedReadingId
+  }));
+
+  window.location.href = '/reveal.html';
 }
 
 function sweepAwayFan() {
@@ -543,184 +590,7 @@ function startBackgroundFetch() {
 }
 
 
-async function handleReveal() {
-  document.querySelector('.reading-stage')?.classList.add('results-visible');
-
-  if (readingData) {
-    showReading(readingData.reading);
-  } else if (readingError) {
-    showReading('Something went wrong generating the reading.');
-  } else {
-    // Still loading — show a gentle loader
-    readingEl.innerHTML = `
-      <div class="reading-loader">
-        <span class="loader-symbol">&#9790;</span>
-        <span class="loader-symbol">&#10022;</span>
-        <span class="loader-symbol">&#9790;</span>
-      </div>
-    `;
-    await readingPromise;
-    readingEl.innerHTML = '';
-    if (readingData) {
-      showReading(readingData.reading);
-    } else {
-      showReading('Something went wrong generating the reading.');
-    }
-  }
-}
-
-function showReading(data) {
-  currentView = 'reading';
-
-  // Normalise: data may be a structured object or a plain fallback string
-  const structured = data && typeof data === 'object' && Array.isArray(data.sections);
-  const sections = structured ? data.sections : [];
-  const summary = structured ? (data.summary || '') : (typeof data === 'string' ? data : '');
-  const labels = positionLabels[spreadType] || [];
-
-  readingEl.innerHTML = '';
-
-  const grid = document.createElement('div');
-  grid.className = 'reading-results-grid';
-
-  // ── Left column: heading + per-card sections ──
-  const leftCol = document.createElement('div');
-  leftCol.className = spreadType === 'celticCross'
-    ? 'reading-col-left rcs-grid'
-    : 'reading-col-left';
-
-  const heading = document.createElement('h1');
-  heading.className = 'reading-title';
-  heading.textContent = 'What the Cards Reveal';
-  leftCol.appendChild(heading);
-
-  selectedCards.forEach((card, i) => {
-    const section = document.createElement('div');
-    section.className = 'reading-card-section';
-
-    const orient = card.isReversed ? 'Reversed' : 'Upright';
-    const orientGlyph = card.isReversed ? '↓' : '↑';
-    const sectionText = sections[i] ? sections[i].text : '';
-
-    section.innerHTML = `
-      <div class="rcs-img-wrap${card.isReversed ? ' reversed' : ''}">
-        <img src="/${card.image}" alt="${card.name}" />
-      </div>
-      <div class="rcs-content">
-        <span class="rcs-position">${labels[i] || ''}</span>
-        <span class="rcs-name">${card.name} <span class="rcs-orient">${orientGlyph} ${orient}</span></span>
-        <p class="rcs-text">${sectionText}</p>
-      </div>
-    `;
-    leftCol.appendChild(section);
-  });
-
-  // ── Right column: summary + notes (hidden until envelope is opened) ──
-  const rightCol = document.createElement('div');
-  rightCol.className = 'reading-col-right';
-
-  const summaryHeading = document.createElement('h2');
-  summaryHeading.className = 'reading-summary-heading';
-  summaryHeading.textContent = 'The Complete Reading';
-  rightCol.appendChild(summaryHeading);
-
-  const summaryText = document.createElement('div');
-  summaryText.className = 'reading-summary-text';
-  if (summary) {
-    summaryText.textContent = summary;
-  } else {
-    // Show a pulsing inline loader — never leave this blank
-    summaryText.innerHTML = '<span class="inline-loader">· · ·</span>';
-    setTimeout(() => {
-      if (summaryText.querySelector('.inline-loader')) {
-        summaryText.innerHTML = '';
-        summaryText.textContent = 'The cards hold their counsel. Sit with each position above and let their meaning unfold in stillness.';
-      }
-    }, 6000);
-  }
-  rightCol.appendChild(summaryText);
-
-  const notesWrap = document.createElement('div');
-  notesWrap.className = 'reading-notes-wrap';
-  notesWrap.innerHTML = `
-    <label class="reading-notes-label">Your Notes <span class="notes-save-status"></span></label>
-    <textarea class="reading-notes" placeholder="Write your reflections here…" rows="5"></textarea>
-    <p class="notes-hint">Notes are saved locally — revisit them in <a href="/history.html">Past Readings</a>.</p>
-  `;
-  rightCol.appendChild(notesWrap);
-
-  const againLink = document.createElement('a');
-  againLink.href = '/?new';
-  againLink.className = 'reading-begin-again';
-  againLink.textContent = 'begin again →';
-  rightCol.appendChild(againLink);
-
-  grid.appendChild(leftCol);
-  grid.appendChild(rightCol);
-  readingEl.appendChild(grid);
-
-  // Notes auto-save
-  const notesArea = notesWrap.querySelector('.reading-notes');
-  const saveStatus = notesWrap.querySelector('.notes-save-status');
-
-  function showSaveStatus(msg) {
-    saveStatus.textContent = msg;
-    saveStatus.classList.add('visible');
-  }
-  function hideSaveStatus() {
-    saveStatus.classList.remove('visible');
-  }
-
-  notesArea.addEventListener('blur', async () => {
-    const notes = notesArea.value.trim() || null;
-    if (!savedReadingId) return;
-    showSaveStatus('Saving…');
-    try {
-      const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({ serverStorage: false }));
-      if (!cfg.serverStorage && window.historyDB) {
-        await window.historyDB.updateNotes(savedReadingId, notes);
-      } else {
-        await fetch(`/api/history/${savedReadingId}/notes`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes })
-        });
-      }
-      showSaveStatus('Saved');
-      setTimeout(hideSaveStatus, 1800);
-    } catch (_) {
-      showSaveStatus('Not saved');
-      setTimeout(hideSaveStatus, 2500);
-    }
-  });
-
-  // ── Pink envelope — floats fixed on right, reveals reading on click ──
-  const envelope = document.createElement('div');
-  envelope.className = 'reading-envelope';
-  envelope.setAttribute('role', 'button');
-  envelope.setAttribute('aria-label', 'Open your reading');
-  envelope.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="2"/>
-      <polyline points="2,4 12,13 22,4"/>
-    </svg>
-    <span class="reading-envelope-label">your<br>reading</span>
-  `;
-  document.body.appendChild(envelope);
-
-  // Fade envelope in after card sections have had time to render
-  setTimeout(() => envelope.classList.add('visible'), 1400);
-
-  envelope.addEventListener('click', () => {
-    envelope.classList.remove('visible');
-    setTimeout(() => envelope.remove(), 900);
-    grid.classList.add('letter-open');
-    // Scroll right column into view on mobile
-    if (window.innerWidth <= 820) {
-      setTimeout(() => rightCol.scrollIntoView({ behavior: 'smooth', block: 'start' }), 600);
-    }
-  });
-}
+// handleReveal and showReading have moved to reveal.js / reveal.html
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -745,27 +615,30 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Fade in status text first, then shuffle scene after a delay
-  [statusEl, shuffleScene].filter(Boolean).forEach(el => {
-    el.style.opacity = '0';
-  });
+  // Intro sequence: doily visible → status text fades in → pause → hands/cards appear
 
+  // Hide hands and cards container initially; doily and shuffle-scene stay visible
+  const hands = shuffleScene.querySelectorAll('.shuffle-hand');
+  hands.forEach(h => { h.style.opacity = '0'; });
+  cardsEl.style.opacity = '0';
+  if (statusEl) statusEl.style.opacity = '0';
+
+  // Step 1: Status text fades in over the doily
   setStatus('The veil between worlds grows thin...');
-
-  // Status text fades in
-  requestAnimationFrame(() => {
-    if (statusEl) {
-      statusEl.style.transition = 'opacity 0.8s ease-out';
-      statusEl.style.opacity = '1';
-    }
-  });
-
-  // Hands + deck fade in after status text is settled
-  await delay(1000);
-  if (shuffleScene) {
-    shuffleScene.style.transition = 'opacity 1s ease-out';
-    shuffleScene.style.opacity = '1';
+  await delay(300);
+  if (statusEl) {
+    statusEl.style.transition = 'opacity 1s ease-out';
+    statusEl.style.opacity = '1';
   }
+
+  // Step 2: Hold the text for a moment
+  await delay(2000);
+
+  // Step 3: Fade in cards container, then start shuffle (hands fade via CSS .is-shuffling)
+  cardsEl.style.transition = 'opacity 0.8s ease-out';
+  cardsEl.style.opacity = '1';
+  // Reset hand opacity so CSS .is-shuffling can control them
+  hands.forEach(h => { h.style.opacity = ''; });
 
   try {
     const res = await fetch('/api/shuffle', { method: 'POST' });

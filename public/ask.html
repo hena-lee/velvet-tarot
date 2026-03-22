@@ -5,9 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#10039; Ask the Cards &#10039;</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Entry overlay: starts opaque rose, fades out to reveal page */
+      .entry-cover {
+        position: fixed;
+        inset: 0;
+        background: var(--rose-bg);
+        z-index: 99999;
+        transition: opacity 0.8s ease;
+        pointer-events: none;
+      }
+    </style>
   </head>
 
   <body>
+    <div class="entry-cover" id="entry-cover"></div>
+    <div class="mobile-gate" id="mobile-gate">
+      <div class="mobile-gate-content">
+        <span class="mobile-gate-label">Velvet Tarot</span>
+        <h1 class="mobile-gate-title">
+          This experience was built for larger screens.
+        </h1>
+        <p class="mobile-gate-subtitle">
+          For the full visual journey — animated cards, lace frames, and
+          all — please visit on a desktop or tablet.
+        </p>
+        <div class="mobile-gate-thesis">
+          <em>"You don't see with your eye, you perceive with your mind."</em>
+        </div>
+      </div>
+    </div>
+
     <script src="components.js"></script>
 
     <section class="reading-section">
@@ -58,6 +86,15 @@
     </section>
 
     <script>
+      // Fade out the entry cover for a smooth transition from landing
+      requestAnimationFrame(() => {
+        const cover = document.getElementById('entry-cover');
+        if (cover) {
+          cover.style.opacity = '0';
+          cover.addEventListener('transitionend', () => cover.remove());
+        }
+      });
+
       // --- Spread pill selection ---
       document.querySelectorAll('.spread-pill').forEach(pill => {
         pill.addEventListener('click', () => {

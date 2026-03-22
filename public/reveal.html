@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#10039; What the Cards Reveal &#10039;</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Reading page overrides: scrollable, full-width body */
+      html { overflow-y: auto; }
+      body { max-width: 100%; padding: 0; }
+    </style>
+  </head>
+  <body class="reading-page">
+    <div class="entry-cover" id="entry-cover" style="position:fixed;inset:0;background:var(--rose-bg);z-index:99999;transition:opacity 0.8s ease;pointer-events:none;"></div>
+    <script src="components.js"></script>
+    <script>
+      requestAnimationFrame(() => {
+        const cover = document.getElementById('entry-cover');
+        if (cover) {
+          cover.style.opacity = '0';
+          cover.addEventListener('transitionend', () => cover.remove());
+        }
+      });
+    </script>
+
+    <main class="reading-stage results-visible">
+      <div id="reading"></div>
+    </main>
+
+    <script src="/lib/db.js"></script>
+    <script src="reveal.js"></script>
+  </body>
+</html>

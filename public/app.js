@@ -179,11 +179,16 @@
       cloudLayer.style.transition = 'opacity 0.25s ease';
       cloudLayer.style.opacity = '0';
     }
-    // Navigate to the ask page after a brief fade
+    // Cover the screen with a solid overlay before navigating to prevent flash
+    const cover = document.createElement('div');
+    cover.style.cssText = 'position:fixed;inset:0;background:var(--rose-bg);z-index:99999;opacity:0;transition:opacity 0.3s ease;';
+    document.body.appendChild(cover);
+    requestAnimationFrame(() => { cover.style.opacity = '1'; });
+    // Navigate after the overlay is fully opaque
     localStorage.setItem('velvet_visited', '1');
     setTimeout(() => {
       window.location.href = '/ask.html';
-    }, 300);
+    }, 350);
   }
 
   function animateTo(target, cb, duration) {

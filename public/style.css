@@ -46,7 +46,7 @@
   --shuffle-min-h: 360px;
   --shuffle-max-h: 600px;
   --shuffle-stage-h: 250px;
-  --hand-offset: 27%;
+  --hand-offset: 32%;
 }
 
 /* Fabric noise texture — shared between rose and emerald backgrounds */
@@ -56,11 +56,30 @@ html {
   /* Default: deep dusty rose (landing page) */
   background-color: var(--rose-bg);
   color: var(--ink);
-  scrollbar-width: thin;
-  scrollbar-color: var(--gold-subtle) transparent;
+  scrollbar-width: none; /* Hide scrollbar globally */
 }
 
-/* Reading page uses same rose background as landing */
+/* Reading page: flowerbed background covering entire page */
+html:has(.reading-page) {
+  background: url('/images/assets/flowerbed.png') center / cover no-repeat fixed;
+}
+
+body.reading-page {
+  background: transparent;
+  position: relative;
+}
+
+/* Paper texture overlay for reading page — sits behind all content */
+body.reading-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-repeat: repeat;
+}
 
 /* Landing page locks scrolling; all other pages scroll freely */
 body.no-scroll {
@@ -178,11 +197,12 @@ body.no-scroll {
 
 /* Brand / home side */
 .nav-brand {
-  font-family: "Cormorant Garamond", "Spectral", Georgia, serif;
-  font-size: 1.1rem;
+  font-family: "Spectral", Georgia, serif;
+  font-size: 0.72rem;
   font-weight: 500;
-  font-style: italic;
-  letter-spacing: 0.04em;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: rgba(42, 8, 18, 0.88);
   text-decoration: none;
   background: none;
@@ -214,6 +234,65 @@ body.no-scroll {
   color: rgba(42, 8, 18, 1);
 }
 
+/* Light navbar on reading page — contrast against dark flowerbed background */
+.reading-page .nav-brand {
+  color: rgba(245, 238, 220, 0.95);
+}
+
+.reading-page .nav-link {
+  color: rgba(245, 238, 220, 0.9);
+}
+
+.reading-page .nav-link:hover {
+  color: rgba(245, 238, 220, 1);
+}
+
+/* Reading results text — dark for legibility against doily background */
+.reading-page .reading-title {
+  color: var(--ink);
+}
+
+.reading-page .rcs-name {
+  color: var(--ink);
+}
+
+.reading-page .rcs-text {
+  color: var(--ink);
+}
+
+.reading-page .rcs-orient {
+  color: var(--ink);
+}
+
+.reading-page .reading-card-section {
+  border-bottom-color: var(--gold-subtle);
+}
+
+/* Right column summary text stays light against the flowerbed */
+.reading-page .reading-summary-heading {
+  color: rgba(245, 238, 220, 0.95);
+}
+
+.reading-page .reading-summary-text {
+  color: rgba(245, 238, 220, 0.88);
+}
+
+.reading-page .reading-notes-label,
+.reading-page .reading-notes,
+.reading-page .reading-notes::placeholder,
+.reading-page .notes-hint,
+.reading-page .notes-hint a {
+  color: rgba(245, 238, 220, 0.6);
+}
+
+.reading-page .reading-begin-again {
+  color: rgba(245, 238, 220, 0.8);
+}
+
+.reading-page .reading-begin-again:hover {
+  color: rgba(245, 238, 220, 1);
+}
+
 /* === LAYOUT === */
 html::-webkit-scrollbar {
   display: none;
@@ -239,6 +318,11 @@ html::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M10,0 L20,10 L10,20 L0,10 Z' fill='rgba(255,255,255,0.025)' stroke='rgba(0,0,0,0.25)' stroke-width='1'/%3E%3Ccircle cx='10' cy='14' r='1.2' fill='rgba(0,0,0,0.3)'/%3E%3C/svg%3E");
   background-size: 11.4px 11.4px;
   background-repeat: repeat;
+}
+
+/* Hide the quilted diamond overlay on the reading page — it uses its own paper texture */
+html:has(.reading-page)::after {
+  display: none;
 }
 
 /* === CLOUD LAYER === */
@@ -604,7 +688,7 @@ html::after {
 
 .cloud-3 {
   width: clamp(120px, 30vw, 348px);
-  top: 30%;
+  top: 20%;
   left: -3%;
   opacity: 1;
   z-index: 0;
@@ -621,7 +705,7 @@ html::after {
 
 .cloud-6 {
   width: clamp(144px, 36vw, 420px);
-  top: 13%;
+  top: 8%;
   left: 10%;
   opacity: 1;
   z-index: 0;
@@ -701,7 +785,7 @@ html::after {
 /* === SKIP INTRO === */
 .skip-intro {
   position: fixed;
-  bottom: 2.5rem;
+  bottom: calc(2.5rem + 2vh);
   right: max(2rem, calc(50vw - 520px));
   background: none;
   border: 1px solid rgba(42, 8, 18, 0.4);
@@ -804,12 +888,22 @@ html::after {
   align-items: flex-start;
   gap: 1.2rem;
   padding: 1.15rem 0;
-  border-bottom: 1px solid var(--gold-subtle);
+  border-bottom: none;
   width: 100%;
+  position: relative;
+}
+.reading-card-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 1px;
+  background: var(--gold-subtle);
 }
 
-.reading-card-section:last-of-type {
-  border-bottom: none;
+.reading-card-section:last-of-type::after {
+  display: none;
 }
 
 .rcs-img-wrap {
@@ -1042,10 +1136,27 @@ html::after {
 }
 
 .reading-col-left {
-  flex: 1;
+  flex: 1 1 50%;
   min-width: 0;
   padding-right: 0.5rem;
   transition: padding-right 0.7s ease;
+  position: relative;
+}
+
+/* Card reveal background — fixed to left half of viewport */
+.reading-page .reading-col-left::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 28%;
+  transform: translate(-50%, -50%) scale(1.15) scaleX(1.25);
+  width: 50vw;
+  height: 80vh;
+  background: url('/images/assets/cardreveal.png') center center / contain no-repeat;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 1;
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.4));
 }
 
 .reading-col-right {
@@ -1062,7 +1173,8 @@ html::after {
 }
 
 .reading-results-grid.letter-open .reading-col-right {
-  max-width: 480px;
+  flex: 1 1 50%;
+  max-width: 50%;
   opacity: 1;
   overflow: visible;
   padding-bottom: 3rem;
@@ -1119,8 +1231,9 @@ html::after {
   text-align: left;
   font-weight: 300;
   font-style: italic;
-  margin-top: 0;
+  margin-top: 3.5rem;
   margin-bottom: 2rem;
+  padding-left: -2.5rem;
 }
 
 .reading-section {
@@ -1132,11 +1245,21 @@ html::after {
   align-items: center;
   justify-content: center;
   padding-top: 2rem;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-  padding-left: calc(50vw - 50%);
-  padding-right: calc(50vw - 50%);
+  width: 100%;
   overflow: visible;
+  /* Gradual fade-in for the reading form */
+  animation: formFadeIn 1.6s ease-out both;
+}
+
+@keyframes formFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header-content {
@@ -1178,7 +1301,7 @@ html::after {
 
 .placemat-button {
   position: absolute;
-  top: -55%;
+  top: 0;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 48px;
@@ -1295,10 +1418,7 @@ button:disabled {
   background: url('/images/assets/backCover.jpg') center / cover no-repeat;
   border: none;
   border-radius: 6px;
-  box-shadow:
-    1px 1px 0 #888,
-    1px 2px 0 #777,
-    2px 4px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
 .shuffle-card {
@@ -1315,8 +1435,10 @@ button:disabled {
   justify-content: center;
   align-items: center;
   height: clamp(150px, 35vw, 250px);
+  margin-top: 5%;
   margin-bottom: 2rem;
   position: relative;
+  z-index: 2;
 }
 
 /* === FAN LAYOUT === */
@@ -1325,10 +1447,11 @@ button:disabled {
   justify-content: center;
   align-items: center;
   height: clamp(120px, 15vw, 180px);
-  margin: 0 auto 2rem;
+  margin: 5% auto 2rem;
   position: relative;
   overflow: visible;
   width: 100%;
+  z-index: 2;
 }
 
 .fan-card-wrapper {
@@ -1423,10 +1546,7 @@ button:disabled {
   background: url('/images/assets/backCover.jpg') center / cover no-repeat;
   border: none;
   border-radius: 6px;
-  box-shadow:
-    1px 1px 0 #888,
-    1px 2px 0 #777,
-    2px 4px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
 .spread-card-front {
@@ -1439,10 +1559,7 @@ button:disabled {
   border: none;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow:
-    1px 1px 0 #888,
-    1px 2px 0 #777,
-    2px 4px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
 .spread-card-img {
@@ -1455,10 +1572,7 @@ button:disabled {
 }
 
 .spread-card.reversed.flipped .spread-card-front {
-  box-shadow:
-    -1px -1px 0 #888,
-    -1px -2px 0 #777,
-    -2px -4px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
 }
 
 /* === CARD LIST (exploration phase) === */
@@ -1649,8 +1763,7 @@ button:disabled {
   }
 }
 
-/* === SKIP SHUFFLE / AUTO-DRAW BUTTONS === */
-.skip-shuffle-btn,
+/* === AUTO-DRAW BUTTON === */
 .auto-draw-btn {
   display: block;
   margin: 1.5rem auto 0;
@@ -1660,7 +1773,7 @@ button:disabled {
   font-size: 0.72rem;
   font-style: italic;
   letter-spacing: 0.1em;
-  color: var(--ink-muted);
+  color: rgba(30, 6, 6, 0.88);
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
@@ -1668,19 +1781,28 @@ button:disabled {
   text-align: center;
 }
 
-.skip-shuffle-btn.visible,
 .auto-draw-btn.visible {
   opacity: 1;
   pointer-events: auto;
+  animation: gentlePulse 3s ease-in-out infinite;
 }
 
-.skip-shuffle-btn:hover,
+@keyframes gentlePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
 .auto-draw-btn:hover {
-  color: var(--ink);
+  color: rgba(30, 6, 6, 1);
+  animation-play-state: paused;
+  opacity: 1;
+  transform: scale(1.08);
 }
 
 /* === READING PAGE === */
 .reading-stage {
+  position: relative;
+  z-index: 1;
   color: var(--ink);
   max-width: 860px;
   margin: 0 auto;
@@ -1692,17 +1814,24 @@ button:disabled {
   /* No align-items: center — that conflicts with the full-bleed shuffle-scene
      breakout margin trick. Individual items center themselves as needed. */
   min-height: 100vh;
+  transition: padding-top 0.8s ease;
 }
 
 .reading-status {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-  color: rgba(245, 238, 220, 0.55);
+  font-size: clamp(1.05rem, 2.3vw, 1.42rem);
+  color: rgba(30, 6, 6, 0.88);
   font-style: italic;
   letter-spacing: 0.12em;
   text-align: center;
-  width: 100%;
-  margin: 0 0 0.5rem;
+  width: max-content;
+  max-width: 80%;
+  margin: 0;
   line-height: 1;
 }
 
@@ -1719,18 +1848,33 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   transition: max-height 0.8s ease;
   background: transparent;
   box-shadow: none;
 }
 
+/* Doily image centered behind the shuffle deck and fan spread */
+.shuffle-doily {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -45%);
+  width: clamp(483px, 94.5vw, 945px);
+  pointer-events: none;
+  z-index: 0;
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.6)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  transition: opacity 0.5s ease;
+}
+
 .shuffle-scene.collapsed {
   min-height: 0;
   max-height: 0;
+  overflow: hidden;
   transition:
     max-height 0.8s ease,
-    min-height 0s;
+    min-height 0.8s ease,
+    overflow 0s 0s;
 }
 
 
@@ -1742,6 +1886,8 @@ button:disabled {
   opacity: 0;
   transition: opacity 0.5s ease;
   margin-top: calc(-1 * clamp(100px, 12vw, 150px) * 0.75);
+  z-index: 1;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 }
 
 .hand-left {
@@ -1762,11 +1908,11 @@ button:disabled {
 }
 
 .shuffle-scene.is-shuffling .hand-left {
-  animation: handHoverLeft 2s ease-in-out infinite;
+  animation: handHoverLeft 3s ease-in-out infinite;
 }
 
 .shuffle-scene.is-shuffling .hand-right {
-  animation: handHoverRight 2s ease-in-out infinite;
+  animation: handHoverRight 3s ease-in-out infinite;
 }
 
 @keyframes handHoverLeft {
@@ -2774,6 +2920,74 @@ a.artifacts-card-img {
 
 .download-link:hover {
   opacity: 0.6;
+}
+
+/* === MOBILE GATE === */
+.mobile-gate {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--rose-bg);
+  z-index: 99999;
+  padding: 2rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .mobile-gate {
+    display: flex;
+  }
+
+  .landing, .cloud-layer, .skip-intro,
+  .reading-section, .custom-cursor {
+    display: none !important;
+  }
+}
+
+.mobile-gate-content {
+  max-width: 320px;
+}
+
+.mobile-gate-label {
+  font-family: 'Special Elite', cursive;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-on-dark-muted);
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.mobile-gate-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--text-on-dark);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.mobile-gate-subtitle {
+  font-family: 'Spectral', serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-on-dark-muted);
+  margin-bottom: 2.5rem;
+}
+
+.mobile-gate-thesis {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--gold);
+  line-height: 1.5;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(245, 238, 220, 0.15);
 }
 
 /* === FOOTER === */

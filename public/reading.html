@@ -11,13 +11,24 @@
     </style>
   </head>
   <body class="reading-page">
+    <div class="entry-cover" id="entry-cover" style="position:fixed;inset:0;background:var(--rose-bg);z-index:99999;transition:opacity 0.8s ease;pointer-events:none;"></div>
     <script src="components.js"></script>
+    <script>
+      // Fade out entry cover for smooth transition from ask page
+      requestAnimationFrame(() => {
+        const cover = document.getElementById('entry-cover');
+        if (cover) {
+          cover.style.opacity = '0';
+          cover.addEventListener('transitionend', () => cover.remove());
+        }
+      });
+    </script>
 
     <main class="reading-stage">
-      <p class="reading-status" id="reading-status"></p>
-
       <!-- Shuffle scene: hands flank the deck during shuffling -->
       <div class="shuffle-scene" id="shuffle-scene">
+        <img src="/images/assets/doileyshuffle.png" class="shuffle-doily" alt="" />
+        <p class="reading-status" id="reading-status"></p>
         <img src="/images/assets/leftHand.png" class="shuffle-hand hand-left" alt="" />
         <div id="cards"></div>
         <img src="/images/assets/rightHand.png" class="shuffle-hand hand-right" alt="" />
