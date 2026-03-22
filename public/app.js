@@ -1,46 +1,3 @@
-const form = document.getElementById('reading-form');
-let formSubmitted = false;
-
-// Redirect to dedicated reading page on submit with zoom+fade transition
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  formSubmitted = true;
-  const question = document.getElementById('question').value.trim();
-  const spread = document.getElementById('spread').value;
-  const params = new URLSearchParams({ spread });
-  if (question) params.set('question', question);
-
-  localStorage.setItem('velvet_visited', '1');
-  const section = document.querySelector('.reading-section');
-  const cloudLayer = document.querySelector('.cloud-layer');
-  if (section) {
-    section.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
-    section.style.transformOrigin = 'center center';
-    section.style.transform = 'scale(1.5)';
-    section.style.opacity = '0';
-    if (cloudLayer) {
-      cloudLayer.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
-      cloudLayer.style.transformOrigin = 'center center';
-      cloudLayer.style.transform = 'scale(1.5)';
-      cloudLayer.style.opacity = '0';
-    }
-    setTimeout(() => {
-      window.location.href = `/reading.html?${params}`;
-    }, 600);
-  } else {
-    window.location.href = `/reading.html?${params}`;
-  }
-});
-
-// --- Spread pill selection ---
-document.querySelectorAll('.spread-pill').forEach(pill => {
-  pill.addEventListener('click', () => {
-    document.querySelectorAll('.spread-pill').forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
-    document.getElementById('spread').value = pill.dataset.value;
-  });
-});
-
 // --- Landing transition: curtain → powder room split → theater zoom (wheel-driven) ---
 (function () {
   const imgWrapper = document.querySelector('.landing-image-wrapper');
@@ -48,24 +5,14 @@ document.querySelectorAll('.spread-pill').forEach(pill => {
   const curtain = document.querySelector('.landing-curtain');
   const powderLeft = document.querySelector('.powder-left');
   const powderRight = document.querySelector('.powder-right');
-  const homeBtn = document.querySelector('.home-btn');
-  const readingForm = document.getElementById('reading-form-wrap') || document.getElementById('reading-form');
   if (!imgWrapper || !landing) return;
 
-  // Define cloudLayer here so it's accessible in all branches
-  const cloudLayerEl = document.querySelector('.cloud-layer');
+  const cloudLayer = document.querySelector('.cloud-layer');
 
-  // Skip landing and go straight to reading form when ?new is in the URL
+  // Skip landing and go straight to ask page when ?new is in the URL
   if (new URLSearchParams(window.location.search).has('new')) {
-    landing.style.visibility = 'hidden';
-    landing.style.pointerEvents = 'none';
-    if (readingForm) readingForm.style.opacity = '1';
-    // Also hide clouds — they belong to the landing theater, not the form
-    if (cloudLayerEl) {
-      cloudLayerEl.style.opacity = '0';
-      cloudLayerEl.style.visibility = 'hidden';
-    }
     history.replaceState(null, '', '/');
+    window.location.href = '/ask.html';
     return;
   }
 
@@ -92,8 +39,6 @@ document.querySelectorAll('.spread-pill').forEach(pill => {
   let snapTimer = null;
   const SNAP_THRESHOLD = 0.08;
   const ANIM_DURATION = 80;
-
-  if (readingForm) readingForm.style.opacity = '0';
 
   let flashTimers = [];
   let flashLoopRunning = false;
@@ -202,7 +147,6 @@ document.querySelectorAll('.spread-pill').forEach(pill => {
     const scale = 1 + p * 1.5;
     imgWrapper.style.transform = `scale(${scale})`;
     landing.style.opacity = 1 - p;
-    if (readingForm) readingForm.style.opacity = Math.max(0, (p - 0.4) / 0.6);
     // Fade clouds in sync with the zoom
     if (cloudLayer) cloudLayer.style.opacity = String(1 - p);
   }
@@ -223,39 +167,23 @@ document.querySelectorAll('.spread-pill').forEach(pill => {
     }
   }
 
-  const cloudLayer = cloudLayerEl;
-
   function hideLanding() {
     isDone = true;
     stopFlashLoop();
     landing.style.pointerEvents = 'none';
-    landing.style.visibility = 'hidden';
-    document.body.classList.remove('no-scroll');
-    // Hide skip button once landing is complete
+    // Hide skip button
     const skipBtn = document.querySelector('.skip-intro');
     if (skipBtn) skipBtn.classList.remove('visible');
-    // Hide clouds immediately — no lingering fade
+    // Fade out clouds
     if (cloudLayer) {
       cloudLayer.style.transition = 'opacity 0.25s ease';
       cloudLayer.style.opacity = '0';
-      setTimeout(() => { cloudLayer.style.visibility = 'hidden'; }, 250);
     }
-  }
-
-  function resetLanding() {
-    isDone = false;
-    formSubmitted = false;
-    landing.style.visibility = '';
-    landing.style.pointerEvents = '';
-    document.body.classList.add('no-scroll');
-    window.scrollTo(0, 0);
-    if (readingForm) readingForm.style.opacity = '0';
-    // Restore clouds when returning to the landing
-    if (cloudLayer) {
-      cloudLayer.style.visibility = '';
-      cloudLayer.style.transition = 'opacity 0.5s ease';
-      cloudLayer.style.opacity = '1';
-    }
+    // Navigate to the ask page after a brief fade
+    localStorage.setItem('velvet_visited', '1');
+    setTimeout(() => {
+      window.location.href = '/ask.html';
+    }, 300);
   }
 
   function animateTo(target, cb, duration) {
@@ -283,23 +211,7 @@ document.querySelectorAll('.spread-pill').forEach(pill => {
   }
 
   window.addEventListener('wheel', (e) => {
-    if (isAnimating) return;
-
-    // Scroll back from the form page
-    if (isDone) {
-      if (!formSubmitted && e.deltaY < 0) {
-        e.preventDefault();
-        resetLanding();
-        phase = 2;
-        progress = 0.99;
-        animateTo(0, () => {
-          phase = 1;
-          progress = 1;
-          render();
-        });
-      }
-      return;
-    }
+    if (isAnimating || isDone) return;
 
     e.preventDefault();
 
@@ -372,42 +284,20 @@ document.querySelectorAll('.spread-pill').forEach(pill => {
   // --- Touch support for mobile ---
   let touchStartY = null;
   let lastTouchY = null;
-  let touchStartTime = 0;
 
-  // Use landing element as touch target (covers viewport during animation)
   landing.addEventListener('touchstart', (e) => {
     if (isAnimating) return;
     touchStartY = e.touches[0].clientY;
     lastTouchY = touchStartY;
-    touchStartTime = Date.now();
     clearTimeout(snapTimer);
   }, { passive: true });
 
   landing.addEventListener('touchmove', (e) => {
-    if (isAnimating || touchStartY === null) return;
-
-    const currentY = e.touches[0].clientY;
-
-    // Scroll back from the form page
-    if (isDone) {
-      const totalDelta = currentY - touchStartY;
-      if (!formSubmitted && totalDelta > 60) {
-        e.preventDefault();
-        touchStartY = null;
-        resetLanding();
-        phase = 2;
-        progress = 0.99;
-        animateTo(0, () => {
-          phase = 1;
-          progress = 1;
-          render();
-        });
-      }
-      return;
-    }
+    if (isAnimating || touchStartY === null || isDone) return;
 
     e.preventDefault();
 
+    const currentY = e.touches[0].clientY;
     const deltaY = lastTouchY - currentY; // positive = swipe up = forward
     lastTouchY = currentY;
 
@@ -462,31 +352,10 @@ document.querySelectorAll('.spread-pill').forEach(pill => {
     }, 150);
   });
 
-  // Star icon → return to landing
-  if (homeBtn) {
-    homeBtn.addEventListener('click', () => {
-      if (!isDone || isAnimating) return;
-      resetLanding();
-      phase = 2;
-      progress = 0.99;
-      animateTo(0, () => {
-        phase = 1;
-        progress = 1;
-        render();
-        animateTo(0, () => {
-          phase = 0;
-          progress = 1;
-          render();
-          animateTo(0);
-        });
-      });
-    });
-  }
-
   // --- Skip intro: show for returning users ---
   const skipBtn = document.querySelector('.skip-intro');
   if (skipBtn && localStorage.getItem('velvet_visited')) {
-    // Fade in gradually after a short delay — feels like an invitation, not a button
+    // Fade in gradually after a short delay
     setTimeout(() => skipBtn.classList.add('visible'), 800);
     skipBtn.addEventListener('click', () => {
       skipBtn.classList.remove('visible');

@@ -1,5 +1,5 @@
 /* === FONTS === */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Jacquard+24&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Jacquard+24&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Special+Elite&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
 
 
 /* === RESET === */
@@ -214,7 +214,6 @@ body.no-scroll {
   color: rgba(42, 8, 18, 1);
 }
 
-/* "New Reading" link — shown after a reading completes */
 /* === LAYOUT === */
 html::-webkit-scrollbar {
   display: none;
@@ -1125,6 +1124,8 @@ html::after {
 }
 
 .reading-section {
+  position: relative;
+  z-index: 2;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1157,22 +1158,44 @@ html::after {
   letter-spacing: 0.04em;
 }
 
-/* === READING FORM (Option A — search bar style) === */
-.reading-form-frame {
-  width: clamp(300px, 78vw, 520px);
-  background-image: url('/images/assets/referenceimages/placemat.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  background-color: transparent;
-  /* Padding maps content to the flat interior of the placemat doily */
-  padding: 3.2rem 3rem 2.8rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.52), 0 6px 20px rgba(0, 0, 0, 0.32);
+/* === PLACEMAT WRAPPER — image sits behind the form === */
+.placemat-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Hide the CSS double-border — the placemat image provides the decorative border */
-.reading-form-frame::before,
-.reading-form-frame::after {
-  display: none;
+.placemat-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  pointer-events: none;
+  z-index: 0;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35));
+}
+
+.placemat-button {
+  position: absolute;
+  top: -55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+}
+
+/* === READING FORM (Option A — search bar style) === */
+.reading-form-frame {
+  position: relative;
+  z-index: 1;
+  width: clamp(240px, 62vw, 416px);
+  background: #eee8d8;
+  padding: 2.5rem 2.25rem 2rem;
+  box-shadow: 0 4px 16px rgba(45, 44, 44, 0.35);
 }
 
 #reading-form {
@@ -1200,9 +1223,10 @@ html::after {
 }
 
 #question::placeholder {
+  font-family: "Special Elite", cursive;
   color: var(--ink-muted);
-  font-size: clamp(0.95rem, 2vw, 1.2rem);
-  font-style: italic;
+  font-size: clamp(0.72rem, 1.5vw, 0.9rem);
+  font-style: normal;
 }
 
 /* Submit arrow */
@@ -1211,12 +1235,14 @@ html::after {
   border: none;
   font-family: "Spectral", Georgia, serif;
   font-size: clamp(1.3rem, 2.8vw, 1.8rem);
-  color: var(--oxblood);
+  color: rgba(30, 6, 6, 0.88);
   cursor: pointer;
   padding: 0 0.15rem;
   line-height: 1;
   opacity: 0.8;
   flex-shrink: 0;
+  font-weight: 200;
+  -webkit-text-stroke: 0;
   transition: opacity 0.2s, transform 0.15s;
 }
 
@@ -1228,7 +1254,7 @@ html::after {
 /* === SPREAD PILLS === */
 .spread-pills {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.4rem;
 }
 
@@ -1238,7 +1264,7 @@ html::after {
   border: 1px solid rgba(184, 150, 46, 0.32);
   background: transparent;
   font-family: "Spectral", Georgia, serif;
-  font-size: clamp(0.68rem, 1.4vw, 0.82rem);
+  font-size: clamp(0.58rem, 1.1vw, 0.72rem);
   letter-spacing: 0.05em;
   color: var(--ink-muted);
   cursor: pointer;

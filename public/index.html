@@ -91,55 +91,6 @@
       </div>
     </section>
 
-    <section class="reading-section">
-      <div class="lace-frame reading-form-frame" id="reading-form-wrap">
-        <form id="reading-form">
-          <div class="form-input-row">
-            <input
-              type="text"
-              id="question"
-              placeholder="Ask the cards anything, or leave blank"
-              autocomplete="off"
-            />
-            <button
-              type="submit"
-              class="form-arrow-btn"
-              aria-label="Draw cards"
-            >
-              &rarr;
-            </button>
-          </div>
-          <div
-            class="spread-pills"
-            id="spread-pills"
-            role="group"
-            aria-label="Spread type"
-          >
-            <button type="button" class="spread-pill" data-value="single">
-              single card
-            </button>
-            <button
-              type="button"
-              class="spread-pill active"
-              data-value="threeCard"
-            >
-              past · present · future
-            </button>
-            <button type="button" class="spread-pill" data-value="celticCross">
-              celtic cross
-            </button>
-          </div>
-          <input type="hidden" id="spread" value="threeCard" />
-        </form>
-      </div>
-
-      <section id="results">
-        <div id="cards"></div>
-        <div id="spread-area"></div>
-        <div id="reading"></div>
-      </section>
-    </section>
-
     <button class="skip-intro" aria-label="Skip intro">skip →</button>
 
     <script src="app.js"></script>

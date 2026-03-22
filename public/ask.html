@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#10039; Ask the Cards &#10039;</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <script src="components.js"></script>
+
+    <section class="reading-section">
+      <div class="placemat-wrap">
+        <img src="/images/assets/placemat.png" class="placemat-img" alt="" />
+        <img src="/images/assets/button.png" class="placemat-button" alt="" />
+        <div class="lace-frame reading-form-frame" id="reading-form-wrap">
+          <form id="reading-form">
+            <div class="form-input-row">
+              <input
+                type="text"
+                id="question"
+                placeholder="Ask the cards anything, or leave blank"
+                autocomplete="off"
+              />
+              <button
+                type="submit"
+                class="form-arrow-btn"
+                aria-label="Draw cards"
+              >
+                &#10230;
+              </button>
+            </div>
+            <div
+              class="spread-pills"
+              id="spread-pills"
+              role="group"
+              aria-label="Spread type"
+            >
+              <button type="button" class="spread-pill" data-value="single">
+                single card
+              </button>
+              <button
+                type="button"
+                class="spread-pill active"
+                data-value="threeCard"
+              >
+                past · present · future
+              </button>
+              <button type="button" class="spread-pill" data-value="celticCross">
+                celtic cross
+              </button>
+            </div>
+            <input type="hidden" id="spread" value="threeCard" />
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // --- Spread pill selection ---
+      document.querySelectorAll('.spread-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('.spread-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          document.getElementById('spread').value = pill.dataset.value;
+        });
+      });
+
+      // --- Form submission → redirect to reading page ---
+      const form = document.getElementById('reading-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const question = document.getElementById('question').value.trim();
+        const spread = document.getElementById('spread').value;
+        const params = new URLSearchParams({ spread });
+        if (question) params.set('question', question);
+
+        localStorage.setItem('velvet_visited', '1');
+
+        const section = document.querySelector('.reading-section');
+        if (section) {
+          section.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
+          section.style.transformOrigin = 'center center';
+          section.style.transform = 'scale(1.5)';
+          section.style.opacity = '0';
+          setTimeout(() => {
+            window.location.href = `/reading.html?${params}`;
+          }, 600);
+        } else {
+          window.location.href = `/reading.html?${params}`;
+        }
+      });
+    </script>
+  </body>
+</html>
