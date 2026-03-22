@@ -10,6 +10,7 @@ form.addEventListener('submit', (e) => {
   const params = new URLSearchParams({ spread });
   if (question) params.set('question', question);
 
+  localStorage.setItem('velvet_visited', '1');
   const section = document.querySelector('.reading-section');
   const cloudLayer = document.querySelector('.cloud-layer');
   if (section) {
@@ -31,6 +32,15 @@ form.addEventListener('submit', (e) => {
   }
 });
 
+// --- Spread pill selection ---
+document.querySelectorAll('.spread-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.spread-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    document.getElementById('spread').value = pill.dataset.value;
+  });
+});
+
 // --- Landing transition: curtain → powder room split → theater zoom (wheel-driven) ---
 (function () {
   const imgWrapper = document.querySelector('.landing-image-wrapper');
@@ -39,17 +49,28 @@ form.addEventListener('submit', (e) => {
   const powderLeft = document.querySelector('.powder-left');
   const powderRight = document.querySelector('.powder-right');
   const homeBtn = document.querySelector('.home-btn');
-  const readingForm = document.getElementById('reading-form');
+  const readingForm = document.getElementById('reading-form-wrap') || document.getElementById('reading-form');
   if (!imgWrapper || !landing) return;
+
+  // Define cloudLayer here so it's accessible in all branches
+  const cloudLayerEl = document.querySelector('.cloud-layer');
 
   // Skip landing and go straight to reading form when ?new is in the URL
   if (new URLSearchParams(window.location.search).has('new')) {
     landing.style.visibility = 'hidden';
     landing.style.pointerEvents = 'none';
     if (readingForm) readingForm.style.opacity = '1';
+    // Also hide clouds — they belong to the landing theater, not the form
+    if (cloudLayerEl) {
+      cloudLayerEl.style.opacity = '0';
+      cloudLayerEl.style.visibility = 'hidden';
+    }
     history.replaceState(null, '', '/');
     return;
   }
+
+  // Lock scrolling while the theatrical landing is active
+  document.body.classList.add('no-scroll');
 
   // Show wrapper only after theater image loads to prevent flash of hidden layers
   const theaterImg = imgWrapper.querySelector('.landing-image');
@@ -69,16 +90,94 @@ form.addEventListener('submit', (e) => {
   let isAnimating = false;
   let isDone = false;
   let snapTimer = null;
-  const SNAP_THRESHOLD = 0.15;
+  const SNAP_THRESHOLD = 0.08;
   const ANIM_DURATION = 80;
 
   if (readingForm) readingForm.style.opacity = '0';
+
+  let flashTimers = [];
+  let flashLoopRunning = false;
+
+  function triggerCloudFlash() {
+    const clouds = document.querySelectorAll('.landing-cloud');
+    const header = document.querySelector('.app-header');
+    const stagger = 120;
+    const headerSync = 2 * stagger;
+    const firstRoundDuration = (clouds.length - 1) * stagger + 500;
+    const fullCycleDuration = firstRoundDuration + 200 + (clouds.length - 1) * stagger + 500;
+
+    // First round — bright flash
+    clouds.forEach((cloud, i) => {
+      flashTimers.push(setTimeout(() => {
+        cloud.classList.add('flash');
+        cloud.addEventListener('animationend', () => {
+          cloud.classList.remove('flash');
+        }, { once: true });
+      }, i * stagger));
+    });
+
+    // Header flashes in sync with clouds
+    if (header) {
+      flashTimers.push(setTimeout(() => {
+        header.classList.add('header-flash');
+        header.addEventListener('animationend', () => {
+          header.classList.remove('header-flash');
+        }, { once: true });
+      }, headerSync));
+
+      flashTimers.push(setTimeout(() => {
+        header.classList.add('header-flash-dim');
+        header.addEventListener('animationend', () => {
+          header.classList.remove('header-flash-dim');
+        }, { once: true });
+      }, firstRoundDuration + 200 + headerSync));
+    }
+
+    // Second round — dimmer afterglow, same stagger order
+    clouds.forEach((cloud, i) => {
+      flashTimers.push(setTimeout(() => {
+        cloud.classList.add('flash-dim');
+        cloud.addEventListener('animationend', () => {
+          cloud.classList.remove('flash-dim');
+        }, { once: true });
+      }, firstRoundDuration + 200 + i * stagger));
+    });
+
+    // Loop: schedule next cycle after a pause
+    flashTimers.push(setTimeout(() => {
+      if (flashLoopRunning) triggerCloudFlash();
+    }, fullCycleDuration + 1500));
+  }
+
+  function startFlashLoop() {
+    if (flashLoopRunning) return;
+    flashLoopRunning = true;
+    // Gradually darken the ground
+    if (landing) landing.classList.add('wet-ground');
+    triggerCloudFlash();
+  }
+
+  function stopFlashLoop() {
+    flashLoopRunning = false;
+    flashTimers.forEach(t => clearTimeout(t));
+    flashTimers = [];
+    // Clean up any lingering flash classes
+    document.querySelectorAll('.landing-cloud').forEach(c => {
+      c.classList.remove('flash', 'flash-dim');
+    });
+    const header = document.querySelector('.app-header');
+    if (header) header.classList.remove('header-flash', 'header-flash-dim');
+    // Remove wet ground
+    if (landing) landing.classList.remove('wet-ground');
+  }
 
   function applyCurtain(p) {
     if (curtain) {
       curtain.style.transform = `translateY(${-p * 100}%)`;
     }
   }
+
+  let powderFlashTriggered = false;
 
   function applyPowderRoom(p) {
     if (powderLeft) {
@@ -87,13 +186,25 @@ form.addEventListener('submit', (e) => {
     if (powderRight) {
       powderRight.style.transform = `translateX(${p * 100}%)`;
     }
+    // Start flashing when doors are 20% open
+    if (p > 0.2 && !powderFlashTriggered) {
+      powderFlashTriggered = true;
+      startFlashLoop();
+    }
+    // Reset flag if doors close back
+    if (p === 0) {
+      powderFlashTriggered = false;
+    }
   }
 
   function applyZoom(p) {
+    if (p > 0) stopFlashLoop();
     const scale = 1 + p * 1.5;
     imgWrapper.style.transform = `scale(${scale})`;
     landing.style.opacity = 1 - p;
     if (readingForm) readingForm.style.opacity = Math.max(0, (p - 0.4) / 0.6);
+    // Fade clouds in sync with the zoom
+    if (cloudLayer) cloudLayer.style.opacity = String(1 - p);
   }
 
   function render() {
@@ -112,10 +223,23 @@ form.addEventListener('submit', (e) => {
     }
   }
 
+  const cloudLayer = cloudLayerEl;
+
   function hideLanding() {
     isDone = true;
+    stopFlashLoop();
     landing.style.pointerEvents = 'none';
     landing.style.visibility = 'hidden';
+    document.body.classList.remove('no-scroll');
+    // Hide skip button once landing is complete
+    const skipBtn = document.querySelector('.skip-intro');
+    if (skipBtn) skipBtn.classList.remove('visible');
+    // Hide clouds immediately — no lingering fade
+    if (cloudLayer) {
+      cloudLayer.style.transition = 'opacity 0.25s ease';
+      cloudLayer.style.opacity = '0';
+      setTimeout(() => { cloudLayer.style.visibility = 'hidden'; }, 250);
+    }
   }
 
   function resetLanding() {
@@ -123,8 +247,15 @@ form.addEventListener('submit', (e) => {
     formSubmitted = false;
     landing.style.visibility = '';
     landing.style.pointerEvents = '';
+    document.body.classList.add('no-scroll');
     window.scrollTo(0, 0);
     if (readingForm) readingForm.style.opacity = '0';
+    // Restore clouds when returning to the landing
+    if (cloudLayer) {
+      cloudLayer.style.visibility = '';
+      cloudLayer.style.transition = 'opacity 0.5s ease';
+      cloudLayer.style.opacity = '1';
+    }
   }
 
   function animateTo(target, cb, duration) {
@@ -172,7 +303,7 @@ form.addEventListener('submit', (e) => {
 
     e.preventDefault();
 
-    const delta = e.deltaY / 800;
+    const delta = e.deltaY / 500;
 
     // Scrolling backward past start of current phase → go to previous phase
     if (phase > 0 && progress + delta < 0) {
@@ -349,6 +480,20 @@ form.addEventListener('submit', (e) => {
           animateTo(0);
         });
       });
+    });
+  }
+
+  // --- Skip intro: show for returning users ---
+  const skipBtn = document.querySelector('.skip-intro');
+  if (skipBtn && localStorage.getItem('velvet_visited')) {
+    // Fade in gradually after a short delay — feels like an invitation, not a button
+    setTimeout(() => skipBtn.classList.add('visible'), 800);
+    skipBtn.addEventListener('click', () => {
+      skipBtn.classList.remove('visible');
+      phase = 2;
+      progress = 0;
+      render();
+      animateTo(1, hideLanding, 600);
     });
   }
 })();

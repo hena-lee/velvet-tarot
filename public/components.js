@@ -4,48 +4,84 @@
   const isReading = document.body.classList.contains("reading-page");
   const isHistory = document.body.classList.contains("history-page");
 
-  // Star: <span> with home-btn on index (for landing JS), <a> link on other pages
-  const starHtml = isHome
-    ? '<span class="home-btn nav-star">&#10022;</span>'
-    : '<a href="/" class="nav-star">&#10022;</a>';
+  const wandSvg = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="2" y1="16" x2="10" y2="8"/>
+    <line x1="10" y1="8" x2="13" y2="3.5"/>
+    <circle cx="14" cy="2.5" r="1.2" fill="currentColor" stroke="none"/>
+    <line x1="14" y1="0.5" x2="14" y2="1.3"/>
+    <line x1="16" y1="1.5" x2="15.3" y2="2"/>
+    <line x1="12" y1="1.5" x2="12.7" y2="2"/>
+  </svg>`;
 
-  // New Reading link: visible on history, hidden-until-summary on reading, absent elsewhere
-  let newReadingLink = '';
-  if (isHistory) {
-    newReadingLink = '<a href="/?new">New Reading</a>';
-  } else if (isReading) {
-    newReadingLink = '<a href="/?new" class="nav-new-reading" style="display:none">New Reading</a>';
-  }
+  const eyeSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>`;
+
+  const bookSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+  </svg>`;
+
+  const downloadSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="12" y1="3" x2="12" y2="15"/>
+    <polyline points="8 11 12 15 16 11"/>
+    <line x1="3" y1="21" x2="21" y2="21"/>
+  </svg>`;
+
+  // Brand: button on home (triggers scroll), anchor on other pages
+  const brandHtml = isHome
+    ? `<button class="nav-brand home-btn" aria-label="Home">Velvet Tarot</button>`
+    : `<a href="/" class="nav-brand" aria-label="Home">Velvet Tarot</a>`;
 
   const navbar = document.createElement("nav");
-  navbar.className = "navbar";
+  navbar.className = "navbar nav-hidden";
   navbar.innerHTML = `
-    <div class="nav-icon">${starHtml}</div>
+    ${brandHtml}
     <div class="nav-links">
-      ${newReadingLink}
-      <a href="/history.html">Past Readings</a>
-      <a href="/artifacts.html">Artifacts</a>
-      <a href="/download.html">Download</a>
+      <a href="/history.html" class="nav-link">Readings</a>
+      <a href="/artifacts.html" class="nav-link">Arcana</a>
+      <a href="/download.html" class="nav-link">Download</a>
     </div>
   `;
 
-  const footer = document.createElement("footer");
-  footer.className = "site-footer";
-  footer.innerHTML = "<span>&copy; 2026 freehand engineering by hena </span>";
-
   document.body.prepend(navbar);
-  document.body.append(footer);
 
-  // Hide navbar on scroll down, show on scroll up or at top
-  let lastScrollY = 0;
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (y > lastScrollY && y > 50) {
-      navbar.classList.add('nav-hidden');
-    } else {
-      navbar.classList.remove('nav-hidden');
+  // Auto-hide navbar: invisible trigger zone at top reveals it on hover
+  const navTrigger = document.createElement('div');
+  navTrigger.className = 'nav-trigger';
+  document.body.appendChild(navTrigger);
+
+  let hideTimer = null;
+
+  function revealNav() {
+    navbar.classList.remove('nav-hidden');
+    clearTimeout(hideTimer);
+  }
+
+  function scheduleHide(ms) {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => navbar.classList.add('nav-hidden'), ms);
+  }
+
+  navTrigger.addEventListener('mouseenter', revealNav);
+  navbar.addEventListener('mouseenter', revealNav);
+  navbar.addEventListener('mouseleave', () => scheduleHide(1500));
+
+  // Mobile: tap near top of screen
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches[0].clientY < 48) {
+      revealNav();
+      scheduleHide(3000);
     }
-    lastScrollY = y;
+  }, { passive: true });
+
+  // Show briefly when scrolled back to top
+  window.addEventListener('scroll', () => {
+    if (window.scrollY < 10) {
+      revealNav();
+      scheduleHide(2500);
+    }
   });
 
   // Custom wand cursor — only on devices with a mouse/trackpad
@@ -116,6 +152,31 @@
 
     wand.addEventListener('animationend', () => {
       wand.classList.remove('twitch');
+    });
+  }
+
+  // --- Page transitions (View Transitions API + fade fallback) ---
+  // Only apply on non-home, non-reading pages to avoid conflicting with their own transitions
+  if (!isHome && !isReading) {
+    const overlay = document.createElement('div');
+    overlay.className = 'page-overlay';
+    document.body.appendChild(overlay);
+
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href]');
+      if (!link) return;
+      // Skip external links, new-tab links, and anchor-only links
+      if (link.origin !== location.origin) return;
+      if (link.target === '_blank') return;
+      if (link.getAttribute('href').startsWith('#')) return;
+      e.preventDefault();
+      const href = link.href;
+      if (document.startViewTransition) {
+        document.startViewTransition(() => { location.href = href; });
+      } else {
+        overlay.classList.add('active');
+        setTimeout(() => { location.href = href; }, 350);
+      }
     });
   }
 

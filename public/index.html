@@ -1,98 +1,147 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#10039; Your Journey Awaits &#10039;</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&#10039; Your Journey Awaits &#10039;</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
+  <body>
+    <div class="cloud-layer">
+      <div class="landing-cloud cloud-1">
+        <img src="/images/assets/cloud.png" alt="" />
+      </div>
+      <div class="landing-cloud cloud-3">
+        <img src="/images/assets/cloud.png" alt="" />
+      </div>
+      <div class="landing-cloud cloud-5">
+        <img src="/images/assets/cloud.png" alt="" />
+      </div>
+      <div class="landing-cloud cloud-7">
+        <img src="/images/assets/cloud.png" alt="" />
+      </div>
+      <div class="landing-cloud cloud-8">
+        <img src="/images/assets/cloud.png" alt="" />
+      </div>
+      <div class="landing-cloud cloud-6">
+        <img src="/images/assets/cloud.png" alt="" />
+      </div>
+    </div>
 
-<body>
-  <div class="cloud-layer">
-    <div class="landing-cloud cloud-1">
-      <img src="/images/assets/cloud.png" alt="" />
-    </div>
-    <div class="landing-cloud cloud-3">
-      <img src="/images/assets/cloud.png" alt="" />
-    </div>
-    <div class="landing-cloud cloud-5">
-      <img src="/images/assets/cloud.png" alt="" />
-    </div>
-    <div class="landing-cloud cloud-7">
-      <img src="/images/assets/cloud.png" alt="" />
-    </div>
-    <div class="landing-cloud cloud-8">
-      <img src="/images/assets/cloud.png" alt="" />
-    </div>
-    <div class="landing-cloud cloud-6">
-      <img src="/images/assets/cloud.png" alt="" />
-    </div>
-  </div>
+    <script src="components.js"></script>
 
-  <script src="components.js"></script>
-
-  <section class="landing">
-    <header class="app-header">
-      <div class="header-content">
-        <div class="header-brand">
-          <div class="header-title-block">
-            <h1>
-              You Don't See with Your Eye, You Perceive With Your Mind...
-            </h1>
+    <section class="landing">
+      <header class="app-header">
+        <div class="header-content">
+          <div class="header-brand">
+            <div class="header-title-block">
+              <h1>
+                You don't see with your eye,<br />you perceive with<br />your mind
+              </h1>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <div class="landing-image-wrapper">
-      <img src="/images/assets/moshPit.gif" class="landing-gif" alt="Human Experience" />
-      <div class="powder-room">
-        <div class="powder-mask powder-mask-left">
-          <img src="/images/assets/leftDoor.png" class="powder-left" alt="leftCurtain" />
+      <div class="landing-image-wrapper">
+        <img
+          src="/images/assets/moshPit.gif"
+          class="landing-gif"
+          alt="Human Experience"
+        />
+        <div class="powder-room">
+          <div class="powder-mask powder-mask-left">
+            <img
+              src="/images/assets/leftDoor.png"
+              class="powder-left"
+              alt="leftCurtain"
+            />
+          </div>
+          <div class="powder-mask powder-mask-right">
+            <img
+              src="/images/assets/rightDoor.png"
+              class="powder-right"
+              alt="rightCurtain"
+            />
+          </div>
         </div>
-        <div class="powder-mask powder-mask-right">
-          <img src="/images/assets/rightDoor.png" class="powder-right" alt="rightCurtain" />
+        <div class="curtain-mask">
+          <img
+            src="/images/assets/curtains.jpg"
+            class="landing-curtain"
+            alt="curtains"
+          />
+        </div>
+        <div class="theater-container">
+          <img
+            src="/images/assets/theater.png"
+            class="landing-image"
+            alt="Theater entrance"
+          />
+          <a
+            href="https://pin.it/6SrB2cDdu"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="landing-pin"
+          >
+            <img src="/images/assets/pinterestLogo.png" alt="Pinterest" />
+          </a>
         </div>
       </div>
-      <div class="curtain-mask">
-        <img src="/images/assets/curtains.jpg" class="landing-curtain" alt="curtains" />
-      </div>
-      <div class="theater-container">
-        <img src="/images/assets/theater.png" class="landing-image" alt="Theater entrance" />
-        <a href="https://pin.it/6SrB2cDdu" target="_blank" rel="noopener noreferrer" class="landing-pin">
-          <img src="/images/assets/pinterestLogo.png" alt="Pinterest" />
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="reading-section">
-    <form id="reading-form">
-      <h2 class="form-heading">What do you seek?</h2>
-      <div class="form-input-wrapper">
-        <span class="form-search-icon">&#128269;</span>
-        <input type="text" id="question" placeholder="Speak your question into the universe" />
-      </div>
-      <div class="form-select-wrapper">
-        <label for="spread" class="form-select-label">Spreads</label>
-        <select id="spread">
-          <option value="single">Single Card</option>
-          <option value="threeCard" selected>Past/Present/Future</option>
-          <option value="celticCross">Celtic Cross</option>
-        </select>
-      </div>
-      <button type="submit">Draw Cards</button>
-    </form>
-
-    <section id="results">
-      <div id="cards"></div>
-      <div id="spread-area"></div>
-      <div id="reading"></div>
     </section>
-  </section>
 
-  <script src="app.js"></script>
-</body>
+    <section class="reading-section">
+      <div class="lace-frame reading-form-frame" id="reading-form-wrap">
+        <form id="reading-form">
+          <div class="form-input-row">
+            <input
+              type="text"
+              id="question"
+              placeholder="Ask the cards anything, or leave blank"
+              autocomplete="off"
+            />
+            <button
+              type="submit"
+              class="form-arrow-btn"
+              aria-label="Draw cards"
+            >
+              &rarr;
+            </button>
+          </div>
+          <div
+            class="spread-pills"
+            id="spread-pills"
+            role="group"
+            aria-label="Spread type"
+          >
+            <button type="button" class="spread-pill" data-value="single">
+              single card
+            </button>
+            <button
+              type="button"
+              class="spread-pill active"
+              data-value="threeCard"
+            >
+              past · present · future
+            </button>
+            <button type="button" class="spread-pill" data-value="celticCross">
+              celtic cross
+            </button>
+          </div>
+          <input type="hidden" id="spread" value="threeCard" />
+        </form>
+      </div>
 
+      <section id="results">
+        <div id="cards"></div>
+        <div id="spread-area"></div>
+        <div id="reading"></div>
+      </section>
+    </section>
+
+    <button class="skip-intro" aria-label="Skip intro">skip →</button>
+
+    <script src="app.js"></script>
+  </body>
 </html>

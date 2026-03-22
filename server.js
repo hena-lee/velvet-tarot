@@ -5,13 +5,19 @@ const path = require('path');
 const { shuffleDeck } = require('./lib/deck');
 const { spreads } = require('./lib/spreads');
 const { generateReading } = require('./lib/reading');
-const { loadHistory, saveReading, deleteReadings, toggleFavorite } = require('./lib/history');
+const { loadHistory, saveReading, deleteReadings, toggleFavorite, updateNotes } = require('./lib/history');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Tells the client whether server-side storage is available.
+// On Vercel the filesystem is read-only, so the client falls back to IndexedDB.
+app.get('/api/config', (req, res) => {
+  res.json({ serverStorage: !process.env.VERCEL });
+});
 
 app.post('/api/shuffle', (req, res) => {
   const deck = shuffleDeck();
@@ -30,11 +36,18 @@ app.post('/api/interpret', async (req, res) => {
     return res.status(400).json({ error: `Expected ${spread.cardCount} cards for ${spread.name}` });
   }
 
+  const isVercel = !!process.env.VERCEL;
+
+  function trySave(entry) {
+    if (isVercel) return null;
+    try { return saveReading(entry); } catch (_) { return null; }
+  }
+
   try {
     const reading = await generateReading(cards, spread, question || null);
     const result = { cards, spread: spread.name, reading };
-    try { saveReading({ spreadType, question: question || null, ...result }); } catch (_) {}
-    res.json(result);
+    const saved = trySave({ spreadType, question: question || null, ...result });
+    res.json({ ...result, savedId: saved ? saved.id : null });
   } catch (err) {
     const fallback = cards.map((card, i) => {
       const orientation = card.isReversed ? 'reversed' : 'upright';
@@ -42,8 +55,8 @@ app.post('/api/interpret', async (req, res) => {
     }).join('\n\n');
 
     const result = { cards, spread: spread.name, reading: fallback };
-    try { saveReading({ spreadType, question: question || null, ...result }); } catch (_) {}
-    res.status(500).json({ error: 'Intelligent reading unavailable', ...result });
+    const saved = trySave({ spreadType, question: question || null, ...result });
+    res.status(500).json({ error: 'Intelligent reading unavailable', ...result, savedId: saved ? saved.id : null });
   }
 });
 
@@ -53,6 +66,7 @@ app.get('/api/cards', (req, res) => {
 });
 
 app.get('/api/history', (req, res) => {
+  if (process.env.VERCEL) return res.json([]);
   const history = loadHistory();
   res.json(history);
 });
@@ -72,6 +86,15 @@ app.post('/api/history/delete', (req, res) => {
     return res.status(400).json({ error: 'ids array is required' });
   }
   deleteReadings(ids);
+  res.json({ success: true });
+});
+
+app.patch('/api/history/:id/notes', (req, res) => {
+  if (process.env.VERCEL) return res.status(403).json({ error: 'Not available on hosted version' });
+  const id = Number(req.params.id);
+  const { notes } = req.body;
+  const entry = updateNotes(id, notes ?? null);
+  if (!entry) return res.status(404).json({ error: 'Reading not found' });
   res.json({ success: true });
 });
 

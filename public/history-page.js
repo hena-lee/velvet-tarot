@@ -4,11 +4,26 @@ const detailEl = document.getElementById('history-detail');
 let historyData = [];
 const selectedIds = new Set();
 let selectMode = false;
+let useClientStorage = false; // true when server has no writable storage (Vercel)
+
+async function detectStorageMode() {
+  try {
+    const res = await fetch('/api/config');
+    const cfg = await res.json();
+    useClientStorage = !cfg.serverStorage;
+  } catch (_) {
+    useClientStorage = false;
+  }
+}
 
 async function loadHistory() {
   try {
-    const res = await fetch('/api/history');
-    historyData = await res.json();
+    if (useClientStorage) {
+      historyData = await window.historyDB.list();
+    } else {
+      const res = await fetch('/api/history');
+      historyData = await res.json();
+    }
     sortHistory();
     renderList();
   } catch (err) {
@@ -32,10 +47,18 @@ function sortHistory() {
 
 async function toggleFavorite(id) {
   try {
-    const res = await fetch(`/api/history/${id}/favorite`, { method: 'PATCH' });
-    const data = await res.json();
-    const entry = historyData.find(e => e.id === id);
-    if (entry) entry.favorite = data.favorite;
+    if (useClientStorage) {
+      const updated = await window.historyDB.toggleFavorite(id);
+      if (updated) {
+        const entry = historyData.find(e => e.id === id);
+        if (entry) entry.favorite = updated.favorite;
+      }
+    } else {
+      const res = await fetch(`/api/history/${id}/favorite`, { method: 'PATCH' });
+      const data = await res.json();
+      const entry = historyData.find(e => e.id === id);
+      if (entry) entry.favorite = data.favorite;
+    }
     sortHistory();
     renderList();
   } catch (err) {
@@ -247,11 +270,15 @@ function showDeleteModal() {
   overlay.querySelector('.history-modal-confirm').addEventListener('click', async () => {
     const ids = Array.from(selectedIds);
     try {
-      await fetch('/api/history/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids })
-      });
+      if (useClientStorage) {
+        await window.historyDB.deleteMultiple(ids);
+      } else {
+        await fetch('/api/history/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids })
+        });
+      }
       historyData = historyData.filter(e => !selectedIds.has(e.id));
       selectedIds.clear();
       selectMode = false;
@@ -292,13 +319,44 @@ function showDetail(idx) {
     `;
   }).join('');
 
+  // Render reading: handle both structured { sections, summary } and legacy plain strings
+  let readingHtml = '';
+  const r = entry.reading;
+  if (r && typeof r === 'object' && Array.isArray(r.sections)) {
+    const sectionsHtml = r.sections.map((s, i) => {
+      const card = entry.cards[i];
+      const rev = card && card.isReversed;
+      const imgHtml = card ? `<img src="/${card.image}" alt="${card.name}" class="detail-section-img${rev ? ' reversed' : ''}" />` : '';
+      return `<div class="detail-reading-section">
+        ${imgHtml}
+        <div class="detail-section-content">
+          <span class="detail-section-position">${s.position}</span>
+          <p>${s.text}</p>
+        </div>
+      </div>`;
+    }).join('');
+    const summaryHtml = r.summary
+      ? `<div class="detail-divider"><span>✦</span></div>
+         <h3 class="detail-summary-heading">The Complete Reading</h3>
+         <div class="detail-summary-text">${r.summary}</div>`
+      : '';
+    readingHtml = sectionsHtml + summaryHtml;
+  } else {
+    readingHtml = `<div class="detail-reading-plain">${typeof r === 'string' ? r : ''}</div>`;
+  }
+
+  const notesHtml = entry.notes
+    ? `<div class="detail-notes-section"><span class="detail-notes-label">Your Notes</span><p class="detail-notes-text">${entry.notes}</p></div>`
+    : '';
+
   detailEl.innerHTML = `
     <a class="detail-back" href="#">&larr;</a>
     <h2 class="detail-spread">${entry.spread}</h2>
     <div class="detail-date">${formatDate(entry.timestamp)}</div>
     ${entry.question ? `<div class="detail-question">"${entry.question}"</div>` : ''}
     <div class="detail-cards">${cardsHtml}</div>
-    <div class="detail-reading">${entry.reading}</div>
+    <div class="detail-reading">${readingHtml}</div>
+    ${notesHtml}
   `;
 
   detailEl.querySelector('.detail-back').addEventListener('click', (e) => {
@@ -307,4 +365,4 @@ function showDetail(idx) {
   });
 }
 
-loadHistory();
+detectStorageMode().then(() => loadHistory());

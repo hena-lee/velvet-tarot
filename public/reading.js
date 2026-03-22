@@ -18,6 +18,7 @@ let currentView = null; // 'shuffle' | 'fan' | 'spread' | 'reading'
 let readingPromise = null;
 let readingData = null;
 let readingError = false;
+let savedReadingId = null; // id of the saved reading (server or IndexedDB)
 
 const spreadCardCounts = {
   single: 1,
@@ -173,6 +174,7 @@ function showShuffleAnimation() {
 
     const numCards = 26;
     const cards = [];
+    let aborted = false;
 
     // Create stacked deck — each card offset slightly for depth
     for (let i = 0; i < numCards; i++) {
@@ -185,9 +187,28 @@ function showShuffleAnimation() {
       cards.push(card);
     }
 
+    // Show skip button after a short delay
+    const skipShuffleBtn = document.createElement('button');
+    skipShuffleBtn.className = 'skip-shuffle-btn';
+    skipShuffleBtn.textContent = 'skip shuffle →';
+    shuffleScene.insertAdjacentElement('afterend', skipShuffleBtn);
+    setTimeout(() => skipShuffleBtn.classList.add('visible'), 1200);
+
+    function finish() {
+      aborted = true;
+      skipShuffleBtn.remove();
+      shuffleScene.classList.remove('is-shuffling');
+      cardsEl.innerHTML = '';
+      cardsEl.className = '';
+      resolve();
+    }
+
+    skipShuffleBtn.addEventListener('click', finish);
+
     // One shuffle pass: scatter outward, then collect back into stack
     function shufflePass() {
       return new Promise(done => {
+        if (aborted) { done(); return; }
         const stagger = 5;
         const scatterDur = 300;
 
@@ -200,15 +221,15 @@ function showShuffleAnimation() {
           const minScatter = maxScatter * 0.5;
           const distance = Math.random() * (maxScatter - minScatter) + minScatter;
 
-          // Phase 1 — Scatter: wide horizontal spread
           setTimeout(() => {
-            card.style.transform = `translate(${direction * distance}px, ${-z}px)`;
+            if (!aborted) card.style.transform = `translate(${direction * distance}px, ${-z}px)`;
           }, delay);
 
-          // Phase 2 — Collect: back to neat diagonal stack
           setTimeout(() => {
-            card.style.zIndex = i;
-            card.style.transform = `translate(${-z}px, ${-z}px)`;
+            if (!aborted) {
+              card.style.zIndex = i;
+              card.style.transform = `translate(${-z}px, ${-z}px)`;
+            }
           }, scatterDur + delay);
         });
 
@@ -220,13 +241,10 @@ function showShuffleAnimation() {
     // Run multiple shuffle passes for a satisfying shuffle
     async function runShuffles() {
       for (let i = 0; i < 4; i++) {
+        if (aborted) return;
         await shufflePass();
       }
-
-      shuffleScene.classList.remove('is-shuffling');
-      cardsEl.innerHTML = '';
-      cardsEl.className = '';
-      resolve();
+      if (!aborted) finish();
     }
 
     // Brief delay so stacked deck is visible first
@@ -277,9 +295,46 @@ function fanOutCards() {
       w.style.opacity = '1';
     }, i * 25);
   });
+
+  // Auto-draw button — appears after the fan finishes fading in
+  const autoDrawBtn = document.createElement('button');
+  autoDrawBtn.className = 'auto-draw-btn';
+  autoDrawBtn.textContent = 'draw for me →';
+  shuffleScene.insertAdjacentElement('afterend', autoDrawBtn);
+  const fanFadeTime = displayCount * 25 + 400;
+  setTimeout(() => autoDrawBtn.classList.add('visible'), fanFadeTime);
+  autoDrawBtn.addEventListener('click', () => {
+    if (selectionLocked) return;
+    autoDrawBtn.remove();
+    autoDrawCards();
+  });
 }
 
 let selectionLocked = false;
+
+function autoDrawCards() {
+  if (selectionLocked) return;
+  // Randomly pick the required number of cards from the fan
+  const allWrappers = Array.from(cardsEl.querySelectorAll('.fan-card-wrapper'));
+  // Fisher-Yates shuffle to pick without duplicates
+  for (let i = allWrappers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allWrappers[i], allWrappers[j]] = [allWrappers[j], allWrappers[i]];
+  }
+  const chosen = allWrappers.slice(0, cardCount);
+  chosen.forEach(wrapper => {
+    const deckIndex = parseInt(wrapper.querySelector('.fan-card').dataset.deckIndex);
+    wrapper.classList.add('picked');
+    selectedCards.push(shuffledDeck[deckIndex]);
+    pickedWrappers.push(wrapper);
+  });
+  selectionLocked = true;
+  setStatus('');
+  startBackgroundFetch();
+  cardsEl.style.transition = 'opacity 0.5s ease';
+  cardsEl.style.opacity = '0';
+  setTimeout(() => startRevealSequence(), 600);
+}
 
 function handleCardTap(deckIndex, wrapper) {
   if (selectionLocked) return;
@@ -309,10 +364,12 @@ function pickCard(deckIndex, wrapper) {
   } else {
     setStatus('');
     selectionLocked = true;
+    // Start AI fetch immediately while fan is fading — maximises loading time
+    startBackgroundFetch();
     // Fade out the entire fan (picked + unpicked)
-    cardsEl.style.transition = 'opacity 0.6s ease';
+    cardsEl.style.transition = 'opacity 0.5s ease';
     cardsEl.style.opacity = '0';
-    setTimeout(() => startRevealSequence(), 700);
+    setTimeout(() => startRevealSequence(), 600);
   }
 }
 
@@ -363,7 +420,6 @@ async function startRevealSequence() {
   for (let i = 0; i < selectedCards.length; i++) {
     const card = selectedCards[i];
     const pos = positions[i];
-    const orientation = card.isReversed ? 'reversed' : 'upright';
 
     const el = document.createElement('div');
     el.className = 'spread-card' + (card.isReversed ? ' reversed' : '');
@@ -388,42 +444,32 @@ async function startRevealSequence() {
 
   sweepAwayFan();
 
-  await delay(500);
+  await delay(300);
 
-  for (let i = 0; i < spreadCards.length; i++) {
-    spreadCards[i].style.transition = 'opacity 0.5s ease';
-    spreadCards[i].style.opacity = '1';
-    await delay(300);
-  }
+  // All cards fade in simultaneously
+  spreadCards.forEach(el => {
+    el.style.transition = 'opacity 0.7s ease';
+    el.style.opacity = '1';
+  });
 
-  await delay(500);
+  await delay(1800);
 
-  for (let i = 0; i < spreadCards.length; i++) {
-    spreadCards[i].classList.add('flipped');
-    await delay(600);
-  }
+  // All cards flip at once — one dramatic reveal
+  spreadCards.forEach(el => el.classList.add('flipped'));
 
-  await delay(400);
+  await delay(2500);
 
   if (!isCentered) {
     document.querySelector('.reading-stage')?.classList.add('spread-visible');
   }
 
-  // Phase 1: Fade out spread, show card list for exploration
-  startBackgroundFetch();
-
-  // Brief pause to admire the spread
-  await delay(1500);
-
-  // Animate spread away and show card list
+  // Fade spread out and proceed directly to reading
   if (isCentered) {
-    // Scale down and fade out the spread
-    spreadArea.style.transition = 'transform 0.7s ease, opacity 0.7s ease';
-    spreadArea.style.transform = 'translate(-50%, -50%) scale(0.8)';
+    spreadArea.style.transition = 'transform 0.8s ease, opacity 0.8s ease';
+    spreadArea.style.transform = 'translate(-50%, -50%) scale(0.92)';
     spreadArea.style.opacity = '0';
-    await delay(700);
+    await delay(800);
     spreadArea.style.display = 'none';
-    // Reset fixed positioning
     spreadArea.style.position = '';
     spreadArea.style.top = '';
     spreadArea.style.left = '';
@@ -431,20 +477,16 @@ async function startRevealSequence() {
     spreadArea.style.zIndex = '';
     spreadArea.style.margin = '';
     document.querySelector('.reading-stage')?.classList.add('spread-visible');
-    buildCardList();
   } else {
-    // Celtic cross: simple fade out
-    spreadArea.style.transition = 'opacity 0.6s ease';
+    spreadArea.style.transition = 'opacity 0.5s ease';
     spreadArea.style.opacity = '0';
-    await delay(600);
+    await delay(500);
     spreadArea.style.display = 'none';
-    buildCardList();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Show reveal button after exploration time
-  await delay(2500);
-  showRevealButton();
+  // Go straight to reading — no card list, no reveal button
+  await handleReveal();
 }
 
 function sweepAwayFan() {
@@ -465,60 +507,6 @@ function sweepAwayFan() {
   }, 800);
 }
 
-function buildCardList() {
-  const listEl = document.createElement('div');
-  listEl.className = 'card-list';
-  listEl.id = 'card-list';
-
-  function renderRows(cards, indices) {
-    indices.forEach(i => {
-      const card = cards[i];
-      const orientation = card.isReversed ? 'reversed' : 'upright';
-      const keywords = card.keywords[orientation].join(', ');
-      const reversedClass = card.isReversed ? ' card-list-img-reversed' : '';
-
-      const row = document.createElement('div');
-      row.className = 'card-list-row';
-      row.innerHTML = `
-        <div class="card-list-img${reversedClass}">
-          <img src="/${card.image}" alt="${card.name}" />
-        </div>
-        <div class="card-list-info">
-          <span class="card-list-position">${positionLabels[spreadType][i]}</span>
-          <span class="card-list-name">${card.name}</span>
-          <span class="card-list-orient">${orientation}</span>
-          <span class="card-list-keywords">${keywords}</span>
-        </div>
-      `;
-      listEl.appendChild(row);
-    });
-  }
-
-  if (spreadType === 'celticCross') {
-    const crossHeading = document.createElement('h3');
-    crossHeading.className = 'card-list-heading';
-    crossHeading.textContent = 'The Cross';
-    listEl.appendChild(crossHeading);
-    renderRows(selectedCards, [0, 1, 2, 3, 4, 5]);
-
-    const staffHeading = document.createElement('h3');
-    staffHeading.className = 'card-list-heading';
-    staffHeading.textContent = 'The Staff';
-    listEl.appendChild(staffHeading);
-    renderRows(selectedCards, [6, 7, 8, 9]);
-  } else {
-    renderRows(selectedCards, selectedCards.map((_, i) => i));
-  }
-
-  // Insert after spread area
-  listEl.style.opacity = '0';
-  spreadArea.after(listEl);
-  requestAnimationFrame(() => {
-    listEl.style.transition = 'opacity 0.6s ease';
-    listEl.style.opacity = '1';
-  });
-}
-
 function startBackgroundFetch() {
   readingPromise = fetch('/api/interpret', {
     method: 'POST',
@@ -530,62 +518,40 @@ function startBackgroundFetch() {
     })
   })
     .then(res => res.json())
-    .then(data => {
+    .then(async data => {
       readingData = data;
-      // Add pulse to button if it exists and reading is ready
-      const btn = document.querySelector('.reveal-reading-btn');
-      if (btn) btn.classList.add('ready');
+      // If server didn't save (Vercel), persist to IndexedDB
+      if (data.savedId === null && window.historyDB) {
+        try {
+          const entry = {
+            spreadType,
+            question: question || null,
+            cards: selectedCards,
+            spread: data.spread,
+            reading: data.reading
+          };
+          const saved = await window.historyDB.save(entry);
+          savedReadingId = saved.id;
+        } catch (_) {}
+      } else {
+        savedReadingId = data.savedId;
+      }
     })
     .catch(() => {
       readingError = true;
     });
 }
 
-function showRevealButton() {
-  const btn = document.createElement('button');
-  btn.className = 'reveal-reading-btn';
-  btn.innerHTML = 'Reveal Your Reading';
-  btn.style.opacity = '0';
-
-  // If reading already arrived, mark as ready
-  if (readingData || readingError) btn.classList.add('ready');
-
-  btn.addEventListener('click', () => handleReveal());
-
-  const cardList = document.getElementById('card-list');
-  (cardList || spreadArea).after(btn);
-
-  requestAnimationFrame(() => {
-    btn.style.transition = 'opacity 0.8s ease';
-    btn.style.opacity = '1';
-  });
-}
 
 async function handleReveal() {
-  const btn = document.querySelector('.reveal-reading-btn');
-  if (btn) {
-    btn.style.transition = 'opacity 0.4s ease';
-    btn.style.opacity = '0';
-    await delay(400);
-    btn.remove();
-  }
-
-  // Collapse the card list
-  const cardList = document.getElementById('card-list');
-  if (cardList) {
-    cardList.classList.add('collapsed');
-  }
-
   document.querySelector('.reading-stage')?.classList.add('results-visible');
-
-  await delay(600);
 
   if (readingData) {
     showReading(readingData.reading);
   } else if (readingError) {
     showReading('Something went wrong generating the reading.');
   } else {
-    // Still loading — show loader and wait
+    // Still loading — show a gentle loader
     readingEl.innerHTML = `
       <div class="reading-loader">
         <span class="loader-symbol">&#9790;</span>
@@ -594,6 +560,7 @@ async function handleReveal() {
       </div>
     `;
     await readingPromise;
+    readingEl.innerHTML = '';
     if (readingData) {
       showReading(readingData.reading);
     } else {
@@ -602,16 +569,157 @@ async function handleReveal() {
   }
 }
 
-function showReading(text) {
+function showReading(data) {
   currentView = 'reading';
+
+  // Normalise: data may be a structured object or a plain fallback string
+  const structured = data && typeof data === 'object' && Array.isArray(data.sections);
+  const sections = structured ? data.sections : [];
+  const summary = structured ? (data.summary || '') : (typeof data === 'string' ? data : '');
+  const labels = positionLabels[spreadType] || [];
+
+  readingEl.innerHTML = '';
+
+  const grid = document.createElement('div');
+  grid.className = 'reading-results-grid';
+
+  // ── Left column: heading + per-card sections ──
+  const leftCol = document.createElement('div');
+  leftCol.className = spreadType === 'celticCross'
+    ? 'reading-col-left rcs-grid'
+    : 'reading-col-left';
+
   const heading = document.createElement('h1');
   heading.className = 'reading-title';
   heading.textContent = 'What the Cards Reveal';
-  readingEl.before(heading);
+  leftCol.appendChild(heading);
 
-  readingEl.textContent = text;
-  const navLink = document.querySelector('.nav-new-reading');
-  if (navLink) navLink.style.display = '';
+  selectedCards.forEach((card, i) => {
+    const section = document.createElement('div');
+    section.className = 'reading-card-section';
+
+    const orient = card.isReversed ? 'Reversed' : 'Upright';
+    const orientGlyph = card.isReversed ? '↓' : '↑';
+    const sectionText = sections[i] ? sections[i].text : '';
+
+    section.innerHTML = `
+      <div class="rcs-img-wrap${card.isReversed ? ' reversed' : ''}">
+        <img src="/${card.image}" alt="${card.name}" />
+      </div>
+      <div class="rcs-content">
+        <span class="rcs-position">${labels[i] || ''}</span>
+        <span class="rcs-name">${card.name} <span class="rcs-orient">${orientGlyph} ${orient}</span></span>
+        <p class="rcs-text">${sectionText}</p>
+      </div>
+    `;
+    leftCol.appendChild(section);
+  });
+
+  // ── Right column: summary + notes (hidden until envelope is opened) ──
+  const rightCol = document.createElement('div');
+  rightCol.className = 'reading-col-right';
+
+  const summaryHeading = document.createElement('h2');
+  summaryHeading.className = 'reading-summary-heading';
+  summaryHeading.textContent = 'The Complete Reading';
+  rightCol.appendChild(summaryHeading);
+
+  const summaryText = document.createElement('div');
+  summaryText.className = 'reading-summary-text';
+  if (summary) {
+    summaryText.textContent = summary;
+  } else {
+    // Show a pulsing inline loader — never leave this blank
+    summaryText.innerHTML = '<span class="inline-loader">· · ·</span>';
+    setTimeout(() => {
+      if (summaryText.querySelector('.inline-loader')) {
+        summaryText.innerHTML = '';
+        summaryText.textContent = 'The cards hold their counsel. Sit with each position above and let their meaning unfold in stillness.';
+      }
+    }, 6000);
+  }
+  rightCol.appendChild(summaryText);
+
+  const notesWrap = document.createElement('div');
+  notesWrap.className = 'reading-notes-wrap';
+  notesWrap.innerHTML = `
+    <label class="reading-notes-label">Your Notes <span class="notes-save-status"></span></label>
+    <textarea class="reading-notes" placeholder="Write your reflections here…" rows="5"></textarea>
+    <p class="notes-hint">Notes are saved locally — revisit them in <a href="/history.html">Past Readings</a>.</p>
+  `;
+  rightCol.appendChild(notesWrap);
+
+  const againLink = document.createElement('a');
+  againLink.href = '/?new';
+  againLink.className = 'reading-begin-again';
+  againLink.textContent = 'begin again →';
+  rightCol.appendChild(againLink);
+
+  grid.appendChild(leftCol);
+  grid.appendChild(rightCol);
+  readingEl.appendChild(grid);
+
+  // Notes auto-save
+  const notesArea = notesWrap.querySelector('.reading-notes');
+  const saveStatus = notesWrap.querySelector('.notes-save-status');
+
+  function showSaveStatus(msg) {
+    saveStatus.textContent = msg;
+    saveStatus.classList.add('visible');
+  }
+  function hideSaveStatus() {
+    saveStatus.classList.remove('visible');
+  }
+
+  notesArea.addEventListener('blur', async () => {
+    const notes = notesArea.value.trim() || null;
+    if (!savedReadingId) return;
+    showSaveStatus('Saving…');
+    try {
+      const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({ serverStorage: false }));
+      if (!cfg.serverStorage && window.historyDB) {
+        await window.historyDB.updateNotes(savedReadingId, notes);
+      } else {
+        await fetch(`/api/history/${savedReadingId}/notes`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes })
+        });
+      }
+      showSaveStatus('Saved');
+      setTimeout(hideSaveStatus, 1800);
+    } catch (_) {
+      showSaveStatus('Not saved');
+      setTimeout(hideSaveStatus, 2500);
+    }
+  });
+
+  // ── Pink envelope — floats fixed on right, reveals reading on click ──
+  const envelope = document.createElement('div');
+  envelope.className = 'reading-envelope';
+  envelope.setAttribute('role', 'button');
+  envelope.setAttribute('aria-label', 'Open your reading');
+  envelope.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <polyline points="2,4 12,13 22,4"/>
+    </svg>
+    <span class="reading-envelope-label">your<br>reading</span>
+  `;
+  document.body.appendChild(envelope);
+
+  // Fade envelope in after card sections have had time to render
+  setTimeout(() => envelope.classList.add('visible'), 1400);
+
+  envelope.addEventListener('click', () => {
+    envelope.classList.remove('visible');
+    setTimeout(() => envelope.remove(), 900);
+    grid.classList.add('letter-open');
+    // Scroll right column into view on mobile
+    if (window.innerWidth <= 820) {
+      setTimeout(() => rightCol.scrollIntoView({ behavior: 'smooth', block: 'start' }), 600);
+    }
+  });
 }
 
 function delay(ms) {
