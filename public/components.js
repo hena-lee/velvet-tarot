@@ -195,7 +195,7 @@
   (function initDustMotes() {
     const canvas = document.createElement('canvas');
     canvas.className = 'dust-canvas';
-    canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0.4;';
+    canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0.7;';
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
@@ -207,18 +207,18 @@
     resize();
     window.addEventListener('resize', resize);
 
-    const MOTE_COUNT = 35;
+    const MOTE_COUNT = 80;
     const motes = [];
     for (let i = 0; i < MOTE_COUNT; i++) {
       motes.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        r: 0.5 + Math.random() * 1.2,
+        r: 0.8 + Math.random() * 1.8,
         vx: (Math.random() - 0.5) * 0.15,
         vy: -0.08 - Math.random() * 0.12,
         drift: Math.random() * Math.PI * 2,
         driftSpeed: 0.002 + Math.random() * 0.004,
-        alpha: 0.2 + Math.random() * 0.4,
+        alpha: 0.3 + Math.random() * 0.5,
       });
     }
 

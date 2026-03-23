@@ -189,6 +189,8 @@ function showShuffleAnimation() {
 
     function finish() {
       aborted = true;
+      shuffleAudio.pause();
+      shuffleAudio.currentTime = 0;
       shuffleScene.classList.remove('is-shuffling');
       cardsEl.innerHTML = '';
       cardsEl.className = '';
@@ -230,10 +232,13 @@ function showShuffleAnimation() {
 
     // Run multiple shuffle passes for a satisfying shuffle
     async function runShuffles() {
+      shuffleAudio.play().catch(() => {});
       for (let i = 0; i < 4; i++) {
         if (aborted) return;
         await shufflePass();
       }
+      shuffleAudio.pause();
+      shuffleAudio.currentTime = 0;
       if (!aborted) finish();
     }
 
@@ -253,9 +258,9 @@ function fanOutCards() {
   const cardSpacing = totalWidth / displayCount;
   const startX = -totalWidth / 2;
 
-  // Scale arc and angle for viewport
-  const arcIntensity = Math.min(15, vw * 0.025);
-  const maxAngle = Math.min(3, vw * 0.005);
+  // Scale arc and angle for viewport — organic hand-spread curve
+  const arcIntensity = Math.min(35, vw * 0.045);
+  const maxAngle = Math.min(8, vw * 0.012);
 
   for (let i = 0; i < displayCount; i++) {
     const wrapper = document.createElement('div');
@@ -272,6 +277,11 @@ function fanOutCards() {
     card.className = 'card-back fan-card';
     card.dataset.deckIndex = i;
 
+    card.addEventListener('mouseenter', () => {
+      const snd = new Audio('/audio/card.mp3');
+      snd.volume = 0.3;
+      snd.play().catch(() => {});
+    });
     card.addEventListener('click', () => handleCardTap(i, wrapper));
     wrapper.appendChild(card);
     cardsEl.appendChild(wrapper);
@@ -298,6 +308,9 @@ function fanOutCards() {
   setTimeout(() => autoDrawBtn.classList.add('visible'), fanFadeTime);
   autoDrawBtn.addEventListener('click', () => {
     if (selectionLocked) return;
+    const snd = new Audio('/audio/click.mp3');
+    snd.volume = 0.5;
+    snd.play().catch(() => {});
     autoDrawBtn.remove();
     autoDrawCards();
   });
@@ -606,6 +619,28 @@ window.addEventListener('resize', () => {
     }
   }, 200);
 });
+
+// --- Audio setup — preload shuffle sound and unlock playback ---
+const shuffleAudio = new Audio('/audio/shuffle.mp3');
+shuffleAudio.volume = 0.5;
+shuffleAudio.loop = true;
+shuffleAudio.preload = 'auto';
+
+// Unlock audio: try immediately (gesture may carry from previous page),
+// and also on first user interaction on this page as fallback.
+function unlockAndPlay() {
+  shuffleAudio.play().then(() => {
+    // Pause immediately — we just needed to unlock; real play happens at shuffle time
+    shuffleAudio.pause();
+    shuffleAudio.currentTime = 0;
+  }).catch(() => {});
+  document.removeEventListener('click', unlockAndPlay);
+  document.removeEventListener('touchstart', unlockAndPlay);
+}
+document.addEventListener('click', unlockAndPlay);
+document.addEventListener('touchstart', unlockAndPlay);
+// Attempt unlock right away (works in some browsers after navigation from user-gesture page)
+unlockAndPlay();
 
 // --- Auto-start on load ---
 window.addEventListener('DOMContentLoaded', async () => {

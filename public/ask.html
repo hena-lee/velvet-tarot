@@ -477,6 +477,11 @@
           }
         }
 
+        // Submit question audio — plays during dissolution, fades during page exit
+        const submitAudio = new Audio("/audio/submitquestion.mp3");
+        submitAudio.volume = 0.5;
+        submitAudio.play().catch(() => {});
+
         // Animate dissolution
         card.classList.add("dissolving");
         const duration = 1800;
@@ -509,10 +514,21 @@
                 requestAnimationFrame(() => {
                   requestAnimationFrame(() => fadeOut.classList.add("active"));
                 });
+                // Fade out audio over the 1.2s page transition
+                const fadeSteps = 24;
+                const fadeInterval = 1200 / fadeSteps;
+                const volStep = submitAudio.volume / fadeSteps;
+                const audioFade = setInterval(() => {
+                  submitAudio.volume = Math.max(0, submitAudio.volume - volStep);
+                  if (submitAudio.volume <= 0) {
+                    clearInterval(audioFade);
+                    submitAudio.pause();
+                  }
+                }, fadeInterval);
                 fadeOut.addEventListener("transitionend", () => {
                   window.location.href = url;
                 });
-              }, 3000);
+              }, 1500);
             }
             return;
           }

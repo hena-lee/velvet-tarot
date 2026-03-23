@@ -68,7 +68,7 @@
   --shuffle-min-h: 360px;
   --shuffle-max-h: 600px;
   --shuffle-stage-h: 250px;
-  --hand-offset: 32%;
+  --hand-offset: 30%;
 }
 
 html {
@@ -87,6 +87,30 @@ html:has(.reading-page) {
 body.reading-page {
   background: transparent;
   position: relative;
+}
+
+/* Subtle vignette — applied globally (landing + ask pages) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+/* Dark scrim — mutes the floral backdrop so cards & text pop (overrides vignette) */
+body.reading-page::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.35);
 }
 
 /* Paper texture overlay for reading page — sits behind all content */
@@ -1504,20 +1528,9 @@ html:has(.landing)::after {
   background: transparent;
 }
 
-/* Card reveal background — fixed to left half of viewport */
+/* Card reveal background — disabled for now */
 .reading-page .reading-col-left::before {
-  content: '';
-  position: fixed;
-  top: 50%;
-  left: 28%;
-  transform: translate(-50%, -50%) scale(1.15) scaleX(1.25);
-  width: 50vw;
-  height: 80vh;
-  background: url('/images/assets/cardreveal.png') center center / contain no-repeat;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 1;
-  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.4));
+  display: none;
 }
 
 .reading-col-right {
@@ -1873,12 +1886,37 @@ button:disabled {
 
 /* === CARD BACK (shared by shuffle + fan) === */
 .card-back {
+  position: relative;
   width: var(--card-w-sm);
   height: var(--card-h-sm);
   background: url('/images/assets/backCover.jpg') center / cover no-repeat;
   border: none;
   border-radius: 6px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.card-back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.03) 1px,
+      rgba(0, 0, 0, 0.03) 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.02) 1px,
+      rgba(0, 0, 0, 0.02) 2px
+    );
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .shuffle-card {
@@ -1886,7 +1924,7 @@ button:disabled {
   height: var(--card-h);
   position: absolute;
   will-change: transform;
-  transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transition: transform 0.18s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 /* === SHUFFLE ANIMATION === */
@@ -2239,10 +2277,10 @@ button:disabled {
   background: none;
   border: none;
   font-family: "Spectral", Georgia, serif;
-  font-size: 0.72rem;
+  font-size: 1.08rem;
   font-style: italic;
   letter-spacing: 0.1em;
-  color: rgba(30, 6, 6, 0.88);
+  color: rgba(245, 238, 220, 0.92);
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
@@ -2262,7 +2300,7 @@ button:disabled {
 }
 
 .auto-draw-btn:hover {
-  color: rgba(30, 6, 6, 1);
+  color: rgba(245, 238, 220, 1);
   animation-play-state: paused;
   opacity: 1;
   transform: scale(1.08);
@@ -2271,8 +2309,8 @@ button:disabled {
 /* === READING PAGE === */
 .reading-stage {
   position: relative;
-  z-index: 1;
-  color: var(--ink);
+  z-index: 2;
+  color: rgba(245, 238, 220, 0.92);
   max-width: 860px;
   margin: 0 auto;
   /* Vertically center the initial shuffle scene in the viewport.
@@ -2287,21 +2325,20 @@ button:disabled {
 }
 
 .reading-status {
-  position: absolute;
-  bottom: 3%;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   z-index: 3;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(1.05rem, 2.3vw, 1.42rem);
-  color: rgba(30, 6, 6, 0.88);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  color: rgba(245, 238, 220, 0.92);
   font-style: italic;
   letter-spacing: 0.12em;
   text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 4px 24px rgba(0, 0, 0, 0.3);
   width: max-content;
   max-width: 80%;
-  margin: 0;
+  margin: 0 auto 1.5rem;
   line-height: 1;
+  padding: 0.8rem 1.8rem;
 }
 
 /* === SHUFFLE SCENE (hands + deck) === */
@@ -2356,7 +2393,7 @@ button:disabled {
   transition: opacity 0.5s ease;
   margin-top: calc(-1 * clamp(100px, 12vw, 150px) * 0.75);
   z-index: 1;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6)) drop-shadow(0 3px 8px rgba(0, 0, 0, 0.4));
 }
 
 .hand-left {
@@ -2377,30 +2414,30 @@ button:disabled {
 }
 
 .shuffle-scene.is-shuffling .hand-left {
-  animation: handHoverLeft 3s ease-in-out infinite;
+  animation: handHoverLeft 2s ease-in-out infinite;
 }
 
 .shuffle-scene.is-shuffling .hand-right {
-  animation: handHoverRight 3s ease-in-out infinite;
+  animation: handHoverRight 2s ease-in-out infinite;
 }
 
 @keyframes handHoverLeft {
   0%,
   100% {
-    transform: translateX(20px) rotate(35deg);
+    transform: translateX(30px) rotate(35deg);
   }
   50% {
-    transform: translateX(-30px) rotate(35deg);
+    transform: translateX(-60px) rotate(35deg);
   }
 }
 
 @keyframes handHoverRight {
   0%,
   100% {
-    transform: translateX(-20px) rotate(-35deg);
+    transform: translateX(-30px) rotate(-35deg);
   }
   50% {
-    transform: translateX(30px) rotate(-30deg);
+    transform: translateX(60px) rotate(-30deg);
   }
 }
 
@@ -2994,7 +3031,7 @@ a.detail-card-img-wrap:hover img:first-child {
     --card-h: 127px;
     --card-w-sm: 50px;
     --card-h-sm: 75px;
-    --hand-offset: 22%;
+    --hand-offset: 25%;
   }
 
   .card-list-img {
@@ -3039,7 +3076,7 @@ a.detail-card-img-wrap:hover img:first-child {
     --card-h: 105px;
     --card-w-sm: 45px;
     --card-h-sm: 67px;
-    --hand-offset: 18%;
+    --hand-offset: 20%;
   }
 
   .fan-stage {
