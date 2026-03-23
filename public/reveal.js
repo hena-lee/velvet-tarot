@@ -60,14 +60,36 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
 
   leftCol.appendChild(cardScroll);
 
-  // ── Right column: summary + notes (hidden until envelope is opened) ──
+  // ── Right column: two stacked boxes ──
   const rightCol = document.createElement('div');
   rightCol.className = 'reading-col-right';
+
+  // Top box — envelope
+  const topBox = document.createElement('div');
+  topBox.className = 'right-box right-box-top';
+
+  const envelope = document.createElement('div');
+  envelope.className = 'reading-envelope inline-envelope';
+  envelope.setAttribute('role', 'button');
+  envelope.setAttribute('aria-label', 'Open your reading');
+  envelope.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <polyline points="2,4 12,13 22,4"/>
+    </svg>
+    <span class="reading-envelope-label">your<br>reading</span>
+  `;
+  topBox.appendChild(envelope);
+  rightCol.appendChild(topBox);
+
+  // Bottom box — summary + notes (shown after envelope is opened)
+  const bottomBox = document.createElement('div');
+  bottomBox.className = 'right-box right-box-bottom';
 
   const summaryHeading = document.createElement('h2');
   summaryHeading.className = 'reading-summary-heading';
   summaryHeading.textContent = 'The Complete Reading';
-  rightCol.appendChild(summaryHeading);
+  bottomBox.appendChild(summaryHeading);
 
   const summaryText = document.createElement('div');
   summaryText.className = 'reading-summary-text';
@@ -82,7 +104,7 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
       }
     }, 6000);
   }
-  rightCol.appendChild(summaryText);
+  bottomBox.appendChild(summaryText);
 
   const notesWrap = document.createElement('div');
   notesWrap.className = 'reading-notes-wrap';
@@ -91,13 +113,15 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
     <textarea class="reading-notes" placeholder="Write your reflections here…" rows="5"></textarea>
     <p class="notes-hint">Notes are saved locally — revisit them in <a href="/history.html">Past Readings</a>.</p>
   `;
-  rightCol.appendChild(notesWrap);
+  bottomBox.appendChild(notesWrap);
 
   const againLink = document.createElement('a');
   againLink.href = '/?new';
   againLink.className = 'reading-begin-again';
   againLink.textContent = 'begin again →';
-  rightCol.appendChild(againLink);
+  bottomBox.appendChild(againLink);
+
+  rightCol.appendChild(bottomBox);
 
   grid.appendChild(leftCol);
   grid.appendChild(rightCol);
@@ -138,29 +162,17 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
     }
   });
 
-  // ── Pink envelope — floats fixed on right, reveals reading on click ──
-  const envelope = document.createElement('div');
-  envelope.className = 'reading-envelope';
-  envelope.setAttribute('role', 'button');
-  envelope.setAttribute('aria-label', 'Open your reading');
-  envelope.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="2"/>
-      <polyline points="2,4 12,13 22,4"/>
-    </svg>
-    <span class="reading-envelope-label">your<br>reading</span>
-  `;
-  document.body.appendChild(envelope);
+  // Hide bottom box inner content until envelope is clicked
+  const bottomContent = bottomBox.querySelectorAll(':scope > *');
+  bottomContent.forEach(el => { el.style.opacity = '0'; el.style.transition = 'opacity 0.6s ease'; });
 
-  setTimeout(() => envelope.classList.add('visible'), 1400);
-
+  // Envelope click — reveal bottom box content
   envelope.addEventListener('click', () => {
-    envelope.classList.remove('visible');
-    setTimeout(() => envelope.remove(), 900);
-    grid.classList.add('letter-open');
-    if (window.innerWidth <= 820) {
-      setTimeout(() => rightCol.scrollIntoView({ behavior: 'smooth', block: 'start' }), 600);
-    }
+    envelope.style.transition = 'opacity 0.5s ease';
+    envelope.style.opacity = '0';
+    setTimeout(() => {
+      bottomContent.forEach(el => { el.style.opacity = '1'; });
+    }, 500);
   });
 }
 
