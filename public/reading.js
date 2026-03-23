@@ -320,14 +320,16 @@ let selectionLocked = false;
 
 function autoDrawCards() {
   if (selectionLocked) return;
-  // Randomly pick the required number of cards from the fan
-  const allWrappers = Array.from(cardsEl.querySelectorAll('.fan-card-wrapper'));
+  // Pick only the remaining needed cards (skip already-picked ones)
+  const remaining = cardCount - selectedCards.length;
+  if (remaining <= 0) return;
+  const unpicked = Array.from(cardsEl.querySelectorAll('.fan-card-wrapper:not(.picked)'));
   // Fisher-Yates shuffle to pick without duplicates
-  for (let i = allWrappers.length - 1; i > 0; i--) {
+  for (let i = unpicked.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [allWrappers[i], allWrappers[j]] = [allWrappers[j], allWrappers[i]];
+    [unpicked[i], unpicked[j]] = [unpicked[j], unpicked[i]];
   }
-  const chosen = allWrappers.slice(0, cardCount);
+  const chosen = unpicked.slice(0, remaining);
   chosen.forEach(wrapper => {
     const deckIndex = parseInt(wrapper.querySelector('.fan-card').dataset.deckIndex);
     wrapper.classList.add('picked');
@@ -431,14 +433,12 @@ async function startRevealSequence() {
   spreadArea.classList.add('active');
 
   // Center the spread area in the viewport
-  if (isCentered) {
-    spreadArea.style.position = 'fixed';
-    spreadArea.style.top = '50%';
-    spreadArea.style.left = '50%';
-    spreadArea.style.transform = 'translate(-50%, -50%)';
-    spreadArea.style.margin = '0';
-    spreadArea.style.zIndex = '10';
-  }
+  spreadArea.style.position = 'fixed';
+  spreadArea.style.top = '50%';
+  spreadArea.style.left = '50%';
+  spreadArea.style.transform = 'translate(-50%, -50%)';
+  spreadArea.style.margin = '0';
+  spreadArea.style.zIndex = '10';
 
   const spreadCards = [];
   for (let i = 0; i < selectedCards.length; i++) {
@@ -493,26 +493,18 @@ async function startRevealSequence() {
     doily.style.opacity = '0';
   }
 
-  if (isCentered) {
-    spreadArea.style.transition = 'transform 0.8s ease, opacity 0.8s ease';
-    spreadArea.style.transform = 'translate(-50%, -50%) scale(0.92)';
-    spreadArea.style.opacity = '0';
-    await delay(800);
-    spreadArea.style.display = 'none';
-    spreadArea.style.position = '';
-    spreadArea.style.top = '';
-    spreadArea.style.left = '';
-    spreadArea.style.transform = '';
-    spreadArea.style.zIndex = '';
-    spreadArea.style.margin = '';
-    document.querySelector('.reading-stage')?.classList.add('spread-visible');
-  } else {
-    spreadArea.style.transition = 'opacity 0.5s ease';
-    spreadArea.style.opacity = '0';
-    await delay(500);
-    spreadArea.style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  spreadArea.style.transition = 'transform 0.8s ease, opacity 0.8s ease';
+  spreadArea.style.transform = 'translate(-50%, -50%) scale(0.92)';
+  spreadArea.style.opacity = '0';
+  await delay(800);
+  spreadArea.style.display = 'none';
+  spreadArea.style.position = '';
+  spreadArea.style.top = '';
+  spreadArea.style.left = '';
+  spreadArea.style.transform = '';
+  spreadArea.style.zIndex = '';
+  spreadArea.style.margin = '';
+  document.querySelector('.reading-stage')?.classList.add('spread-visible');
 
   // Now collapse the shuffle scene (doily already faded)
   shuffleScene.style.transition = 'opacity 0.3s ease';
@@ -535,9 +527,24 @@ async function startRevealSequence() {
   }
 
   // Save state and navigate to reveal page
-  const readingPayload = readingError
-    ? 'Something went wrong generating the reading.'
-    : readingData.reading;
+  let readingPayload;
+  if (readingError || !readingData || !readingData.reading) {
+    // Build client-side fallback with card meanings
+    readingPayload = {
+      sections: selectedCards.map((card, i) => {
+        const orient = card.isReversed ? 'reversed' : 'upright';
+        const labels = { single: ['The Card'], threeCard: ['Past', 'Present', 'Future'],
+          celticCross: ['Present','Challenge','Foundation','Recent Past','Crown','Near Future','Self','Environment','Hopes and Fears','Outcome'] };
+        return {
+          position: (labels[spreadType] || [])[i] || `Card ${i + 1}`,
+          text: `${card.name} (${orient}) — ${card.meaning?.[orient] || card.keywords?.[orient]?.join(', ') || ''}`
+        };
+      }),
+      summary: 'The spirits were quiet this time. Reflect on each card above and let your intuition guide you.'
+    };
+  } else {
+    readingPayload = readingData.reading;
+  }
 
   sessionStorage.setItem('velvet_reading', JSON.stringify({
     reading: readingPayload,
@@ -568,6 +575,13 @@ function sweepAwayFan() {
 }
 
 function startBackgroundFetch() {
+  // Prevent accidental navigation/refresh while reading is being generated
+  window._readingInProgress = true;
+  window.addEventListener('beforeunload', preventUnload);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+
   readingPromise = fetch('/api/interpret', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -575,7 +589,8 @@ function startBackgroundFetch() {
       cards: selectedCards,
       spreadType,
       question: question || undefined
-    })
+    }),
+    signal: controller.signal
   })
     .then(res => res.json())
     .then(async data => {
@@ -599,7 +614,19 @@ function startBackgroundFetch() {
     })
     .catch(() => {
       readingError = true;
+    })
+    .finally(() => {
+      clearTimeout(timeout);
+      window._readingInProgress = false;
+      window.removeEventListener('beforeunload', preventUnload);
     });
+}
+
+function preventUnload(e) {
+  if (window._readingInProgress) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
 }
 
 

@@ -24,9 +24,7 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
 
   // ── Left column: heading + per-card sections ──
   const leftCol = document.createElement('div');
-  leftCol.className = spreadType === 'celticCross'
-    ? 'reading-col-left rcs-grid'
-    : 'reading-col-left';
+  leftCol.className = 'reading-col-left';
 
   const heading = document.createElement('h1');
   heading.className = 'reading-title';

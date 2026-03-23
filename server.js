@@ -45,18 +45,40 @@ app.post('/api/interpret', async (req, res) => {
 
   try {
     const reading = await generateReading(cards, spread, question || null);
+
+    // If Gemini returned empty sections, fill them from card meanings
+    if (!reading.sections || reading.sections.length === 0) {
+      reading.sections = cards.map((card, i) => {
+        const orientation = card.isReversed ? 'reversed' : 'upright';
+        return {
+          position: spread.positions[i].label,
+          text: `${card.name} (${orientation}) — ${card.meaning[orientation]}`
+        };
+      });
+    }
+    if (!reading.summary) {
+      reading.summary = 'The cards hold their counsel. Sit with each position above and let their meaning unfold in stillness.';
+    }
+
     const result = { cards, spread: spread.name, reading };
     const saved = trySave({ spreadType, question: question || null, ...result });
     res.json({ ...result, savedId: saved ? saved.id : null });
   } catch (err) {
-    const fallback = cards.map((card, i) => {
-      const orientation = card.isReversed ? 'reversed' : 'upright';
-      return `${spread.positions[i].label}: ${card.name} (${orientation}) — ${card.meaning[orientation]}`;
-    }).join('\n\n');
+    // Total failure — build structured fallback from card meanings
+    const fallbackReading = {
+      sections: cards.map((card, i) => {
+        const orientation = card.isReversed ? 'reversed' : 'upright';
+        return {
+          position: spread.positions[i].label,
+          text: `${card.name} (${orientation}) — ${card.meaning[orientation]}`
+        };
+      }),
+      summary: 'The spirits were quiet this time. The card meanings above offer guidance — sit with them and let your intuition speak.'
+    };
 
-    const result = { cards, spread: spread.name, reading: fallback };
+    const result = { cards, spread: spread.name, reading: fallbackReading };
     const saved = trySave({ spreadType, question: question || null, ...result });
-    res.status(500).json({ error: 'Intelligent reading unavailable', ...result, savedId: saved ? saved.id : null });
+    res.json({ ...result, savedId: saved ? saved.id : null });
   }
 });
 
