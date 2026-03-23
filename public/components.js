@@ -2,32 +2,6 @@
 (function () {
   const isHome = document.querySelector(".landing") !== null;
   const isReading = document.body.classList.contains("reading-page");
-  const isHistory = document.body.classList.contains("history-page");
-
-  const wandSvg = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="2" y1="16" x2="10" y2="8"/>
-    <line x1="10" y1="8" x2="13" y2="3.5"/>
-    <circle cx="14" cy="2.5" r="1.2" fill="currentColor" stroke="none"/>
-    <line x1="14" y1="0.5" x2="14" y2="1.3"/>
-    <line x1="16" y1="1.5" x2="15.3" y2="2"/>
-    <line x1="12" y1="1.5" x2="12.7" y2="2"/>
-  </svg>`;
-
-  const eyeSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>`;
-
-  const bookSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-  </svg>`;
-
-  const downloadSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="12" y1="3" x2="12" y2="15"/>
-    <polyline points="8 11 12 15 16 11"/>
-    <line x1="3" y1="21" x2="21" y2="21"/>
-  </svg>`;
 
   // Brand: button on home (triggers scroll), anchor on other pages
   const brandHtml = isHome
@@ -46,6 +20,20 @@
   `;
 
   document.body.prepend(navbar);
+
+  // --- Click sound for UI interactions ---
+  function playClickSound() {
+    const audio = new Audio("/audio/click.mp3");
+    audio.volume = 0.7;
+    audio.playbackRate = 1.8;
+    audio.play().catch(() => {});
+  }
+  window._playClickSound = playClickSound;
+
+  // Nav links + brand
+  navbar.querySelectorAll("a, button").forEach((el) => {
+    el.addEventListener("click", () => playClickSound());
+  });
 
   // Mobile gate — shown on small screens across all pages
   if (!document.getElementById('mobile-gate')) {

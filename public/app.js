@@ -44,6 +44,8 @@
 
   let flashTimers = [];
   let flashLoopRunning = false;
+  let autoAdvanceTimer = null;
+  let skippedIntro = false;
 
   // === Audio system ===
   // All audio requires a user gesture to unlock — we unlock on first interaction
@@ -347,12 +349,23 @@
     fadeIn(thunderLoop, 3000);
     fadeIn(rainLoop, 4000);
     triggerCloudFlash();
+    // Auto-advance to ask page after 5s if user hasn't scrolled past the gif
+    clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = setTimeout(() => {
+      if (!isDone && phase <= 2) {
+        phase = 2;
+        progress = 0;
+        render();
+        animateTo(1, hideLanding, 600);
+      }
+    }, 5000);
   }
 
   function stopFlashLoop() {
     flashLoopRunning = false;
     flashTimers.forEach(t => clearTimeout(t));
     flashTimers = [];
+    clearTimeout(autoAdvanceTimer);
     // Clean up any lingering flash classes
     document.querySelectorAll('.landing-cloud').forEach(c => {
       c.classList.remove('flash', 'flash-dim');
@@ -465,7 +478,7 @@
     // Longer pause in darkness to build suspense before the reading card
     localStorage.setItem('velvet_visited', '1');
     setTimeout(() => {
-      window.location.href = '/ask.html';
+      window.location.href = skippedIntro ? '/ask.html?skip' : '/ask.html';
     }, 1400);
   }
 
@@ -639,7 +652,14 @@
     // Fade in gradually after a short delay
     setTimeout(() => skipBtn.classList.add('visible'), 800);
     skipBtn.addEventListener('click', () => {
+      if (window._playClickSound) window._playClickSound();
+      skippedIntro = true;
       skipBtn.classList.remove('visible');
+      // Silently jump curtain + doors to fully open so no movement sounds trigger
+      curtainLastP = 1;
+      curtainMoving = false;
+      doorsLastP = 1;
+      doorsMoving = false;
       phase = 2;
       progress = 0;
       render();

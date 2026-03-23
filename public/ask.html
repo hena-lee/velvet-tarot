@@ -68,60 +68,92 @@
       }
 
       @keyframes eyeOpen {
-        0%   { --spot-w: 0%;  --spot-h: 0%; }
-        8%   { --spot-w: 8%;  --spot-h: 0.8%; }
-        18%  { --spot-w: 8%;  --spot-h: 3%; }
-        26%  { --spot-w: 8%;  --spot-h: 6%; }
-        34%  { --spot-w: 8%;  --spot-h: 6%; }
-        39%  { --spot-w: 8%;  --spot-h: 0.3%; }
-        46%  { --spot-w: 8%;  --spot-h: 6%; }
-        58%  { --spot-w: 8%;  --spot-h: 6%; }
-        63%  { --spot-w: 8%;  --spot-h: 0.3%; }
-        72%  { --spot-w: 8%;  --spot-h: 7%; }
-        100% { --spot-w: 8%;  --spot-h: 7%; }
+        0% {
+          --spot-w: 0%;
+          --spot-h: 0%;
+        }
+        8% {
+          --spot-w: 8%;
+          --spot-h: 0.8%;
+        }
+        18% {
+          --spot-w: 8%;
+          --spot-h: 3%;
+        }
+        26% {
+          --spot-w: 8%;
+          --spot-h: 6%;
+        }
+        34% {
+          --spot-w: 8%;
+          --spot-h: 6%;
+        }
+        39% {
+          --spot-w: 8%;
+          --spot-h: 0.3%;
+        }
+        46% {
+          --spot-w: 8%;
+          --spot-h: 6%;
+        }
+        58% {
+          --spot-w: 8%;
+          --spot-h: 6%;
+        }
+        63% {
+          --spot-w: 8%;
+          --spot-h: 0.3%;
+        }
+        72% {
+          --spot-w: 8%;
+          --spot-h: 7%;
+        }
+        100% {
+          --spot-w: 8%;
+          --spot-h: 7%;
+        }
       }
 
       @keyframes eyeReveal {
-        0%   { --spot-w: 8%;   --spot-h: 7%; }
-        100% { --spot-w: 100%; --spot-h: 100%; }
+        0% {
+          --spot-w: 8%;
+          --spot-h: 7%;
+        }
+        100% {
+          --spot-w: 100%;
+          --spot-h: 100%;
+        }
       }
 
       .entry-cover.spotlight-open {
         animation: eyeReveal 2s ease-in-out forwards;
       }
 
-      /* Vision text — positioned above and below the reading form */
-      .vision-text {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
+      /* Vision text — centered behind the card, revealed during dissolution */
+      .reveal-text {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6em;
         font-family: "California Sun", "Jacquard 24", Georgia, serif;
-        font-size: clamp(1.2rem, 2.5vw, 2rem);
+        font-size: clamp(1rem, 2vw, 1.6rem);
         color: rgb(38, 10, 10);
         letter-spacing: 0.08em;
         text-align: center;
-        z-index: 4;
+        z-index: 2;
         pointer-events: none;
-        white-space: nowrap;
+        padding: 2rem;
+        line-height: 1.6;
       }
-      .vision-top {
-        top: 12%;
-      }
-      .vision-bottom {
-        bottom: 10%;
-      }
-      .vision-text .v-word,
-      .vision-text .v-char {
+      .reveal-text .r-char {
         opacity: 0;
-        transition: opacity 0.4s ease;
+        transition: opacity 0.35s ease;
       }
-      .vision-text .v-word.visible,
-      .vision-text .v-char.visible {
+      .reveal-text .r-char.visible {
         opacity: 1;
-      }
-      .vision-text.fade-out {
-        transition: opacity 0.8s ease;
-        opacity: 0;
       }
 
       /* Dissolution mask — diagonal wipe from bottom-left to top-right */
@@ -136,16 +168,70 @@
           to top right,
           transparent 0%,
           transparent calc(var(--dissolve) * 100% - 4%),
-          rgba(0,0,0,0.3) calc(var(--dissolve) * 100% - 2%),
+          rgba(0, 0, 0, 0.3) calc(var(--dissolve) * 100% - 2%),
           black calc(var(--dissolve) * 100%)
         );
         mask-image: linear-gradient(
           to top right,
           transparent 0%,
           transparent calc(var(--dissolve) * 100% - 4%),
-          rgba(0,0,0,0.3) calc(var(--dissolve) * 100% - 2%),
+          rgba(0, 0, 0, 0.3) calc(var(--dissolve) * 100% - 2%),
           black calc(var(--dissolve) * 100%)
         );
+      }
+
+      /* Manicule wobble+glow when user is typing */
+      @keyframes maniculeWobble {
+        0%,
+        100% {
+          transform: rotate(0deg);
+          filter: drop-shadow(0 0 0px transparent);
+        }
+        25% {
+          transform: rotate(-6deg);
+        }
+        50% {
+          transform: rotate(4deg);
+          filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+        }
+        75% {
+          transform: rotate(-3deg);
+        }
+      }
+      .manicule.typing {
+        animation: maniculeWobble 0.6s ease-in-out infinite;
+      }
+      @keyframes buttonWobble {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        25% {
+          transform: translate(-50%, -50%) rotate(-3deg) scale(1.03);
+        }
+        50% {
+          transform: translate(-50%, -50%) rotate(2deg) scale(0.97);
+        }
+        75% {
+          transform: translate(-50%, -50%) rotate(-1.5deg) scale(1.01);
+        }
+      }
+      .readingform-button.typing {
+        animation: buttonWobble 0.6s ease-in-out infinite;
+      }
+
+      /* Page fade-out before navigation */
+      .page-fade-out {
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        background: var(--rose-bg, #996070);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1.2s ease-in;
+      }
+      .page-fade-out.active {
+        opacity: 1;
       }
 
       /* Glitter canvas overlays the form area */
@@ -163,14 +249,24 @@
 
     <script src="components.js"></script>
 
-    <p class="vision-text vision-top" id="vision-top"></p>
-    <p class="vision-text vision-bottom" id="vision-bottom"></p>
-
-    <img src="/images/assets/piercing.png" class="piercing-img piercing-right" alt="" />
+    <img
+      src="/images/assets/piercing.png"
+      class="piercing-img piercing-right"
+      alt=""
+    />
     <section class="reading-section">
       <div class="readingform-wrap">
-        <img src="/images/assets/readingform.png" class="readingform-img" alt="" />
-        <img src="/images/assets/button.png" class="readingform-button" alt="" />
+        <div class="reveal-text" id="reveal-text"></div>
+        <img
+          src="/images/assets/readingform.png"
+          class="readingform-img"
+          alt=""
+        />
+        <img
+          src="/images/assets/button.png"
+          class="readingform-button"
+          alt=""
+        />
         <div class="lace-frame reading-form-frame" id="reading-form-wrap">
           <form id="reading-form">
             <div class="form-input-row">
@@ -223,45 +319,28 @@
     </section>
 
     <script>
-      // --- Vision text animation ---
-      function startVisionSequence() {
-        const topEl = document.getElementById("vision-top");
-        const botEl = document.getElementById("vision-bottom");
+      // --- Prepare reveal text (hidden behind the card) ---
+      const revealTextEl = document.getElementById("reveal-text");
+      const revealLines = [
+        "You don\u2019t see with your eye,",
+        "You perceive with your mind.",
+      ];
+      revealTextEl.innerHTML = revealLines
+        .map((line) => {
+          const chars = line
+            .split("")
+            .map((ch) =>
+              ch === " " ? " " : `<span class="r-char">${ch}</span>`,
+            )
+            .join("");
+          return `<span class="reveal-line">${chars}</span>`;
+        })
+        .join("");
 
-        // Wrap words for top text
-        const topWords = "You don't see with your eye".split(" ");
-        topEl.innerHTML = topWords
-          .map((w) => `<span class="v-word">${w}</span>`)
-          .join(" ");
-
-        // Wrap characters for bottom text
-        const botText = "You perceive with your mind";
-        botEl.innerHTML = botText
-          .split("")
-          .map((ch) =>
-            ch === " "
-              ? " "
-              : `<span class="v-char">${ch}</span>`
-          )
-          .join("");
-
-        // Phase 1: fade in top text word by word
-        const wordSpans = topEl.querySelectorAll(".v-word");
-        let delay = 300;
-        wordSpans.forEach((span, i) => {
-          setTimeout(() => span.classList.add("visible"), delay + i * 350);
-        });
-
-        // Phase 2: after top text is fully visible, fade it out then fade in bottom char by char
-        const topDone = delay + wordSpans.length * 350 + 800;
-        setTimeout(() => {
-          topEl.classList.add("fade-out");
-        }, topDone);
-
-        const botStart = topDone + 900;
-        const charSpans = botEl.querySelectorAll(".v-char");
-        charSpans.forEach((span, i) => {
-          setTimeout(() => span.classList.add("visible"), botStart + i * 60);
+      function startRevealText() {
+        const chars = revealTextEl.querySelectorAll(".r-char");
+        chars.forEach((span, i) => {
+          setTimeout(() => span.classList.add("visible"), i * 50);
         });
       }
 
@@ -273,7 +352,6 @@
         if (new URLSearchParams(window.location.search).has("skip")) {
           document.documentElement.classList.remove("dark-start");
           cover.remove();
-          startVisionSequence();
           return;
         }
         setTimeout(() => {
@@ -284,21 +362,39 @@
             document.documentElement.classList.remove("dark-start");
             void cover.offsetWidth;
             cover.classList.add("spotlight-open");
-            cover.addEventListener(
-              "animationend",
-              () => {
-                cover.remove();
-                startVisionSequence();
-              },
-              { once: true },
-            );
+            cover.addEventListener("animationend", () => cover.remove(), {
+              once: true,
+            });
           });
         }, 800);
       });
 
+      // --- Manicule wobble on typing ---
+      const questionInput = document.getElementById("question");
+      const manicule = document.querySelector(".manicule");
+      const redButton = document.querySelector(".readingform-button");
+      let typingTimer = null;
+      questionInput.addEventListener("input", () => {
+        if (manicule) manicule.classList.add("typing");
+        if (redButton) redButton.classList.add("typing");
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+          if (manicule) manicule.classList.remove("typing");
+          if (redButton) redButton.classList.remove("typing");
+        }, 150);
+      });
+
+      // --- Click sound ---
+      function playClick() {
+        const audio = new Audio("/audio/click.mp3");
+        audio.volume = 0.5;
+        audio.play().catch(() => {});
+      }
+
       // --- Spread tag selection ---
       document.querySelectorAll(".spread-pill").forEach((pill) => {
         pill.addEventListener("click", () => {
+          playClick();
           document
             .querySelectorAll(".spread-pill")
             .forEach((p) => p.classList.remove("active"));
@@ -312,6 +408,9 @@
         // Disable form interaction
         card.style.pointerEvents = "none";
 
+        // Start char-by-char text reveal behind the dissolving card
+        startRevealText();
+
         // Create glitter canvas
         const wrap = card.closest(".readingform-wrap");
         const canvas = document.createElement("canvas");
@@ -323,7 +422,7 @@
         const ctx = canvas.getContext("2d");
 
         const particles = [];
-        const colors = ["#FFD700", "#7F00FF", "#6B1524", "#eee8d8"];
+        const colors = ["#eee8d8", "#ddd8cc", "#c8c3b8", "#e8e4dc", "#d4d0c8"];
 
         function spawnParticles(progress) {
           // Spawn along the diagonal dissolution edge
@@ -334,7 +433,8 @@
             const ny = 1 - (progress * 1.4 - nx);
             const px = nx * canvas.width;
             const py = ny * canvas.height;
-            if (py < 0 || py > canvas.height || px < 0 || px > canvas.width) continue;
+            if (py < 0 || py > canvas.height || px < 0 || px > canvas.width)
+              continue;
             particles.push({
               x: px + (Math.random() - 0.5) * 20,
               y: py + (Math.random() - 0.5) * 20,
@@ -343,7 +443,7 @@
               size: 1 + Math.random() * 3,
               color: colors[Math.floor(Math.random() * colors.length)],
               life: 1,
-              decay: 0.008 + Math.random() * 0.012,
+              decay: 0.02 + Math.random() * 0.025,
               spin: Math.random() * Math.PI * 2,
             });
           }
@@ -358,36 +458,66 @@
             p.vy -= 0.01; // slight upward drift
             p.life -= p.decay;
             p.spin += 0.05;
-            if (p.life <= 0) { particles.splice(i, 1); continue; }
+            if (p.life <= 0) {
+              particles.splice(i, 1);
+              continue;
+            }
             ctx.save();
             ctx.globalAlpha = p.life;
             ctx.translate(p.x, p.y);
             ctx.rotate(p.spin);
             ctx.fillStyle = p.color;
-            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * (0.6 + Math.random() * 0.4));
+            ctx.fillRect(
+              -p.size / 2,
+              -p.size / 2,
+              p.size,
+              p.size * (0.6 + Math.random() * 0.4),
+            );
             ctx.restore();
           }
         }
 
         // Animate dissolution
         card.classList.add("dissolving");
-        const duration = 3000;
+        const duration = 1800;
         const start = performance.now();
         let animId;
+        let dissolutionDone = false;
+        let navigateScheduled = false;
 
         function tick(now) {
           const elapsed = now - start;
-          const progress = Math.min(elapsed / duration, 1.5); // overshoot to cover diagonal
-          card.style.setProperty("--dissolve", progress);
-          spawnParticles(progress);
+
+          if (!dissolutionDone) {
+            const progress = Math.min(elapsed / duration, 1.5);
+            card.style.setProperty("--dissolve", progress);
+            spawnParticles(progress);
+            if (elapsed >= duration + 400) dissolutionDone = true;
+          }
+
           drawParticles();
 
-          if (elapsed < duration + 800) {
-            animId = requestAnimationFrame(tick);
-          } else {
-            // Navigate after dissolution completes
-            window.location.href = url;
+          if (dissolutionDone && particles.length === 0) {
+            // All particles faded — wait for text to be read, then navigate
+            if (!navigateScheduled) {
+              navigateScheduled = true;
+              setTimeout(() => {
+                // Fade the whole page out before navigating
+                const fadeOut = document.createElement("div");
+                fadeOut.className = "page-fade-out";
+                document.body.appendChild(fadeOut);
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => fadeOut.classList.add("active"));
+                });
+                fadeOut.addEventListener("transitionend", () => {
+                  window.location.href = url;
+                });
+              }, 3000);
+            }
+            return;
           }
+
+          animId = requestAnimationFrame(tick);
         }
         animId = requestAnimationFrame(tick);
       }
@@ -396,6 +526,7 @@
       const form = document.getElementById("reading-form");
       form.addEventListener("submit", (e) => {
         e.preventDefault();
+        playClick();
         const question = document.getElementById("question").value.trim();
         const spread = document.getElementById("spread").value;
         const params = new URLSearchParams({ spread });

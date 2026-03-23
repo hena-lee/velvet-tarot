@@ -1679,7 +1679,7 @@ html:has(.landing)::after {
   transform: translate(-50%, -50%);
   width: 48px;
   height: 48px;
-  z-index: 2;
+  z-index: 4;
   pointer-events: none;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
 }
@@ -1687,7 +1687,7 @@ html:has(.landing)::after {
 /* === READING FORM === */
 .reading-form-frame {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   width: clamp(240px, 62vw, 416px);
   background: #eee8d8;
   padding: 2.5rem 2.25rem 2rem;
