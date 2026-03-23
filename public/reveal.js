@@ -26,6 +26,14 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
   const leftCol = document.createElement('div');
   leftCol.className = 'reading-col-left';
 
+  // Card reveal background image — lives inside the container so it
+  // scales and aligns with the heading + scroll box automatically.
+  const revealBg = document.createElement('img');
+  revealBg.src = '/images/assets/cardreveal.png';
+  revealBg.alt = '';
+  revealBg.className = 'card-reveal-bg';
+  leftCol.appendChild(revealBg);
+
   const heading = document.createElement('h1');
   heading.className = 'reading-title';
   heading.textContent = 'What the Cards Reveal';

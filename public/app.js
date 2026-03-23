@@ -167,6 +167,7 @@
   const rainLoop = createLoop('/audio/rain.mp3', 0.35);
   const curtainSound = '/audio/curtain.mp3';
   const doorsSound = '/audio/doors.mp3';
+  const zoomSound = '/audio/zoom.mp3';
   let curtainLastP = 0;
   let curtainMoving = false;
   let doorsLastP = 0;
@@ -175,7 +176,7 @@
   // Pre-load one-shot sounds as audio buffers for Web Audio API playback.
   // This avoids HTMLAudioElement autoplay restrictions on wheel events.
   const oneShotBuffers = {};
-  [curtainSound, doorsSound].forEach(src => {
+  [curtainSound, doorsSound, zoomSound].forEach(src => {
     fetch(src)
       .then(r => r.arrayBuffer())
       .then(buf => audioCtx.decodeAudioData(buf))
@@ -427,8 +428,13 @@
     }
   }
 
+  let zoomPlayed = false;
   function applyZoom(p) {
     if (p > 0) stopFlashLoop();
+    if (p > 0 && !zoomPlayed) {
+      zoomPlayed = true;
+      playOneShot(zoomSound, 0.5, false);
+    }
     // Everything scales up together — theater, header, clouds — as if the camera pushes in
     const scale = 1 + p * 1.5;
     landing.style.transform = `scale(${scale})`;

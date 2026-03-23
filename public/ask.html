@@ -354,8 +354,43 @@
           cover.remove();
           return;
         }
+        // Preload blink audio via Web Audio API for reliable playback
+        const blinkCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let blinkBuffer = null;
+        fetch("/audio/blink.mp3")
+          .then(r => r.arrayBuffer())
+          .then(buf => blinkCtx.decodeAudioData(buf))
+          .then(decoded => { blinkBuffer = decoded; })
+          .catch(() => {});
+        // Unlock audio context on any user gesture (covers refresh scenario)
+        const unlockBlink = () => {
+          if (blinkCtx.state === "suspended") blinkCtx.resume();
+        };
+        ["click", "touchstart", "pointerdown", "keydown"].forEach(evt =>
+          window.addEventListener(evt, unlockBlink, { once: false, passive: true })
+        );
+        // Also try resuming immediately (works when gesture carries from landing page)
+        unlockBlink();
+
         setTimeout(() => {
           cover.classList.add("spotlight-blink");
+          // Play blink sound when eyes close (at 39% and 63% of 3.6s animation)
+          const blinkSnd = () => {
+            if (!blinkBuffer || blinkCtx.state === "closed") return;
+            if (blinkCtx.state === "suspended") blinkCtx.resume();
+            const source = blinkCtx.createBufferSource();
+            const gain = blinkCtx.createGain();
+            source.buffer = blinkBuffer;
+            gain.gain.value = 0.25;
+            // Fade out the last 40% of the sound
+            const fadeStart = blinkBuffer.duration * 0.6;
+            gain.gain.setValueAtTime(0.25, blinkCtx.currentTime + fadeStart);
+            gain.gain.linearRampToValueAtTime(0, blinkCtx.currentTime + blinkBuffer.duration);
+            source.connect(gain).connect(blinkCtx.destination);
+            source.start(0);
+          };
+          setTimeout(blinkSnd, 3600 * 0.39);
+          setTimeout(blinkSnd, 3600 * 0.63);
           cover.addEventListener("animationend", function onBlink() {
             cover.removeEventListener("animationend", onBlink);
             cover.classList.remove("spotlight-blink");
@@ -536,6 +571,35 @@
           animId = requestAnimationFrame(tick);
         }
         animId = requestAnimationFrame(tick);
+      }
+
+      // --- Breathing card parallax tilt ---
+      const formCard = document.getElementById("reading-form-wrap");
+      const formWrap = document.querySelector(".readingform-wrap");
+      const formImg = document.querySelector(".readingform-img");
+      if (formCard && formWrap) {
+        formWrap.addEventListener("mousemove", (e) => {
+          if (formCard.classList.contains("dissolving")) return;
+          const rect = formCard.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const nx = (e.clientX - cx) / (rect.width / 2);
+          const ny = (e.clientY - cy) / (rect.height / 2);
+          const maxTilt = 3;
+          const ry = nx * maxTilt;
+          const rx = -ny * maxTilt;
+          formCard.style.transform = `translateX(1%) rotateX(${rx}deg) rotateY(${ry}deg)`;
+          if (formImg) {
+            formImg.style.transform = `translate(-50%, -50%) scale(0.7) rotateX(${rx * 0.2}deg) rotateY(${ry * 0.2}deg)`;
+          }
+        });
+        formWrap.addEventListener("mouseleave", () => {
+          if (formCard.classList.contains("dissolving")) return;
+          formCard.style.transform = "translateX(1%)";
+          if (formImg) {
+            formImg.style.transform = "translate(-50%, -50%) scale(0.7)";
+          }
+        });
       }
 
       // --- Form submission ---

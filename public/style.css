@@ -68,7 +68,7 @@
   --shuffle-min-h: 360px;
   --shuffle-max-h: 600px;
   --shuffle-stage-h: 250px;
-  --hand-offset: 30%;
+  --hand-offset: 26%;
 }
 
 html {
@@ -1277,9 +1277,8 @@ html:has(.landing)::after {
 .rcs-img-wrap img {
   width: 72px;
   height: 108px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 5px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .rcs-img-wrap.reversed img {
@@ -1502,40 +1501,62 @@ html:has(.landing)::after {
 /* Starts single-column; right col expands when envelope is opened */
 .reading-results-grid {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   min-height: 0;
   flex: 1;
 }
 
 .reading-col-left {
-  flex: 0 0 31%;
-  max-width: 31%;
+  flex: 0 0 50%;
+  max-width: 50%;
   min-width: 0;
   min-height: 0;
-  /* Keep left edge where it was */
-  margin-left: 11.5%;
-  margin-top: 13vh;
+  margin-left: 0;
+  margin-top: 0;
   padding-right: 0;
   padding-left: 0;
+  padding-top: 5rem;
   display: flex;
   flex-direction: column;
-  max-height: 72.5vh;
+  height: 100vh;
   overflow: hidden;
+  position: relative;
+  background: rgba(255, 0, 0, 0.15);
+}
+
+/* Card reveal background — sits inside the left column container.
+   Uses transform scale to bleed beyond overflow:hidden bounds. */
+.reading-col-left .card-reveal-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 65%;
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.4));
 }
 
 /* Scrollable card list — visible scroll box below the heading */
 .reading-card-scroll {
-  flex: 1;
+  flex: 0 1 auto;
+  max-height: calc(100% - 6rem);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(150, 130, 100, 0.4) transparent;
   min-height: 0;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(150, 130, 100, 0.2);
+  background: rgba(0, 255, 0, 0.15);
+  border: none;
   border-radius: 8px;
   padding: 0rem 1.2rem;
+  position: relative;
+  z-index: 1;
+  width: 50%;
+  align-self: center;
+  margin-bottom: 3rem;
 }
 .reading-card-scroll::-webkit-scrollbar {
   width: 6px;
@@ -1548,32 +1569,21 @@ html:has(.landing)::after {
   background: transparent;
 }
 
-/* Card reveal background — decorative image behind the card list */
-.reading-page .reading-col-left::before {
-  content: '';
-  position: fixed;
-  top: 50%;
-  left: 28%;
-  transform: translate(-50%, -50%) scale(1.15) scaleX(1.25);
-  width: 50vw;
-  height: 80vh;
-  background: url('/images/assets/cardreveal.png') center center / contain no-repeat;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 1;
-  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.4));
-}
 
 .reading-col-right {
-  flex: 1 1 auto;
+  flex: 0 0 50%;
+  max-width: 50%;
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-height: 70vh;
+  height: 100vh;
   padding-right: 2rem;
-  margin-left: auto;
+  padding-top: 5rem;
+  margin-left: 0;
+  margin-top: 0;
+  background: rgba(0, 0, 255, 0.15);
 }
 
 .right-box {
@@ -1639,13 +1649,18 @@ html:has(.landing)::after {
   font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
   font-size: clamp(1.8rem, 4.5vw, 3rem);
   color: var(--ink);
-  text-align: left;
+  text-align: center;
   font-weight: 300;
   font-style: italic;
-  margin-top: 1rem;
+  margin-top: 2rem;
   margin-bottom: -0.5rem;
-  padding-left: 1.5rem;
+  padding-left: 0;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 0, 0, 0.15);
+  align-self: center;
+  width: 50%;
 }
 
 .reading-section {
@@ -1697,6 +1712,7 @@ html:has(.landing)::after {
   display: flex;
   align-items: center;
   justify-content: center;
+  perspective: 800px;
 }
 
 .piercing-img {
@@ -1721,6 +1737,9 @@ html:has(.landing)::after {
   pointer-events: none;
   z-index: 0;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35));
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.12s ease-out;
 }
 
 .readingform-button {
@@ -1744,6 +1763,9 @@ html:has(.landing)::after {
   padding: 2.5rem 2.25rem 2rem;
   box-shadow: 0 4px 16px rgba(45, 44, 44, 0.35);
   transform: translateX(1%);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.12s ease-out;
 }
 
 #reading-form {
@@ -2425,58 +2447,53 @@ button:disabled {
 .shuffle-hand {
   position: absolute;
   top: 38%;
-  width: clamp(100px, 12vw, 150px);
+  width: clamp(130px, 16vw, 200px);
+  height: auto;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.5s ease;
-  margin-top: calc(-1 * clamp(100px, 12vw, 150px) * 0.75);
-  z-index: 1;
+  margin-top: calc(-1 * clamp(130px, 16vw, 200px) * 0.75);
+  z-index: 10;
   filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6)) drop-shadow(0 3px 8px rgba(0, 0, 0, 0.4));
 }
 
 .hand-left {
   left: var(--hand-offset);
+  transform: rotate(10deg);
   transform-origin: center center;
-  transform: rotate(30deg);
 }
 
 .hand-right {
   right: var(--hand-offset);
+  /* Right hand image is shorter (1086×1352) vs left (1022×1484).
+     Scale height to match the left hand's aspect ratio so both look the same size. */
+  height: calc(clamp(130px, 16vw, 200px) * 1.423);
+  transform: rotate(-10deg);
   transform-origin: center center;
-  transform: rotate(-30deg);
 }
 
-/* Hands appear and animate during shuffle */
+/* Hands appear during shuffle */
 .shuffle-scene.is-shuffling .shuffle-hand {
   opacity: 1;
 }
 
+/* Hands hover in and out — magical shuffle motion */
 .shuffle-scene.is-shuffling .hand-left {
-  animation: handHoverLeft 2s ease-in-out infinite;
+  animation: handHoverLeft 1.8s ease-in-out infinite;
 }
 
 .shuffle-scene.is-shuffling .hand-right {
-  animation: handHoverRight 2s ease-in-out infinite;
+  animation: handHoverRight 1.8s ease-in-out infinite;
 }
 
 @keyframes handHoverLeft {
-  0%,
-  100% {
-    transform: translateX(30px) rotate(35deg);
-  }
-  50% {
-    transform: translateX(-60px) rotate(35deg);
-  }
+  0%, 100% { transform: translateX(0) rotate(10deg); }
+  50% { transform: translateX(clamp(30px, 6vw, 75px)) rotate(12deg); }
 }
 
 @keyframes handHoverRight {
-  0%,
-  100% {
-    transform: translateX(-30px) rotate(-35deg);
-  }
-  50% {
-    transform: translateX(60px) rotate(-30deg);
-  }
+  0%, 100% { transform: translateX(0) rotate(-10deg); }
+  50% { transform: translateX(clamp(-30px, -6vw, -75px)) rotate(-12deg); }
 }
 
 /* === HISTORY PAGE === */
@@ -3069,7 +3086,7 @@ a.detail-card-img-wrap:hover img:first-child {
     --card-h: 127px;
     --card-w-sm: 50px;
     --card-h-sm: 75px;
-    --hand-offset: 25%;
+    --hand-offset: 21%;
   }
 
   .card-list-img {
@@ -3114,7 +3131,7 @@ a.detail-card-img-wrap:hover img:first-child {
     --card-h: 105px;
     --card-w-sm: 45px;
     --card-h-sm: 67px;
-    --hand-offset: 20%;
+    --hand-offset: 16%;
   }
 
   .fan-stage {
@@ -3165,12 +3182,12 @@ a.detail-card-img-wrap:hover img:first-child {
     --card-h: 90px;
     --card-w-sm: 40px;
     --card-h-sm: 60px;
-    --hand-offset: 15%;
+    --hand-offset: 12%;
   }
 
   .shuffle-hand {
-    width: clamp(70px, 20vw, 100px);
-    margin-top: calc(-1 * clamp(70px, 20vw, 100px) * 0.75);
+    width: clamp(90px, 22vw, 130px);
+    margin-top: calc(-1 * clamp(90px, 22vw, 130px) * 0.75);
   }
 
   .card-list-img {
@@ -3197,7 +3214,7 @@ a.detail-card-img-wrap:hover img:first-child {
     --card-h: 78px;
     --card-w-sm: 35px;
     --card-h-sm: 52px;
-    --hand-offset: 10%;
+    --hand-offset: 7%;
   }
 
   .fan-stage {
@@ -3205,8 +3222,8 @@ a.detail-card-img-wrap:hover img:first-child {
   }
 
   .shuffle-hand {
-    width: clamp(60px, 18vw, 80px);
-    margin-top: calc(-1 * clamp(60px, 18vw, 80px) * 0.75);
+    width: clamp(75px, 20vw, 100px);
+    margin-top: calc(-1 * clamp(75px, 20vw, 100px) * 0.75);
   }
 
   .landing-image-wrapper {
