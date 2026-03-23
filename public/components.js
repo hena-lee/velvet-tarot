@@ -31,8 +31,8 @@
 
   // Brand: button on home (triggers scroll), anchor on other pages
   const brandHtml = isHome
-    ? `<button class="nav-brand home-btn" aria-label="Home">Velvet Tarot</button>`
-    : `<a href="/" class="nav-brand" aria-label="Home">Velvet Tarot</a>`;
+    ? `<button class="nav-brand home-btn" aria-label="Home">VT</button>`
+    : `<a href="/" class="nav-brand" aria-label="Home">VT</a>`;
 
   const navbar = document.createElement("nav");
   navbar.className = "navbar nav-hidden";

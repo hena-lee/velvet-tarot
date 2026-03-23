@@ -50,12 +50,19 @@
   let audioUnlocked = false;
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+  const clickPrompt = document.getElementById('click-prompt');
+
   function unlockAudio() {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().then(() => { audioUnlocked = true; }).catch(() => {});
+    } else {
+      audioUnlocked = true;
+    }
+    // Hide the click prompt once audio is unlocked
+    if (clickPrompt) clickPrompt.classList.add('hidden');
   }
-  ['click', 'touchstart', 'wheel'].forEach(evt =>
+  // Only listen on events that qualify as user activation for autoplay
+  ['click', 'touchstart', 'pointerdown'].forEach(evt =>
     window.addEventListener(evt, unlockAudio, { once: false, passive: true })
   );
 
@@ -104,8 +111,32 @@
     audio._fadeIv = iv;
   }
 
-  // One-shot audio helper — earlyFade starts fading at 25% of duration
+  // One-shot audio helper — uses Web Audio API buffers (works on wheel events)
+  // with HTMLAudioElement fallback. earlyFade starts fading at 25% of duration.
   function playOneShot(src, volume, earlyFade) {
+    // Try Web Audio API first (not blocked by autoplay on wheel events)
+    const buffer = oneShotBuffers[src];
+    if (buffer && audioCtx.state !== 'closed') {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const source = audioCtx.createBufferSource();
+      const gain = audioCtx.createGain();
+      source.buffer = buffer;
+      gain.gain.value = volume;
+      source.connect(gain).connect(audioCtx.destination);
+      source.start(0);
+      if (earlyFade) {
+        const fadeStart = audioCtx.currentTime + buffer.duration * 0.25;
+        gain.gain.setValueAtTime(volume, fadeStart);
+        gain.gain.linearRampToValueAtTime(0, fadeStart + buffer.duration * 0.25);
+        source.stop(fadeStart + buffer.duration * 0.25);
+      }
+      // Return a dummy with pause event for storm sequence compatibility
+      const dummy = new EventTarget();
+      const stopTime = earlyFade ? buffer.duration * 0.5 : buffer.duration;
+      setTimeout(() => dummy.dispatchEvent(new Event('pause')), stopTime * 1000);
+      return dummy;
+    }
+    // Fallback: HTMLAudioElement (works after click/touch activation)
     const audio = new Audio(src);
     audio.volume = volume;
     audio.play().catch(() => {});
@@ -134,8 +165,21 @@
   const rainLoop = createLoop('/audio/rain.mp3', 0.35);
   const curtainSound = '/audio/curtain.mp3';
   const doorsSound = '/audio/doors.mp3';
-  let curtainAudioPlayed = false;
-  let doorsAudioPlayed = false;
+  let curtainLastP = 0;
+  let curtainMoving = false;
+  let doorsLastP = 0;
+  let doorsMoving = false;
+
+  // Pre-load one-shot sounds as audio buffers for Web Audio API playback.
+  // This avoids HTMLAudioElement autoplay restrictions on wheel events.
+  const oneShotBuffers = {};
+  [curtainSound, doorsSound].forEach(src => {
+    fetch(src)
+      .then(r => r.arrayBuffer())
+      .then(buf => audioCtx.decodeAudioData(buf))
+      .then(decoded => { oneShotBuffers[src] = decoded; })
+      .catch(() => {});
+  });
 
   // === Foreground rain — soft-focus drops for depth ===
   const rainCanvas = document.getElementById('rain-canvas');
@@ -155,7 +199,6 @@
   function spawnDrop() {
     // Vary size for depth — larger = closer to camera
     const size = 1.5 + Math.random() * 4;
-    const blur = size * 2.5 + Math.random() * 3;
     const alpha = 0.08 + (size / 5.5) * 0.18;
     const H = window.innerHeight;
     // Start drops in the bottom third of the screen
@@ -166,7 +209,6 @@
       w: size * 0.4,
       h: size * (8 + Math.random() * 14),
       speed: 6 + size * 4 + Math.random() * 3,
-      blur: blur,
       alpha: alpha,
     };
   }
@@ -182,6 +224,9 @@
       if (drops.length < 80) drops.push(spawnDrop());
     }
 
+    // Single fill style — CSS blur on the canvas softens everything in one GPU pass
+    rainCtx.fillStyle = 'rgba(195, 205, 220, 1)';
+
     for (let i = drops.length - 1; i >= 0; i--) {
       const d = drops[i];
       d.y += d.speed;
@@ -193,20 +238,10 @@
         continue;
       }
 
-      rainCtx.save();
-      rainCtx.filter = 'blur(' + d.blur + 'px)';
       rainCtx.globalAlpha = d.alpha;
-      // Soft white-blue raindrop streak
-      const grad = rainCtx.createLinearGradient(d.x, d.y, d.x, d.y + d.h);
-      grad.addColorStop(0, 'rgba(200, 210, 225, 0)');
-      grad.addColorStop(0.3, 'rgba(200, 210, 225, 1)');
-      grad.addColorStop(0.7, 'rgba(180, 195, 215, 1)');
-      grad.addColorStop(1, 'rgba(180, 195, 215, 0)');
-      rainCtx.fillStyle = grad;
       rainCtx.beginPath();
       rainCtx.ellipse(d.x, d.y + d.h / 2, d.w, d.h / 2, 0, 0, Math.PI * 2);
       rainCtx.fill();
-      rainCtx.restore();
     }
 
     rainAnimId = requestAnimationFrame(tickRain);
@@ -269,6 +304,23 @@
       }, firstRoundDuration + 200 + headerSync));
     }
 
+    // Theater image flashes in sync with header
+    if (theaterImg) {
+      flashTimers.push(setTimeout(() => {
+        theaterImg.classList.add('theater-flash');
+        theaterImg.addEventListener('animationend', () => {
+          theaterImg.classList.remove('theater-flash');
+        }, { once: true });
+      }, headerSync));
+
+      flashTimers.push(setTimeout(() => {
+        theaterImg.classList.add('theater-flash-dim');
+        theaterImg.addEventListener('animationend', () => {
+          theaterImg.classList.remove('theater-flash-dim');
+        }, { once: true });
+      }, firstRoundDuration + 200 + headerSync));
+    }
+
     // Second round — dimmer afterglow, same stagger order
     clouds.forEach((cloud, i) => {
       flashTimers.push(setTimeout(() => {
@@ -307,7 +359,10 @@
     });
     const header = document.querySelector('.app-header');
     if (header) header.classList.remove('header-flash', 'header-flash-dim');
-    // Keep wet ground — once fabric is soaked, it stays
+    // Clean up theater flash
+    if (theaterImg) theaterImg.classList.remove('theater-flash', 'theater-flash-dim');
+    // Remove wet ground effect
+    landing.classList.remove('wet-ground');
     stopRain();
     // Fade out thunder and rain audio
     fadeOut(thunderLoop, 2000);
@@ -318,11 +373,13 @@
     if (curtain) {
       curtain.style.transform = `translateY(${-p * 100}%)`;
     }
-    // Play curtain rising sound once when curtain starts moving
-    if (p > 0.02 && !curtainAudioPlayed) {
-      curtainAudioPlayed = true;
+    // Play sound when movement starts or changes direction
+    const delta = p - curtainLastP;
+    if (Math.abs(delta) > 0.001 && !curtainMoving) {
       playOneShot(curtainSound, 0.5, true);
     }
+    curtainMoving = Math.abs(delta) > 0.001;
+    curtainLastP = p;
   }
 
   let powderFlashTriggered = false;
@@ -334,22 +391,26 @@
     if (powderRight) {
       powderRight.style.transform = `translateX(${p * 100}%)`;
     }
-    // Play sliding doors sound once when doors start moving
-    if (p > 0.02 && !doorsAudioPlayed) {
-      doorsAudioPlayed = true;
+    // Play sound when movement starts or changes direction
+    const delta = p - doorsLastP;
+    if (Math.abs(delta) > 0.001 && !doorsMoving) {
       const doorsAudio = playOneShot(doorsSound, 0.5, true);
-      // Start storm sequence after the doors audio finishes
-      doorsAudio.addEventListener('pause', () => {
-        if (!powderFlashTriggered && !isDone) {
-          powderFlashTriggered = true;
-          startFlashLoop();
-        }
-      }, { once: true });
+      // Start storm sequence after the first opening completes
+      if (!powderFlashTriggered && !isDone) {
+        doorsAudio.addEventListener('pause', () => {
+          if (!powderFlashTriggered && !isDone) {
+            powderFlashTriggered = true;
+            startFlashLoop();
+          }
+        }, { once: true });
+      }
     }
-    // Reset flag if doors close back
+    doorsMoving = Math.abs(delta) > 0.001;
+    doorsLastP = p;
+    // Full storm reset when doors close back
     if (p === 0) {
       powderFlashTriggered = false;
-      doorsAudioPlayed = false;
+      stopFlashLoop();
     }
   }
 
