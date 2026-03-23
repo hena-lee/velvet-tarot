@@ -47,6 +47,29 @@
 
   document.body.prepend(navbar);
 
+  // Mobile gate — shown on small screens across all pages
+  if (!document.getElementById('mobile-gate')) {
+    const gate = document.createElement('div');
+    gate.className = 'mobile-gate';
+    gate.id = 'mobile-gate';
+    gate.innerHTML = `
+      <div class="mobile-gate-content">
+        <span class="mobile-gate-label">Velvet Tarot</span>
+        <h1 class="mobile-gate-title">
+          This experience was built for larger screens.
+        </h1>
+        <p class="mobile-gate-subtitle">
+          For the full visual journey — animated cards, lace frames, and
+          all — please visit on a desktop or tablet.
+        </p>
+        <div class="mobile-gate-thesis">
+          <em>"You don't see with your eye, you perceive with your mind."</em>
+        </div>
+      </div>
+    `;
+    document.body.prepend(gate);
+  }
+
   // Auto-hide navbar: invisible trigger zone at top reveals it on hover
   const navTrigger = document.createElement('div');
   navTrigger.className = 'nav-trigger';
@@ -179,6 +202,58 @@
       }
     });
   }
+
+  // --- Dust motes — subtle floating particles across entire site ---
+  (function initDustMotes() {
+    const canvas = document.createElement('canvas');
+    canvas.className = 'dust-canvas';
+    canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0.4;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    let w, h;
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const MOTE_COUNT = 35;
+    const motes = [];
+    for (let i = 0; i < MOTE_COUNT; i++) {
+      motes.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 0.5 + Math.random() * 1.2,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: -0.08 - Math.random() * 0.12,
+        drift: Math.random() * Math.PI * 2,
+        driftSpeed: 0.002 + Math.random() * 0.004,
+        alpha: 0.2 + Math.random() * 0.4,
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (const m of motes) {
+        m.drift += m.driftSpeed;
+        m.x += m.vx + Math.sin(m.drift) * 0.12;
+        m.y += m.vy;
+        // Wrap around
+        if (m.y < -5) { m.y = h + 5; m.x = Math.random() * w; }
+        if (m.x < -5) m.x = w + 5;
+        if (m.x > w + 5) m.x = -5;
+
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220, 200, 170, ${m.alpha})`;
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
 
   // Vercel Analytics
   const analyticsScript = document.createElement('script');

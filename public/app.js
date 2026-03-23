@@ -8,6 +8,8 @@
   if (!imgWrapper || !landing) return;
 
   const cloudLayer = document.querySelector('.cloud-layer');
+  const gif = document.querySelector('.landing-gif');
+  const header = document.querySelector('.app-header');
 
   // Skip landing and go straight to ask page when ?new is in the URL
   if (new URLSearchParams(window.location.search).has('new')) {
@@ -43,9 +45,198 @@
   let flashTimers = [];
   let flashLoopRunning = false;
 
+  // === Audio system ===
+  // All audio requires a user gesture to unlock — we unlock on first interaction
+  let audioUnlocked = false;
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  ['click', 'touchstart', 'wheel'].forEach(evt =>
+    window.addEventListener(evt, unlockAudio, { once: false, passive: true })
+  );
+
+  // Looping audio helper with fade support
+  function createLoop(src, volume) {
+    const audio = new Audio(src);
+    audio.loop = true;
+    audio.volume = 0;
+    audio.preload = 'auto';
+    audio._targetVol = volume;
+    return audio;
+  }
+
+  function fadeIn(audio, duration) {
+    if (!audio || audio._fading === 'in') return;
+    audio._fading = 'in';
+    audio.volume = 0;
+    audio.play().catch(() => {});
+    const step = 20;
+    const inc = audio._targetVol / (duration / step);
+    const iv = setInterval(() => {
+      audio.volume = Math.min(audio.volume + inc, audio._targetVol);
+      if (audio.volume >= audio._targetVol) {
+        audio._fading = null;
+        clearInterval(iv);
+      }
+    }, step);
+    audio._fadeIv = iv;
+  }
+
+  function fadeOut(audio, duration) {
+    if (!audio) return;
+    if (audio._fadeIv) clearInterval(audio._fadeIv);
+    audio._fading = 'out';
+    const step = 20;
+    const dec = audio.volume / (duration / step);
+    const iv = setInterval(() => {
+      audio.volume = Math.max(audio.volume - dec, 0);
+      if (audio.volume <= 0) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio._fading = null;
+        clearInterval(iv);
+      }
+    }, step);
+    audio._fadeIv = iv;
+  }
+
+  // One-shot audio helper — earlyFade starts fading at 25% of duration
+  function playOneShot(src, volume, earlyFade) {
+    const audio = new Audio(src);
+    audio.volume = volume;
+    audio.play().catch(() => {});
+    if (earlyFade) {
+      audio.addEventListener('loadedmetadata', () => {
+        const startFade = audio.duration * 0.25;
+        const fadeDur = startFade * 1000;
+        setTimeout(() => {
+          const step = 20;
+          const dec = audio.volume / (fadeDur / step);
+          const iv = setInterval(() => {
+            audio.volume = Math.max(audio.volume - dec, 0);
+            if (audio.volume <= 0) {
+              audio.pause();
+              clearInterval(iv);
+            }
+          }, step);
+        }, startFade * 1000);
+      }, { once: true });
+    }
+    return audio;
+  }
+
+  // Audio sources
+  const thunderLoop = createLoop('/audio/thunder.mp3', 0.4);
+  const rainLoop = createLoop('/audio/rain.mp3', 0.35);
+  const curtainSound = '/audio/curtain.mp3';
+  const doorsSound = '/audio/doors.mp3';
+  let curtainAudioPlayed = false;
+  let doorsAudioPlayed = false;
+
+  // === Foreground rain — soft-focus drops for depth ===
+  const rainCanvas = document.getElementById('rain-canvas');
+  const rainCtx = rainCanvas ? rainCanvas.getContext('2d') : null;
+  let rainAnimId = null;
+  const drops = [];
+
+  function initRainCanvas() {
+    if (!rainCanvas) return;
+    rainCanvas.width = window.innerWidth * devicePixelRatio;
+    rainCanvas.height = window.innerHeight * devicePixelRatio;
+    rainCanvas.style.width = window.innerWidth + 'px';
+    rainCanvas.style.height = window.innerHeight + 'px';
+    rainCtx.scale(devicePixelRatio, devicePixelRatio);
+  }
+
+  function spawnDrop() {
+    // Vary size for depth — larger = closer to camera
+    const size = 1.5 + Math.random() * 4;
+    const blur = size * 2.5 + Math.random() * 3;
+    const alpha = 0.08 + (size / 5.5) * 0.18;
+    const H = window.innerHeight;
+    // Start drops in the bottom third of the screen
+    const startY = H * 0.33 + Math.random() * (H * 0.1);
+    return {
+      x: Math.random() * window.innerWidth,
+      y: startY - Math.random() * 40,
+      w: size * 0.4,
+      h: size * (8 + Math.random() * 14),
+      speed: 6 + size * 4 + Math.random() * 3,
+      blur: blur,
+      alpha: alpha,
+    };
+  }
+
+  function tickRain() {
+    if (!rainCtx) return;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    rainCtx.clearRect(0, 0, W, H);
+
+    // Spawn new drops
+    for (let i = 0; i < 3; i++) {
+      if (drops.length < 80) drops.push(spawnDrop());
+    }
+
+    for (let i = drops.length - 1; i >= 0; i--) {
+      const d = drops[i];
+      d.y += d.speed;
+      // Slight wind drift
+      d.x += 0.3;
+
+      if (d.y > H + 30) {
+        drops.splice(i, 1);
+        continue;
+      }
+
+      rainCtx.save();
+      rainCtx.filter = 'blur(' + d.blur + 'px)';
+      rainCtx.globalAlpha = d.alpha;
+      // Soft white-blue raindrop streak
+      const grad = rainCtx.createLinearGradient(d.x, d.y, d.x, d.y + d.h);
+      grad.addColorStop(0, 'rgba(200, 210, 225, 0)');
+      grad.addColorStop(0.3, 'rgba(200, 210, 225, 1)');
+      grad.addColorStop(0.7, 'rgba(180, 195, 215, 1)');
+      grad.addColorStop(1, 'rgba(180, 195, 215, 0)');
+      rainCtx.fillStyle = grad;
+      rainCtx.beginPath();
+      rainCtx.ellipse(d.x, d.y + d.h / 2, d.w, d.h / 2, 0, 0, Math.PI * 2);
+      rainCtx.fill();
+      rainCtx.restore();
+    }
+
+    rainAnimId = requestAnimationFrame(tickRain);
+  }
+
+  function startRain() {
+    if (!rainCanvas || rainAnimId) return;
+    initRainCanvas();
+    drops.length = 0;
+    rainCanvas.classList.add('active');
+    tickRain();
+  }
+
+  function stopRain() {
+    if (rainAnimId) {
+      cancelAnimationFrame(rainAnimId);
+      rainAnimId = null;
+    }
+    if (rainCanvas) rainCanvas.classList.remove('active');
+    drops.length = 0;
+  }
+
+  if (rainCanvas) {
+    window.addEventListener('resize', () => {
+      if (rainAnimId) initRainCanvas();
+    });
+  }
+
   function triggerCloudFlash() {
     const clouds = document.querySelectorAll('.landing-cloud');
-    const header = document.querySelector('.app-header');
     const stagger = 120;
     const headerSync = 2 * stagger;
     const firstRoundDuration = (clouds.length - 1) * stagger + 500;
@@ -97,8 +288,12 @@
   function startFlashLoop() {
     if (flashLoopRunning) return;
     flashLoopRunning = true;
-    // Gradually darken the ground
+    // Gradually darken the ground + start foreground rain
     if (landing) landing.classList.add('wet-ground');
+    startRain();
+    // Fade in thunder and rain audio
+    fadeIn(thunderLoop, 3000);
+    fadeIn(rainLoop, 4000);
     triggerCloudFlash();
   }
 
@@ -112,13 +307,21 @@
     });
     const header = document.querySelector('.app-header');
     if (header) header.classList.remove('header-flash', 'header-flash-dim');
-    // Remove wet ground
-    if (landing) landing.classList.remove('wet-ground');
+    // Keep wet ground — once fabric is soaked, it stays
+    stopRain();
+    // Fade out thunder and rain audio
+    fadeOut(thunderLoop, 2000);
+    fadeOut(rainLoop, 2500);
   }
 
   function applyCurtain(p) {
     if (curtain) {
       curtain.style.transform = `translateY(${-p * 100}%)`;
+    }
+    // Play curtain rising sound once when curtain starts moving
+    if (p > 0.02 && !curtainAudioPlayed) {
+      curtainAudioPlayed = true;
+      playOneShot(curtainSound, 0.5, true);
     }
   }
 
@@ -131,23 +334,37 @@
     if (powderRight) {
       powderRight.style.transform = `translateX(${p * 100}%)`;
     }
-    // Start flashing when doors are 20% open
-    if (p > 0.2 && !powderFlashTriggered) {
-      powderFlashTriggered = true;
-      startFlashLoop();
+    // Play sliding doors sound once when doors start moving
+    if (p > 0.02 && !doorsAudioPlayed) {
+      doorsAudioPlayed = true;
+      const doorsAudio = playOneShot(doorsSound, 0.5, true);
+      // Start storm sequence after the doors audio finishes
+      doorsAudio.addEventListener('pause', () => {
+        if (!powderFlashTriggered && !isDone) {
+          powderFlashTriggered = true;
+          startFlashLoop();
+        }
+      }, { once: true });
     }
     // Reset flag if doors close back
     if (p === 0) {
       powderFlashTriggered = false;
+      doorsAudioPlayed = false;
     }
   }
 
   function applyZoom(p) {
     if (p > 0) stopFlashLoop();
+    // Everything scales up together — theater, header, clouds — as if the camera pushes in
     const scale = 1 + p * 1.5;
-    imgWrapper.style.transform = `scale(${scale})`;
+    landing.style.transform = `scale(${scale})`;
+    landing.style.transformOrigin = '50% 55%';
+    if (cloudLayer) {
+      cloudLayer.style.transform = `scale(${scale})`;
+      cloudLayer.style.transformOrigin = '50% 55%';
+    }
+    // Fade to black
     landing.style.opacity = 1 - p;
-    // Fade clouds in sync with the zoom
     if (cloudLayer) cloudLayer.style.opacity = String(1 - p);
   }
 
@@ -179,16 +396,16 @@
       cloudLayer.style.transition = 'opacity 0.25s ease';
       cloudLayer.style.opacity = '0';
     }
-    // Cover the screen with a solid overlay before navigating to prevent flash
+    // Cover the screen with black — we've zoomed into darkness
     const cover = document.createElement('div');
-    cover.style.cssText = 'position:fixed;inset:0;background:var(--rose-bg);z-index:99999;opacity:0;transition:opacity 0.3s ease;';
+    cover.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;opacity:0;transition:opacity 0.8s ease;';
     document.body.appendChild(cover);
     requestAnimationFrame(() => { cover.style.opacity = '1'; });
-    // Navigate after the overlay is fully opaque
+    // Longer pause in darkness to build suspense before the reading card
     localStorage.setItem('velvet_visited', '1');
     setTimeout(() => {
       window.location.href = '/ask.html';
-    }, 350);
+    }, 1400);
   }
 
   function animateTo(target, cb, duration) {
@@ -254,8 +471,6 @@
   }, { passive: false });
 
   // Click on layers to advance through phases
-  const gif = document.querySelector('.landing-gif');
-
   const CLICK_DURATION = 500;
 
   function advancePhase() {

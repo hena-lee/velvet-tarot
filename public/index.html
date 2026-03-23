@@ -8,21 +8,55 @@
   </head>
 
   <body>
-    <div class="mobile-gate" id="mobile-gate">
-      <div class="mobile-gate-content">
-        <span class="mobile-gate-label">Velvet Tarot</span>
-        <h1 class="mobile-gate-title">
-          This experience was built for larger screens.
-        </h1>
-        <p class="mobile-gate-subtitle">
-          For the full visual journey — animated cards, lace frames, and
-          all — please visit on a desktop or tablet.
-        </p>
-        <div class="mobile-gate-thesis">
-          <em>"You don't see with your eye, you perceive with your mind."</em>
-        </div>
-      </div>
-    </div>
+    <!-- SVG filter for wet-ground ink-bleed effect -->
+    <svg style="position: absolute; width: 0; height: 0" aria-hidden="true">
+      <defs>
+        <!-- Fine capillary distortion — high-frequency noise for fiber-wicking edges -->
+        <filter
+          id="ink-bleed"
+          x="-20%"
+          y="-20%"
+          width="140%"
+          height="140%"
+          color-interpolation-filters="sRGB"
+        >
+          <!-- Coarse warp for overall organic shape -->
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.008 0.014"
+            numOctaves="4"
+            seed="7"
+            result="coarse"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="coarse"
+            scale="40"
+            xChannelSelector="R"
+            yChannelSelector="G"
+            result="warped"
+          />
+          <!-- Fine noise for capillary fringe along edges -->
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.04 0.06"
+            numOctaves="3"
+            seed="13"
+            result="fine"
+          />
+          <feDisplacementMap
+            in="warped"
+            in2="fine"
+            scale="14"
+            xChannelSelector="G"
+            yChannelSelector="R"
+          />
+        </filter>
+      </defs>
+    </svg>
+
+    <!-- Foreground rain canvas — soft-focus drops for depth -->
+    <canvas id="rain-canvas"></canvas>
 
     <div class="cloud-layer">
       <div class="landing-cloud cloud-1">
@@ -51,11 +85,10 @@
       <header class="app-header">
         <div class="header-content">
           <div class="header-brand">
-            <div class="header-title-block">
               <h1>
-                You don't see with your eye,<br />you perceive with<br />your mind
+                You don't see with your eye,<br />you perceive with<br />your
+                mind.
               </h1>
-            </div>
           </div>
         </div>
       </header>

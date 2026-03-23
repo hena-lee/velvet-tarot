@@ -1,54 +1,113 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark-start">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#10039; Ask the Cards &#10039;</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* Entry overlay: starts opaque rose, fades out to reveal page */
+      /* Start page black to prevent rose-bg flash before cover renders */
+      html.dark-start {
+        background: #000 !important;
+      }
+
+      /* Register custom properties for eye-spotlight animation */
+      @property --spot-w {
+        syntax: "<percentage>";
+        initial-value: 0%;
+        inherits: false;
+      }
+      @property --spot-h {
+        syntax: "<percentage>";
+        initial-value: 0%;
+        inherits: false;
+      }
+
+      /* Entry overlay: starts as black, two eye-shaped spotlights blink then open */
       .entry-cover {
         position: fixed;
         inset: 0;
-        background: var(--rose-bg);
         z-index: 99999;
-        transition: opacity 0.8s ease;
         pointer-events: none;
+        background: #000;
+        --spot-w: 0%;
+        --spot-h: 0%;
+        mask-image:
+          radial-gradient(
+            ellipse var(--spot-w) var(--spot-h) at 40% 50%,
+            transparent 0%,
+            transparent 50%,
+            black 100%
+          ),
+          radial-gradient(
+            ellipse var(--spot-w) var(--spot-h) at 60% 50%,
+            transparent 0%,
+            transparent 50%,
+            black 100%
+          );
+        -webkit-mask-image:
+          radial-gradient(
+            ellipse var(--spot-w) var(--spot-h) at 40% 50%,
+            transparent 0%,
+            transparent 50%,
+            black 100%
+          ),
+          radial-gradient(
+            ellipse var(--spot-w) var(--spot-h) at 60% 50%,
+            transparent 0%,
+            transparent 50%,
+            black 100%
+          );
+        mask-composite: intersect;
+        -webkit-mask-composite: source-in;
+        transition: none;
+      }
+
+      .entry-cover.spotlight-blink {
+        animation: eyeOpen 3.6s ease-in-out forwards;
+      }
+
+      @keyframes eyeOpen {
+        0%   { --spot-w: 0%;  --spot-h: 0%; }
+        8%   { --spot-w: 8%;  --spot-h: 0.8%; }
+        18%  { --spot-w: 8%;  --spot-h: 3%; }
+        26%  { --spot-w: 8%;  --spot-h: 6%; }
+        34%  { --spot-w: 8%;  --spot-h: 6%; }
+        39%  { --spot-w: 8%;  --spot-h: 0.3%; }
+        46%  { --spot-w: 8%;  --spot-h: 6%; }
+        58%  { --spot-w: 8%;  --spot-h: 6%; }
+        63%  { --spot-w: 8%;  --spot-h: 0.3%; }
+        72%  { --spot-w: 8%;  --spot-h: 7%; }
+        100% { --spot-w: 8%;  --spot-h: 7%; }
+      }
+
+      @keyframes eyeReveal {
+        0%   { --spot-w: 8%;   --spot-h: 7%; }
+        100% { --spot-w: 100%; --spot-h: 100%; }
+      }
+
+      .entry-cover.spotlight-open {
+        animation: eyeReveal 2s ease-in-out forwards;
       }
     </style>
   </head>
 
   <body>
     <div class="entry-cover" id="entry-cover"></div>
-    <div class="mobile-gate" id="mobile-gate">
-      <div class="mobile-gate-content">
-        <span class="mobile-gate-label">Velvet Tarot</span>
-        <h1 class="mobile-gate-title">
-          This experience was built for larger screens.
-        </h1>
-        <p class="mobile-gate-subtitle">
-          For the full visual journey — animated cards, lace frames, and
-          all — please visit on a desktop or tablet.
-        </p>
-        <div class="mobile-gate-thesis">
-          <em>"You don't see with your eye, you perceive with your mind."</em>
-        </div>
-      </div>
-    </div>
 
     <script src="components.js"></script>
 
     <section class="reading-section">
-      <div class="placemat-wrap">
-        <img src="/images/assets/placemat.png" class="placemat-img" alt="" />
-        <img src="/images/assets/button.png" class="placemat-button" alt="" />
+      <div class="readingform-wrap">
+        <img src="/images/assets/readingform.png" class="readingform-img" alt="" />
+        <img src="/images/assets/button.png" class="readingform-button" alt="" />
         <div class="lace-frame reading-form-frame" id="reading-form-wrap">
           <form id="reading-form">
             <div class="form-input-row">
               <input
                 type="text"
                 id="question"
-                placeholder="Ask the cards anything, or leave blank"
+                placeholder="Whisper your query to the cards..."
                 autocomplete="off"
               />
               <button
@@ -56,7 +115,11 @@
                 class="form-arrow-btn"
                 aria-label="Draw cards"
               >
-                &#10230;
+                <img
+                  src="/images/assets/manicule.png"
+                  class="manicule"
+                  alt="☞"
+                />
               </button>
             </div>
             <div
@@ -75,7 +138,11 @@
               >
                 past · present · future
               </button>
-              <button type="button" class="spread-pill" data-value="celticCross">
+              <button
+                type="button"
+                class="spread-pill"
+                data-value="celticCross"
+              >
                 celtic cross
               </button>
             </div>
@@ -86,47 +153,49 @@
     </section>
 
     <script>
-      // Fade out the entry cover for a smooth transition from landing
+      // Two-spotlight reveal: darkness → blink → open
       requestAnimationFrame(() => {
-        const cover = document.getElementById('entry-cover');
+        const cover = document.getElementById("entry-cover");
         if (cover) {
-          cover.style.opacity = '0';
-          cover.addEventListener('transitionend', () => cover.remove());
+          setTimeout(() => {
+            cover.classList.add("spotlight-blink");
+            cover.addEventListener("animationend", function onBlink() {
+              cover.removeEventListener("animationend", onBlink);
+              cover.classList.remove("spotlight-blink");
+              document.documentElement.classList.remove("dark-start");
+              void cover.offsetWidth;
+              cover.classList.add("spotlight-open");
+              cover.addEventListener(
+                "animationend",
+                () => { cover.remove(); },
+                { once: true },
+              );
+            });
+          }, 800);
         }
       });
 
-      // --- Spread pill selection ---
-      document.querySelectorAll('.spread-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-          document.querySelectorAll('.spread-pill').forEach(p => p.classList.remove('active'));
-          pill.classList.add('active');
-          document.getElementById('spread').value = pill.dataset.value;
+      // --- Spread tag selection ---
+      document.querySelectorAll(".spread-pill").forEach((pill) => {
+        pill.addEventListener("click", () => {
+          document
+            .querySelectorAll(".spread-pill")
+            .forEach((p) => p.classList.remove("active"));
+          pill.classList.add("active");
+          document.getElementById("spread").value = pill.dataset.value;
         });
       });
 
-      // --- Form submission → redirect to reading page ---
-      const form = document.getElementById('reading-form');
-      form.addEventListener('submit', (e) => {
+      // --- Form submission ---
+      const form = document.getElementById("reading-form");
+      form.addEventListener("submit", (e) => {
         e.preventDefault();
-        const question = document.getElementById('question').value.trim();
-        const spread = document.getElementById('spread').value;
+        const question = document.getElementById("question").value.trim();
+        const spread = document.getElementById("spread").value;
         const params = new URLSearchParams({ spread });
-        if (question) params.set('question', question);
-
-        localStorage.setItem('velvet_visited', '1');
-
-        const section = document.querySelector('.reading-section');
-        if (section) {
-          section.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
-          section.style.transformOrigin = 'center center';
-          section.style.transform = 'scale(1.5)';
-          section.style.opacity = '0';
-          setTimeout(() => {
-            window.location.href = `/reading.html?${params}`;
-          }, 600);
-        } else {
-          window.location.href = `/reading.html?${params}`;
-        }
+        if (question) params.set("question", question);
+        localStorage.setItem("velvet_visited", "1");
+        window.location.href = `/reading.html?${params}`;
       });
     </script>
   </body>

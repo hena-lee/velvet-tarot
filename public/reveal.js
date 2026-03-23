@@ -33,6 +33,10 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
   heading.textContent = 'What the Cards Reveal';
   leftCol.appendChild(heading);
 
+  // Scrollable container for card sections
+  const cardScroll = document.createElement('div');
+  cardScroll.className = 'reading-card-scroll';
+
   selectedCards.forEach((card, i) => {
     const section = document.createElement('div');
     section.className = 'reading-card-section';
@@ -51,8 +55,10 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
         <p class="rcs-text">${sectionText}</p>
       </div>
     `;
-    leftCol.appendChild(section);
+    cardScroll.appendChild(section);
   });
+
+  leftCol.appendChild(cardScroll);
 
   // ── Right column: summary + notes (hidden until envelope is opened) ──
   const rightCol = document.createElement('div');
