@@ -128,6 +128,7 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
   summaryWrap.appendChild(summaryText);
 
   topBox.appendChild(envelope);
+  envelope.classList.add('floating');
   topBox.appendChild(summaryWrap);
   rightCol.appendChild(topBox);
 
@@ -229,6 +230,7 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
   envelope.addEventListener('click', () => {
     if (envelopeOpened) return;
     envelopeOpened = true;
+    envelope.classList.remove('floating');
     envelope.style.cursor = 'default';
     envelope.style.transform = '';
 
@@ -323,6 +325,14 @@ window.addEventListener('DOMContentLoaded', () => {
       state.spreadType,
       state.savedReadingId
     );
+
+    // Remove entry cover instantly (html bg is black, no visible change),
+    // then fade the content itself in from opacity 0 — one continuous motion from black
+    const cover = document.getElementById('entry-cover');
+    if (cover) cover.remove();
+    requestAnimationFrame(() => {
+      document.querySelector('.reading-stage').classList.add('content-ready');
+    });
   } catch (err) {
     console.error('[velvet-reading] Error:', err);
     window.location.href = '/ask.html';

@@ -254,8 +254,9 @@ body::after {
   );
 }
 
-/* Reading page: same vignette shape + base tint for text readability over floral bg */
-body.reading-page::after {
+/* Reveal page: stronger atmospheric overlay — z-index:-1 puts it above flowerbed but behind all content */
+body.reveal-page::after {
+  z-index: -1;
   background: radial-gradient(
     ellipse 70% 60% at 50% 50%,
     rgba(0, 0, 0, 0.28) 0%,
@@ -1857,6 +1858,15 @@ html:has(.landing)::after {
   transition: transform 0.12s ease-out;
 }
 
+@keyframes envelopeFloat {
+  0%, 100% { translate: 0 0px; }
+  50%       { translate: 0 -14px; }
+}
+
+.envelope-sequence.floating {
+  animation: envelopeFloat 3s ease-in-out infinite;
+}
+
 .envelope-img {
   position: absolute;
   inset: 0;
@@ -2584,6 +2594,12 @@ button:disabled {
   overflow: hidden;
   box-sizing: border-box;
   margin: 0;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.reading-stage.results-visible.content-ready {
+  opacity: 1;
 }
 
 /* #reading must fill reading-stage so the grid can inherit height */
@@ -2689,8 +2705,7 @@ button:disabled {
   letter-spacing: 0.12em;
   text-align: center;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 4px 24px rgba(0, 0, 0, 0.3);
-  width: max-content;
-  max-width: 80%;
+  white-space: nowrap;
   margin: 0 auto 0.5rem;
   line-height: 1;
   padding: 0.8rem 1.8rem;

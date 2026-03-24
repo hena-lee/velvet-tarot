@@ -396,6 +396,14 @@ function pickCard(deckIndex, wrapper) {
   } else {
     setStatus('');
     selectionLocked = true;
+    // Fade out and remove the auto-draw button gracefully
+    const btn = document.querySelector('.auto-draw-btn');
+    if (btn) {
+      btn.style.pointerEvents = 'none';
+      btn.style.transition = 'opacity 0.4s ease';
+      btn.style.opacity = '0';
+      btn.addEventListener('transitionend', () => btn.remove(), { once: true });
+    }
     // Start AI fetch immediately while fan is fading — maximises loading time
     startBackgroundFetch();
     // Fade out the entire fan (picked + unpicked)
@@ -630,7 +638,14 @@ async function startRevealSequence() {
   window._readingInProgress = false;
   window.removeEventListener('beforeunload', preventUnload);
 
-  window.location.href = '/reading.html';
+  // Page-fade-out matching reading.html entry-cover — navigate on transitionend (same pattern as ask→reveal)
+  const fadeOut = document.createElement('div');
+  fadeOut.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;opacity:0;pointer-events:none;transition:opacity 0.8s ease;';
+  document.body.appendChild(fadeOut);
+  requestAnimationFrame(() => { fadeOut.style.opacity = '1'; });
+  fadeOut.addEventListener('transitionend', () => {
+    window.location.href = '/reading.html';
+  }, { once: true });
 }
 
 function sweepAwayFan() {
