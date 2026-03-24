@@ -139,7 +139,7 @@
         align-items: center;
         justify-content: center;
         gap: 0.25em;
-        font-family: "California Sun", "Jacquard 24", Georgia, serif;
+        font-family: "California Sun", Georgia, serif;
         font-size: clamp(1rem, 2vw, 1.6rem);
         color: rgb(38, 10, 10);
         letter-spacing: 0.08em;
@@ -295,22 +295,17 @@
               role="group"
               aria-label="Spread type"
             >
-              <button type="button" class="spread-pill" data-value="single">
-                single card
+              <button type="button" class="spread-pill" data-value="single" aria-label="Single card">
+                <img src="/images/assets/singlecard.png" class="spread-pill-img" alt="" />
+                <span class="spread-pill-label">single card</span>
               </button>
-              <button
-                type="button"
-                class="spread-pill active"
-                data-value="threeCard"
-              >
-                past · present · future
+              <button type="button" class="spread-pill active" data-value="threeCard" aria-label="Past, present, future">
+                <img src="/images/assets/pastpresentfuture.png" class="spread-pill-img" alt="" />
+                <span class="spread-pill-label">past · present · future</span>
               </button>
-              <button
-                type="button"
-                class="spread-pill"
-                data-value="celticCross"
-              >
-                celtic cross
+              <button type="button" class="spread-pill" data-value="celticCross" aria-label="Celtic cross">
+                <img src="/images/assets/celticcross.png" class="spread-pill-img" alt="" />
+                <span class="spread-pill-label">celtic cross</span>
               </button>
             </div>
             <input type="hidden" id="spread" value="threeCard" />
@@ -513,6 +508,7 @@
 
         // Animate dissolution
         card.classList.add("dissolving");
+
         const duration = 1800;
         const start = performance.now();
         let animId;

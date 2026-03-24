@@ -305,10 +305,9 @@ function showDetail(idx) {
   const cardsHtml = entry.cards.map(c => {
     const orient = c.isReversed ? 'Reversed' : 'Upright';
     const reversedClass = c.isReversed ? ' detail-card-reversed' : '';
-    const imgWrapOpen = c.pinterest
-      ? `<a href="${c.pinterest}" target="_blank" rel="noopener noreferrer" class="detail-card-img-wrap${reversedClass}">`
-      : `<div class="detail-card-img-wrap${reversedClass}">`;
-    const imgWrapClose = c.pinterest ? `</a>` : `</div>`;
+    const cardSlug = 'card-' + c.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const imgWrapOpen = `<a href="/artifacts.html#${cardSlug}" class="detail-card-img-wrap${reversedClass}">`;
+    const imgWrapClose = `</a>`;
     return `
       <div class="detail-card">
         ${imgWrapOpen}

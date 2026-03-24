@@ -41,6 +41,13 @@
         Object.values(suits).forEach(arr => arr.sort((a, b) => a.number - b.number));
 
         const container = document.getElementById('artifacts-content');
+        // After render, scroll to the card anchor if one is in the URL
+        const scrollToHash = () => {
+          if (window.location.hash) {
+            const target = document.getElementById(window.location.hash.slice(1));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        };
 
         // Render Major Arcana group heading
         const majorHeading = document.createElement('h2');
@@ -61,6 +68,8 @@
         SUIT_ORDER.forEach(suit => {
           container.appendChild(renderSection(SUIT_LABELS[suit], suits[suit]));
         });
+
+        scrollToHash();
       }
 
       function renderSection(title, cards) {
@@ -80,6 +89,7 @@
         cards.forEach(card => {
           const row = document.createElement('div');
           row.className = 'artifacts-row';
+          row.id = 'card-' + card.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
           row.innerHTML = `
             ${card.pinterest ? `<a href="${card.pinterest}" target="_blank" rel="noopener noreferrer" class="artifacts-card-img">` : `<div class="artifacts-card-img">`}

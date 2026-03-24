@@ -11,7 +11,6 @@ const shuffleScene = document.getElementById('shuffle-scene');
 
 let shuffledDeck = [];
 let selectedCards = [];
-let pickedWrappers = [];
 let currentView = null; // 'shuffle' | 'fan' | 'spread' | 'reading'
 
 // Background AI fetch state
@@ -361,7 +360,6 @@ function autoDrawCards() {
     const deckIndex = parseInt(wrapper.querySelector('.fan-card').dataset.deckIndex);
     wrapper.classList.add('picked');
     selectedCards.push(shuffledDeck[deckIndex]);
-    pickedWrappers.push(wrapper);
   });
   selectionLocked = true;
   setStatus('');
@@ -390,7 +388,6 @@ function pickCard(deckIndex, wrapper) {
   wrapper.classList.add('picked');
   const card = shuffledDeck[deckIndex];
   selectedCards.push(card);
-  pickedWrappers.push(wrapper);
 
   const remaining = cardCount - selectedCards.length;
 
@@ -415,7 +412,6 @@ function unpickCard(deckIndex, wrapper) {
 
   wrapper.classList.remove('picked');
   selectedCards.splice(idx, 1);
-  pickedWrappers.splice(pickedWrappers.indexOf(wrapper), 1);
 
   const remaining = cardCount - selectedCards.length;
   setStatus(`Pick ${remaining} more card${remaining > 1 ? 's' : ''}`);

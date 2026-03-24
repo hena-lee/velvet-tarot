@@ -209,13 +209,19 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
   summaryWrap.style.opacity = '0';
   summaryWrap.style.transition = 'opacity 1.8s ease';
 
-  // Preload break-seal sound
+  // Preload envelope sounds
   const sealAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
   let sealBuffer = null;
+  let clickBuffer = null;
   fetch('/audio/breakseal.mp3')
     .then(r => r.arrayBuffer())
     .then(buf => sealAudioCtx.decodeAudioData(buf))
     .then(decoded => { sealBuffer = decoded; })
+    .catch(() => {});
+  fetch('/audio/click.mp3')
+    .then(r => r.arrayBuffer())
+    .then(buf => sealAudioCtx.decodeAudioData(buf))
+    .then(decoded => { clickBuffer = decoded; })
     .catch(() => {});
 
   // Envelope click — animate seal break → open → reveal summary
@@ -226,9 +232,21 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
     envelope.style.cursor = 'default';
     envelope.style.transform = '';
 
+    if (sealAudioCtx.state === 'suspended') sealAudioCtx.resume();
+
+    // Play click sound immediately on tap
+    if (clickBuffer) {
+      const src = sealAudioCtx.createBufferSource();
+      const gain = sealAudioCtx.createGain();
+      src.buffer = clickBuffer;
+      src.playbackRate.value = 1.8;
+      gain.gain.value = 0.7;
+      src.connect(gain).connect(sealAudioCtx.destination);
+      src.start(0);
+    }
+
     // Play break-seal sound
     if (sealBuffer) {
-      if (sealAudioCtx.state === 'suspended') sealAudioCtx.resume();
       const source = sealAudioCtx.createBufferSource();
       const gain = sealAudioCtx.createGain();
       source.buffer = sealBuffer;

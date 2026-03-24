@@ -21,16 +21,53 @@
   // Lock scrolling while the theatrical landing is active
   document.body.classList.add('no-scroll');
 
-  // Show wrapper only after theater image loads to prevent flash of hidden layers
+  // theaterImg is used throughout for flash animations and click handlers
   const theaterImg = imgWrapper.querySelector('.landing-image');
-  if (theaterImg) {
-    if (theaterImg.complete) {
-      imgWrapper.style.visibility = 'visible';
-    } else {
-      theaterImg.addEventListener('load', () => {
-        imgWrapper.style.visibility = 'visible';
+
+  // === Opening intro sequence ===
+  const introPlayed = sessionStorage.getItem('introPlayed');
+
+  if (introPlayed) {
+    // Returning user — show everything immediately, no animation
+    if (cloudLayer) { cloudLayer.style.transition = 'none'; cloudLayer.classList.remove('intro-hidden'); }
+    imgWrapper.style.transition = 'none';
+    imgWrapper.classList.remove('intro-hidden');
+  } else {
+    // First visit — wrap header letters for CSS stagger animation
+    const h1 = document.querySelector('.header-brand h1');
+    if (h1) {
+      const text = h1.textContent;
+      h1.textContent = '';
+      text.split('').forEach((char, i) => {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.style.setProperty('--i', i);
+        span.textContent = char === ' ' ? '\u00A0' : char;
+        h1.appendChild(span);
       });
     }
+
+    // Preload all landing images
+    const imageSrcs = [
+      '/images/assets/theater.png',
+      '/images/assets/curtains.jpg',
+      '/images/assets/leftDoor.png',
+      '/images/assets/rightDoor.png',
+      '/images/assets/cloud.png',
+      '/images/assets/moshPit.gif',
+    ];
+    const imagesReady = Promise.all(imageSrcs.map(src => new Promise(resolve => {
+      const img = new Image(); img.onload = img.onerror = resolve; img.src = src;
+    })));
+    const minWait = new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Fade in clouds and images together after header completes + images are preloaded
+    // Rain stays tied to the storm sequence (startFlashLoop) as before
+    Promise.all([imagesReady, minWait]).then(() => {
+      if (cloudLayer) cloudLayer.classList.remove('intro-hidden');
+      imgWrapper.classList.remove('intro-hidden');
+      sessionStorage.setItem('introPlayed', '1');
+    });
   }
 
   // phase 0 = curtain rise, phase 1 = powder room split, phase 2 = theater zoom
