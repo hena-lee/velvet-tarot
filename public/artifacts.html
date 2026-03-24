@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>&#10039; Artifacts &#10039;</title>
+    <link rel="preload" href="/fonts/California sun.woff2" as="font" type="font/woff2" crossorigin />
+    <title>Velvet Tarot</title>
     <link rel="stylesheet" href="style.css" />
     <style>
       html { overflow-y: auto; }
@@ -111,6 +112,11 @@
       }
 
       loadCards();
+
+      // Scroll sound on page scroll
+      if (window._attachScrollSound) {
+        window._attachScrollSound(window);
+      }
 
       // Hide footer until user scrolls to bottom
       const footer = document.querySelector('.site-footer');

@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>&#10039; Ask the Cards &#10039;</title>
+    <link rel="preload" href="/fonts/California sun.woff2" as="font" type="font/woff2" crossorigin />
+    <title>Velvet Tarot</title>
     <link rel="stylesheet" href="style.css" />
     <style>
       /* Start page black to prevent rose-bg flash before cover renders */
@@ -137,7 +138,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 0.6em;
+        gap: 0.25em;
         font-family: "California Sun", "Jacquard 24", Georgia, serif;
         font-size: clamp(1rem, 2vw, 1.6rem);
         color: rgb(38, 10, 10);
@@ -145,7 +146,7 @@
         text-align: center;
         z-index: 2;
         pointer-events: none;
-        padding: 2rem;
+        padding: calc(2rem + 3%) 2rem 2rem;
         line-height: 1.6;
       }
       .reveal-text .r-char {
@@ -323,7 +324,8 @@
       const revealTextEl = document.getElementById("reveal-text");
       const revealLines = [
         "You don\u2019t see with your eye,",
-        "You perceive with your mind.",
+        "You perceive with",
+        "your mind.",
       ];
       revealTextEl.innerHTML = revealLines
         .map((line) => {
@@ -419,17 +421,9 @@
         }, 150);
       });
 
-      // --- Click sound ---
-      function playClick() {
-        const audio = new Audio("/audio/click.mp3");
-        audio.volume = 0.5;
-        audio.play().catch(() => {});
-      }
-
       // --- Spread tag selection ---
       document.querySelectorAll(".spread-pill").forEach((pill) => {
         pill.addEventListener("click", () => {
-          playClick();
           document
             .querySelectorAll(".spread-pill")
             .forEach((p) => p.classList.remove("active"));
@@ -606,13 +600,12 @@
       const form = document.getElementById("reading-form");
       form.addEventListener("submit", (e) => {
         e.preventDefault();
-        playClick();
         const question = document.getElementById("question").value.trim();
         const spread = document.getElementById("spread").value;
         const params = new URLSearchParams({ spread });
         if (question) params.set("question", question);
         localStorage.setItem("velvet_visited", "1");
-        const url = `/reading.html?${params}`;
+        const url = `/reveal.html?${params}`;
         const card = document.getElementById("reading-form-wrap");
         startDissolution(card, url);
       });

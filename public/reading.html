@@ -3,18 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href="/fonts/California sun.woff2" as="font" type="font/woff2" crossorigin />
+    <title>Velvet Tarot</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-      /* Reading page overrides: scrollable, full-width body */
-      html { overflow-y: auto; }
+      /* Reveal page: locked to viewport, no page scroll */
+      html, body { overflow: hidden; height: 100vh; }
+      html { scrollbar-width: none; }
+      html::-webkit-scrollbar { display: none; }
       body { max-width: 100%; padding: 0; }
     </style>
   </head>
   <body class="reading-page">
-    <div class="entry-cover" id="entry-cover" style="position:fixed;inset:0;background:var(--rose-bg);z-index:99999;transition:opacity 0.8s ease;pointer-events:none;"></div>
+    <div class="entry-cover" id="entry-cover" style="position:fixed;inset:0;background:#1a0a0f;z-index:99999;transition:opacity 2s ease;pointer-events:none;"></div>
     <script src="components.js"></script>
     <script>
-      // Fade out entry cover for smooth transition from ask page
       requestAnimationFrame(() => {
         const cover = document.getElementById('entry-cover');
         if (cover) {
@@ -24,16 +27,7 @@
       });
     </script>
 
-    <main class="reading-stage">
-      <p class="reading-status" id="reading-status"></p>
-      <!-- Shuffle scene: hands flank the deck during shuffling -->
-      <div class="shuffle-scene" id="shuffle-scene">
-        <img src="/images/assets/leftHand.png" class="shuffle-hand hand-left" alt="" />
-        <div id="cards"></div>
-        <img src="/images/assets/rightHand.png" class="shuffle-hand hand-right" alt="" />
-      </div>
-
-      <div id="spread-area"></div>
+    <main class="reading-stage results-visible">
       <div id="reading"></div>
     </main>
 

@@ -22,17 +22,30 @@
   document.body.prepend(navbar);
 
   // --- Click sound for UI interactions ---
-  function playClickSound() {
-    const audio = new Audio("/audio/click.mp3");
-    audio.volume = 0.7;
-    audio.playbackRate = 1.8;
-    audio.play().catch(() => {});
-  }
-  window._playClickSound = playClickSound;
+  // Preload click sound via Web Audio API for instant playback
+  const clickCtx = new (window.AudioContext || window.webkitAudioContext)();
+  let clickBuffer = null;
+  fetch("/audio/click.mp3")
+    .then(r => r.arrayBuffer())
+    .then(buf => clickCtx.decodeAudioData(buf))
+    .then(decoded => { clickBuffer = decoded; })
+    .catch(() => {});
 
-  // Nav links + brand
-  navbar.querySelectorAll("a, button").forEach((el) => {
-    el.addEventListener("click", () => playClickSound());
+  function playClickSound() {
+    if (!clickBuffer) return;
+    if (clickCtx.state === "suspended") clickCtx.resume();
+    const source = clickCtx.createBufferSource();
+    const gain = clickCtx.createGain();
+    source.buffer = clickBuffer;
+    gain.gain.value = 0.7;
+    source.connect(gain).connect(clickCtx.destination);
+    source.playbackRate.value = 1.8;
+    source.start(0);
+  }
+  // Click sound on all interactive elements (nav links, buttons, action links)
+  document.addEventListener("click", (e) => {
+    const target = e.target.closest("a, button");
+    if (target) playClickSound();
   });
 
   // Mobile gate — shown on small screens across all pages
@@ -242,6 +255,47 @@
     }
     draw();
   })();
+
+  // --- Scroll sound utility — attach to any scrollable element ---
+  const scrollCtx = new (window.AudioContext || window.webkitAudioContext)();
+  let scrollBuf = null;
+  fetch('/audio/scroll.mp3')
+    .then(r => r.arrayBuffer())
+    .then(buf => scrollCtx.decodeAudioData(buf))
+    .then(decoded => { scrollBuf = decoded; })
+    .catch(() => {});
+
+  window._attachScrollSound = function(el) {
+    if (!el) return;
+    let src = null, gain = null, timer = null;
+    el.addEventListener('scroll', () => {
+      if (!scrollBuf) return;
+      if (scrollCtx.state === 'suspended') scrollCtx.resume();
+      if (!src) {
+        src = scrollCtx.createBufferSource();
+        gain = scrollCtx.createGain();
+        src.buffer = scrollBuf;
+        src.loop = true;
+        gain.gain.value = 0.3;
+        src.connect(gain).connect(scrollCtx.destination);
+        src.start(0);
+      }
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (gain) {
+          gain.gain.setValueAtTime(gain.gain.value, scrollCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, scrollCtx.currentTime + 0.3);
+        }
+        setTimeout(() => {
+          if (src) {
+            try { src.stop(); } catch (_) {}
+            src = null;
+            gain = null;
+          }
+        }, 300);
+      }, 150);
+    });
+  };
 
   // Vercel Analytics
   const analyticsScript = document.createElement('script');

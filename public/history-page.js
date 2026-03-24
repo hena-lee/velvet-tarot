@@ -73,6 +73,7 @@ function truncate(str, len) {
 
 function enterSelectMode(initialId) {
   selectMode = true;
+  selectedIds.clear();
   if (initialId !== undefined) {
     selectedIds.add(initialId);
   }
@@ -319,30 +320,17 @@ function showDetail(idx) {
     `;
   }).join('');
 
-  // Render reading: handle both structured { sections, summary } and legacy plain strings
+  // Render reading summary (skip per-card sections — user can check Arcana for card details)
   let readingHtml = '';
   const r = entry.reading;
-  if (r && typeof r === 'object' && Array.isArray(r.sections)) {
-    const sectionsHtml = r.sections.map((s, i) => {
-      const card = entry.cards[i];
-      const rev = card && card.isReversed;
-      const imgHtml = card ? `<img src="/${card.image}" alt="${card.name}" class="detail-section-img${rev ? ' reversed' : ''}" />` : '';
-      return `<div class="detail-reading-section">
-        ${imgHtml}
-        <div class="detail-section-content">
-          <span class="detail-section-position">${s.position}</span>
-          <p>${s.text}</p>
-        </div>
-      </div>`;
-    }).join('');
-    const summaryHtml = r.summary
-      ? `<div class="detail-divider"><span>✦</span></div>
-         <h3 class="detail-summary-heading">The Complete Reading</h3>
-         <div class="detail-summary-text">${r.summary}</div>`
-      : '';
-    readingHtml = sectionsHtml + summaryHtml;
-  } else {
-    readingHtml = `<div class="detail-reading-plain">${typeof r === 'string' ? r : ''}</div>`;
+  if (r && typeof r === 'object' && r.summary) {
+    readingHtml = `<div class="detail-divider"><span>✦</span></div>
+       <h3 class="detail-summary-heading">Your Reading</h3>
+       <div class="detail-summary-text">${r.summary}</div>`;
+  } else if (typeof r === 'string' && r) {
+    readingHtml = `<div class="detail-divider"><span>✦</span></div>
+       <h3 class="detail-summary-heading">Your Reading</h3>
+       <div class="detail-reading-plain">${r}</div>`;
   }
 
   const notesHtml = entry.notes
@@ -350,9 +338,14 @@ function showDetail(idx) {
     : '';
 
   detailEl.innerHTML = `
-    <a class="detail-back" href="#">&larr;</a>
-    <h2 class="detail-spread">${entry.spread}</h2>
-    <div class="detail-date">${formatDate(entry.timestamp)}</div>
+    <div class="detail-header">
+      <a class="detail-back" href="#">&larr; Back</a>
+      <a href="/ask.html?skip" class="detail-new-reading">New Reading &rarr;</a>
+    </div>
+    <div class="detail-meta">
+      <h2 class="detail-spread">${entry.spread}</h2>
+      <span class="detail-date">${formatDate(entry.timestamp)}</span>
+    </div>
     ${entry.question ? `<div class="detail-question">"${entry.question}"</div>` : ''}
     <div class="detail-cards">${cardsHtml}</div>
     <div class="detail-reading">${readingHtml}</div>
@@ -365,4 +358,19 @@ function showDetail(idx) {
   });
 }
 
-detectStorageMode().then(() => loadHistory());
+detectStorageMode().then(() => {
+  // Show privacy note based on storage mode
+  const privacyNote = document.getElementById('history-privacy-note');
+  if (privacyNote) {
+    privacyNote.textContent = useClientStorage
+      ? 'Your readings are stored privately in this browser. No one else can see them — not even us.'
+      : 'Your readings are saved locally on your device. Nothing is sent to the cloud.';
+  }
+  loadHistory();
+
+  // Scroll sound on the list and detail views
+  if (window._attachScrollSound) {
+    window._attachScrollSound(document.getElementById('history'));
+    window._attachScrollSound(document.getElementById('history-detail'));
+  }
+});

@@ -658,7 +658,6 @@
     // Fade in gradually after a short delay
     setTimeout(() => skipBtn.classList.add('visible'), 800);
     skipBtn.addEventListener('click', () => {
-      if (window._playClickSound) window._playClickSound();
       skippedIntro = true;
       skipBtn.classList.remove('visible');
       // Silently jump curtain + doors to fully open so no movement sounds trigger

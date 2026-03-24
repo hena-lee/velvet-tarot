@@ -45,6 +45,9 @@ app.post('/api/interpret', async (req, res) => {
 
   try {
     const reading = await generateReading(cards, spread, question || null);
+    console.log('[interpret] Gemini returned:', JSON.stringify(reading).slice(0, 300));
+    console.log('[interpret] summary length:', reading.summary ? reading.summary.length : 0);
+    console.log('[interpret] sections count:', reading.sections ? reading.sections.length : 0);
 
     // If Gemini returned empty sections, fill them from card meanings
     if (!reading.sections || reading.sections.length === 0) {
@@ -64,6 +67,7 @@ app.post('/api/interpret', async (req, res) => {
     const saved = trySave({ spreadType, question: question || null, ...result });
     res.json({ ...result, savedId: saved ? saved.id : null });
   } catch (err) {
+    console.error('[interpret] Gemini FAILED:', err.message || err);
     // Total failure — build structured fallback from card meanings
     const fallbackReading = {
       sections: cards.map((card, i) => {

@@ -24,11 +24,11 @@
     async save(entry) {
       const db = await openDB();
       const record = {
+        ...entry,
         id: Date.now(),
         timestamp: new Date().toISOString(),
         favorite: false,
-        notes: null,
-        ...entry
+        notes: null
       };
       return new Promise((resolve, reject) => {
         const req = db.transaction(STORE, 'readwrite').objectStore(STORE).add(record);
