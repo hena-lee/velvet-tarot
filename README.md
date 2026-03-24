@@ -12,7 +12,7 @@ Once inside, choose a spread, ask your question, and watch the deck shuffle in h
 
 ## Why I Built This
 
-A friend of mine is really into tarot, so I wanted to make something for her that felt like more than pulling a card from an app. I wanted it to feel like a real reading, something with a Victorian cabinet-of-curiosities vibe. I built it as a gift, and it ended up being a gift for me too.
+A friend of mine is really into tarot, so I wanted to make something for her that felt like more than pulling a card from an app. I wanted it to feel like a real reading, something with a Victorian cabinet-of-curiosities vibe. I built it as a gift, and it ended up being a gift for me too :-)
 
 ## Technical Highlights
 
