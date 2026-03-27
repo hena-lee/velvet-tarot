@@ -4,7 +4,7 @@ An interactive tarot reading app with a scroll-driven theatrical entrance, hand-
 
 **[Live Demo](https://velvettarot.vercel.app/)**
 
-![Landing page](docs/preview.gif)
+![Landing page](docs/velvetTarot.gif)
 
 Once inside, choose a spread, ask your question, and watch the deck shuffle before your cards fan out and flip to reveal the draw. Gemini reads the spread and returns a written interpretation tailored to your question.
 
