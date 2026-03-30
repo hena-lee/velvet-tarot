@@ -220,6 +220,31 @@
       .readingform-button.typing {
         animation: buttonWobble 0.6s ease-in-out infinite;
       }
+      @keyframes buttonDrop {
+        /* Phase 1: Scale up */
+        0%   { transform: translate(-50%, -50%) scale(1) rotate(0deg) rotateX(0deg); }
+        8%   { transform: translate(-50%, -50%) scale(1.05) rotate(0deg) rotateX(0deg); }
+        /* Phase 2: Tilt */
+        15%  { transform: translate(-50%, -50%) scale(1.05) rotate(-5deg) rotateX(0deg); }
+        /* Phase 3: Fall to bottom */
+        45%  { transform: translate(-50%, calc(-50% + var(--drop))) scale(1.05) rotate(-15deg) rotateX(180deg); }
+        /* Phase 4: First bounce up + spin */
+        55%  { transform: translate(-50%, calc(-50% + var(--drop) - 60px)) scale(1.05) rotate(-10deg) rotateX(360deg); }
+        /* Fall back down */
+        65%  { transform: translate(-50%, calc(-50% + var(--drop))) scale(1.05) rotate(-5deg) rotateX(540deg); }
+        /* Phase 5: Second smaller bounce + spin */
+        72%  { transform: translate(-50%, calc(-50% + var(--drop) - 25px)) scale(1.05) rotate(-3deg) rotateX(630deg); }
+        /* Settle back down */
+        82%  { transform: translate(-50%, calc(-50% + var(--drop))) scale(1.05) rotate(0deg) rotateX(720deg); }
+        /* Phase 6: Collapse flat on the surface */
+        90%  { transform: translate(-50%, calc(-50% + var(--drop))) scale(1.05) rotate(0deg) rotateX(80deg); }
+        95%  { transform: translate(-50%, calc(-50% + var(--drop))) scale(1.05) rotate(0deg) rotateX(88deg); }
+        100% { transform: translate(-50%, calc(-50% + var(--drop))) scale(1.05) rotate(0deg) rotateX(85deg); }
+      }
+      .readingform-button.dropping {
+        transform-origin: center center;
+        animation: buttonDrop 2.4s ease-in forwards;
+      }
 
       /* Page fade-out before navigation */
       .page-fade-out {
@@ -263,11 +288,10 @@
           class="readingform-img"
           alt=""
         />
-        <img
-          src="/images/assets/button.png"
-          class="readingform-button"
-          alt=""
-        />
+        <div class="readingform-button">
+          <img src="/images/assets/button.png" class="readingform-button-img" alt="" />
+          <img src="/images/assets/button.png" class="readingform-button-back" alt="" />
+        </div>
         <div class="lace-frame reading-form-frame" id="reading-form-wrap">
           <form id="reading-form">
             <div class="form-input-row">
@@ -508,6 +532,20 @@
 
         // Animate dissolution
         card.classList.add("dissolving");
+
+        // Animate the red button: scale → tilt → bounce → settle flat
+        if (redButton) {
+          const btnRect = redButton.getBoundingClientRect();
+          const floor = window.innerHeight - btnRect.top - btnRect.height - 10;
+          redButton.style.setProperty("--drop", floor + "px");
+          redButton.classList.add("dropping");
+          // Play click sound when the tilt begins (~190ms = end of scale phase)
+          setTimeout(() => {
+            const clickAudio = new Audio("/audio/click.mp3");
+            clickAudio.volume = 0.5;
+            clickAudio.play().catch(() => {});
+          }, 190);
+        }
 
         const duration = 1800;
         const start = performance.now();

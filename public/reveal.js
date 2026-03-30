@@ -509,9 +509,9 @@ async function startRevealSequence() {
 
   // Scale timing based on spread complexity
   const timings = {
-    single:     { preFlip: 800,  showCards: 1200, fadeOut: 600 },
-    threeCard:  { preFlip: 1200, showCards: 1800, fadeOut: 700 },
-    celticCross: { preFlip: 1800, showCards: 2500, fadeOut: 800 },
+    single:     { preFlip: 800,  showCards: 3200, fadeOut: 600 },
+    threeCard:  { preFlip: 1200, showCards: 3800, fadeOut: 700 },
+    celticCross: { preFlip: 1800, showCards: 4500, fadeOut: 800 },
   };
   const t = timings[spreadType] || timings.threeCard;
 

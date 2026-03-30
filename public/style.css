@@ -2104,7 +2104,40 @@ html:has(.landing)::after {
   height: 48px;
   z-index: 4;
   pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+/* Front face */
+.readingform-button-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  transform: translateZ(2px);
+  backface-visibility: hidden;
+}
+
+/* Back face — same image, flipped so it shows when parent rotates past 90deg */
+.readingform-button-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transform: translateZ(-2px) rotateX(180deg);
+  backface-visibility: hidden;
+}
+
+/* Edge ring — thin dark strip visible from the side during spins */
+.readingform-button::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 3px solid #3a0e0e;
+  border-radius: 50%;
+  transform: translateZ(0px);
 }
 
 /* === READING FORM === */
@@ -2213,7 +2246,7 @@ html:has(.landing)::after {
   transform: translateX(-50%);
   white-space: nowrap;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 0.58rem;
+  font-size: 0.78rem;
   font-style: italic;
   letter-spacing: 0.08em;
   color: var(--ink-muted);
@@ -2232,6 +2265,10 @@ html:has(.landing)::after {
 
 .spread-pill.active {
   filter: brightness(1.1);
+}
+
+.spread-pill.active .spread-pill-label {
+  opacity: 1;
 }
 
 /* Needle-thread stitch animation on the burgundy button */
