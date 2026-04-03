@@ -642,7 +642,7 @@ async function startRevealSequence() {
   const fadeOut = document.createElement('div');
   fadeOut.style.cssText = 'position:fixed;inset:0;background:#000;z-index:99999;opacity:0;pointer-events:none;transition:opacity 0.8s ease;';
   document.body.appendChild(fadeOut);
-  requestAnimationFrame(() => { fadeOut.style.opacity = '1'; });
+  requestAnimationFrame(() => { requestAnimationFrame(() => { fadeOut.style.opacity = '1'; }); });
   fadeOut.addEventListener('transitionend', () => {
     window.location.href = '/reading.html';
   }, { once: true });
