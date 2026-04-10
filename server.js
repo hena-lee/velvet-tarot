@@ -29,11 +29,13 @@ const CARDS_BY_ID = new Map(ALL_CARDS.map(c => [c.id, c]));
 const ALLOWED_ORIGIN_HOSTS = new Set([
   'localhost',
   '127.0.0.1',
-  'velvet-tarot.vercel.app',
+  'velvettarot.vercel.app',
   // Add custom domain(s) here if you ever attach one.
 ]);
-// Also allow Vercel preview deployments for this project.
-const VERCEL_PREVIEW_RE = /^velvet-tarot[a-z0-9-]*\.vercel\.app$/i;
+// Also allow Vercel preview deployments for this project. Matches both the
+// hyphenated and non-hyphenated spellings of the project name so preview
+// URLs like velvettarot-git-main-hena-lee.vercel.app resolve correctly.
+const VERCEL_PREVIEW_RE = /^velvet-?tarot[a-z0-9-]*\.vercel\.app$/i;
 
 function isAllowedOrigin(req) {
   const raw = req.get('origin') || req.get('referer');
