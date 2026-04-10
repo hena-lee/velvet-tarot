@@ -267,11 +267,45 @@
         pointer-events: none;
         z-index: 10;
       }
+
+      /* Demo notice — only shown on the hosted Vercel demo, not local */
+      .demo-notice {
+        position: fixed;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        font-family: Georgia, serif;
+        font-size: 0.78rem;
+        font-style: italic;
+        color: rgba(238, 232, 216, 0.65);
+        text-align: center;
+        letter-spacing: 0.04em;
+        padding: 0.35rem 0.9rem;
+        background: rgba(0, 0, 0, 0.35);
+        border-radius: 999px;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: auto;
+        max-width: 92vw;
+      }
+      .demo-notice a {
+        color: rgba(238, 232, 216, 0.9);
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-underline-offset: 2px;
+      }
+      .demo-notice a:hover {
+        color: rgba(255, 255, 255, 1);
+      }
     </style>
   </head>
 
   <body>
     <div class="entry-cover" id="entry-cover"></div>
+
+    <!-- Demo notice — populated by JS only when running on the hosted demo -->
+    <div class="demo-notice" id="demo-notice" hidden></div>
 
     <script src="components.js"></script>
 
@@ -629,6 +663,22 @@
           }
         });
       }
+
+      // --- Demo notice (hosted demo only) ---
+      // /api/config returns { serverStorage: false } on Vercel, true locally.
+      // We use that as the "this is the hosted demo" signal so the notice
+      // only appears for portfolio visitors, never during local dev.
+      fetch('/api/config')
+        .then(r => r.json())
+        .then(cfg => {
+          if (cfg && cfg.serverStorage === false) {
+            const el = document.getElementById('demo-notice');
+            if (!el) return;
+            el.innerHTML = '✦ this is a free demo with per-visitor rate limits — <a href="https://github.com/hena-lee/velvet-tarot" target="_blank" rel="noopener">clone the repo</a> to run it locally for unlimited readings ✦';
+            el.hidden = false;
+          }
+        })
+        .catch(() => {});
 
       // --- Form submission ---
       const form = document.getElementById("reading-form");

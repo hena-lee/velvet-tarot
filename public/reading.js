@@ -11,7 +11,7 @@ const positionLabels = {
   ]
 };
 
-function showReading(data, selectedCards, spreadType, savedReadingId) {
+function showReading(data, selectedCards, spreadType, savedReadingId, errorMessage) {
   const structured = data && typeof data === 'object' && Array.isArray(data.sections);
   const sections = structured ? data.sections : [];
   const summary = structured ? (data.summary || '') : (typeof data === 'string' ? data : '');
@@ -114,7 +114,12 @@ function showReading(data, selectedCards, spreadType, savedReadingId) {
 
   const summaryText = document.createElement('div');
   summaryText.className = 'reading-summary-text';
-  if (summary) {
+  if (errorMessage) {
+    // Demo rate limit / network error path — show the friendly message immediately
+    // and re-title the box so it doesn't pretend to be a reading.
+    summaryHeading.textContent = 'A Pause in the Reading';
+    summaryText.textContent = errorMessage;
+  } else if (summary) {
     summaryText.textContent = summary;
   } else {
     summaryText.innerHTML = '<span class="inline-loader">· · ·</span>';
@@ -323,7 +328,8 @@ window.addEventListener('DOMContentLoaded', () => {
       state.reading,
       state.selectedCards,
       state.spreadType,
-      state.savedReadingId
+      state.savedReadingId,
+      state.errorMessage || null
     );
 
     // Remove entry cover instantly (html bg is black, no visible change),

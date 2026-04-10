@@ -629,7 +629,8 @@ async function startRevealSequence() {
     spreadType,
     savedReadingId,
     question: question || null,
-    reading
+    reading,
+    errorMessage: window._readingError || null
   };
 
   sessionStorage.setItem('velvet_reading', JSON.stringify(payload));
@@ -678,13 +679,24 @@ function startBackgroundFetch() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      cards: selectedCards,
+      // Only send IDs + orientation. Server looks up the rest from cards.json
+      // so attacker-controlled card data can't inflate the LLM prompt.
+      cards: selectedCards.map(c => ({ id: c.id, isReversed: !!c.isReversed })),
       spreadType,
       question: question || undefined
     }),
     signal: controller.signal
   })
-    .then(res => res.json())
+    .then(async res => {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        // Surface a friendly error to the reading page based on the status.
+        const err = new Error(data.error || 'Request failed');
+        err.status = res.status;
+        throw err;
+      }
+      return data;
+    })
     .then(async data => {
       readingData = data;
       // If server didn't save (Vercel), persist to IndexedDB
@@ -704,7 +716,22 @@ function startBackgroundFetch() {
         savedReadingId = data.savedId;
       }
     })
-    .catch(() => {})
+    .catch((err) => {
+      // Stash a user-facing error message so the reading page can show it
+      // instead of an empty fallback. 429 = our rate limit, 503 = global cap,
+      // 403 = origin blocked, anything else = generic failure.
+      let message;
+      if (err && err.status === 429) {
+        message = 'This demo has a per-visitor rate limit to keep the free Gemini quota safe. Wait a minute and try again — or clone the repo from GitHub to run it locally with your own free API key for unlimited readings.';
+      } else if (err && err.status === 503) {
+        message = 'The demo has reached its daily reading limit. Try again tomorrow, or clone the repo from GitHub to run it locally with your own free Gemini API key.';
+      } else if (err && (err.status === 400 || err.status === 403 || err.status === 413)) {
+        message = 'Something about that request was rejected. Please refresh and try again.';
+      } else {
+        message = 'The cards could not be reached this time. Please check your connection and try again.';
+      }
+      window._readingError = message;
+    })
     .finally(() => {
       clearTimeout(timeout);
       window._readingInProgress = false;
