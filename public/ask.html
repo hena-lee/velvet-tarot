@@ -268,25 +268,31 @@
         z-index: 10;
       }
 
-      /* Demo notice — only shown on the hosted Vercel demo, not local */
+      /* Demo notice — only shown on the hosted Vercel demo, not local.
+         Position is set in JS relative to the doily image's bounding rect
+         since the doily is absolutely positioned + scaled and its visual
+         bounds don't match any layout container. The transform shifts the
+         notice up by its own height so its bottom edge sits at the y-coord
+         set in JS. */
       .demo-notice {
         position: fixed;
-        bottom: 1rem;
         left: 50%;
-        transform: translateX(-50%);
-        z-index: 100;
+        top: 0; /* overridden by JS once the doily image loads */
+        transform: translate(-50%, -100%);
+        z-index: 20;
         font-family: Georgia, serif;
         font-size: 0.78rem;
         font-style: italic;
-        color: rgba(238, 232, 216, 0.65);
+        color: rgba(238, 232, 216, 0.7);
         text-align: center;
         letter-spacing: 0.04em;
         padding: 0.35rem 0.9rem;
-        background: rgba(0, 0, 0, 0.35);
+        background: rgba(0, 0, 0, 0.32);
         border-radius: 999px;
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
         pointer-events: auto;
+        white-space: nowrap;
         max-width: 92vw;
       }
       .demo-notice a {
@@ -303,9 +309,6 @@
 
   <body>
     <div class="entry-cover" id="entry-cover"></div>
-
-    <!-- Demo notice — populated by JS only when running on the hosted demo -->
-    <div class="demo-notice" id="demo-notice" hidden></div>
 
     <script src="components.js"></script>
 
@@ -371,6 +374,9 @@
         </div>
       </div>
     </section>
+
+    <!-- Demo notice — populated and positioned by JS on the hosted demo only -->
+    <div class="demo-notice" id="demo-notice" hidden></div>
 
     <script>
       // --- Prepare reveal text (hidden behind the card) ---
@@ -668,6 +674,21 @@
       // /api/config returns { serverStorage: false } on Vercel, true locally.
       // We use that as the "this is the hosted demo" signal so the notice
       // only appears for portfolio visitors, never during local dev.
+      //
+      // The notice is fixed-positioned and tracked to the top edge of the
+      // doily image, since the doily is absolutely positioned + scaled and
+      // its visual bounds don't match any layout container we could anchor to.
+      function positionDemoNotice() {
+        const el = document.getElementById('demo-notice');
+        const img = document.querySelector('.readingform-img');
+        if (!el || el.hidden || !img) return;
+        const rect = img.getBoundingClientRect();
+        // Place just above the visual top of the doily, nudged down 2vh so
+        // the notice tucks slightly into the doily's frame. The CSS transform
+        // shifts the notice up by its own height so its bottom edge lands here.
+        el.style.top = (rect.top - 14 + window.innerHeight * 0.02) + 'px';
+      }
+
       fetch('/api/config')
         .then(r => r.json())
         .then(cfg => {
@@ -676,6 +697,15 @@
             if (!el) return;
             el.innerHTML = '✦ this is a free demo with per-visitor rate limits — <a href="https://github.com/hena-lee/velvet-tarot" target="_blank" rel="noopener">clone the repo</a> to run it locally for unlimited readings ✦';
             el.hidden = false;
+            // Position once now, again after the image has had a chance to
+            // load/layout, and on every resize.
+            positionDemoNotice();
+            const doilyImg = document.querySelector('.readingform-img');
+            if (doilyImg && !doilyImg.complete) {
+              doilyImg.addEventListener('load', positionDemoNotice, { once: true });
+            }
+            requestAnimationFrame(positionDemoNotice);
+            window.addEventListener('resize', positionDemoNotice);
           }
         })
         .catch(() => {});
