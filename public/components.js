@@ -267,33 +267,27 @@
 
   window._attachScrollSound = function(el) {
     if (!el) return;
-    let src = null, gain = null, timer = null;
+    // One-shot model: play scroll.mp3 once per gesture, no looping. After
+    // it finishes, ignore further scroll events for a short cooldown so
+    // trackpad momentum/inertia events don't trigger a second play.
+    let playing = false;
+    let cooldownUntil = 0;
+    const COOLDOWN_MS = 450;
     el.addEventListener('scroll', () => {
-      if (!scrollBuf) return;
+      if (!scrollBuf || playing) return;
+      if (performance.now() < cooldownUntil) return;
       if (scrollCtx.state === 'suspended') scrollCtx.resume();
-      if (!src) {
-        src = scrollCtx.createBufferSource();
-        gain = scrollCtx.createGain();
-        src.buffer = scrollBuf;
-        src.loop = true;
-        gain.gain.value = 0.3;
-        src.connect(gain).connect(scrollCtx.destination);
-        src.start(0);
-      }
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        if (gain) {
-          gain.gain.setValueAtTime(gain.gain.value, scrollCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0, scrollCtx.currentTime + 0.3);
-        }
-        setTimeout(() => {
-          if (src) {
-            try { src.stop(); } catch (_) {}
-            src = null;
-            gain = null;
-          }
-        }, 300);
-      }, 150);
+      const src = scrollCtx.createBufferSource();
+      const gain = scrollCtx.createGain();
+      src.buffer = scrollBuf;
+      gain.gain.value = 0.3;
+      src.connect(gain).connect(scrollCtx.destination);
+      src.onended = () => {
+        playing = false;
+        cooldownUntil = performance.now() + COOLDOWN_MS;
+      };
+      playing = true;
+      src.start(0);
     });
   };
 

@@ -137,6 +137,8 @@ function showReading(data, selectedCards, spreadType, savedReadingId, errorMessa
   topBox.appendChild(summaryWrap);
   rightCol.appendChild(topBox);
 
+  if (window._attachScrollSound) window._attachScrollSound(summaryText);
+
   // Stack container — pen overlays notes in the same space
   const penNotesStack = document.createElement('div');
   penNotesStack.className = 'pen-notes-stack';
@@ -169,6 +171,8 @@ function showReading(data, selectedCards, spreadType, savedReadingId, errorMessa
   penNotesStack.appendChild(bottomBox);
   penNotesStack.appendChild(penImg);
   rightCol.appendChild(penNotesStack);
+
+  if (window._attachScrollSound) window._attachScrollSound(bottomBox);
 
   grid.appendChild(leftCol);
   grid.appendChild(rightCol);
